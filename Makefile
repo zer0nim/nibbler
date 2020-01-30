@@ -99,6 +99,9 @@ SRC =	main.cpp \
 \
 		utils/Logging.cpp \
 		utils/Stats.cpp \
+\
+		utils/ArgsParser/ArgsParser.cpp \
+		utils/ArgsParser/ArgInfo.cpp \
 
 # INC_DIR/HEAD
 HEAD =	nibbler.hpp \
@@ -106,6 +109,9 @@ HEAD =	nibbler.hpp \
 \
 		utils/Logging.hpp \
 		utils/Stats.hpp \
+\
+		utils/ArgsParser/ArgsParser.hpp \
+		utils/ArgsParser/ArgInfo.hpp \
 
 
 ################################################################################
