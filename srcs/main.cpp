@@ -12,16 +12,55 @@ int main(int ac, char * const *av) {
 
 	initLogs();  // init logs functions
 
-
-// ls: illegal option -- z
-
 	ArgsParser	argsParser;
 	argsParser.init();
-	std::cout << "default: " << argsParser.addArgument() << std::endl;
-	std::cout << "string: " << argsParser.addArgument(ArgType::STRING) << std::endl;
-	std::cout << "bool: " << argsParser.addArgument(ArgType::BOOL) << std::endl;
-	std::cout << "int: " << argsParser.addArgument(ArgType::INT) << std::endl;
-	std::cout << "float: " << argsParser.addArgument(ArgType::FLOAT) << std::endl;
+
+	std::cout << argsParser.addArgument()
+		.setShortName("n")
+		.setLongName("name")
+		.setHelp("set your name")
+		.isRequired(true)
+		.setDefaultS("billy")
+		.setMinI(2)
+		.setMaxI(22)
+	<< std::endl;
+
+	std::cout << argsParser.addArgument(ArgType::STRING)
+		.setShortName("n")
+		.setLongName("name")
+		.setHelp("set your name")
+		.isRequired(true)
+	<< std::endl;
+
+	std::cout << argsParser.addArgument(ArgType::BOOL)
+		.setShortName("v")
+		.setLongName("verbose")
+		.setHelp("display usage of the program")
+		.isRequired(true)
+		.setStoreTrue()
+		.setDefaultB(true)
+	<< std::endl;
+
+	std::cout << argsParser.addArgument(ArgType::INT)
+		.setShortName("w")
+		.setLongName("width")
+		.setHelp("set windows width")
+		.isRequired(true)
+		.setMinI(33)
+		.setMaxI(43)
+		.setDefaultI(42)
+	<< std::endl;
+
+	std::cout << argsParser.addArgument(ArgType::FLOAT)
+		.setShortName("s")
+		.setLongName("speed")
+		.setHelp("set move speed")
+		.isRequired(true)
+		.setDefaultF(12.5)
+		.setMinF(-42.3)
+		.setMaxF(103)
+	<< std::endl;
+
 	// argsParser.parseArgs(ac, av);
 
 	// // load the defaut gui

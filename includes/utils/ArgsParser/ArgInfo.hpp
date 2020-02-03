@@ -19,13 +19,29 @@ namespace ArgType {
 		"int",
 		"float"
 	};
-}
+}  // namespace ArgType
 
 // -- ArgInfo ------------------------------------------------------------------
 class ArgInfo {
 	public:
 		virtual ~ArgInfo();
 		virtual void print(std::ostream &out) const;
+
+		ArgInfo	&setShortName(std::string shortName);
+		ArgInfo	&setLongName(std::string longName);
+		ArgInfo	&setHelp(std::string help);
+		ArgInfo	&isRequired(bool required);
+
+		virtual ArgInfo	&setDefaultS(std::string defaultV);
+		virtual ArgInfo	&setDefaultB(bool defaultV);
+		virtual ArgInfo	&setDefaultI(int defaultV);
+		virtual ArgInfo	&setDefaultF(float defaultV);
+
+		virtual ArgInfo	&setMinI(int min);
+		virtual ArgInfo	&setMinF(float min);
+		virtual ArgInfo	&setMaxI(int max);
+		virtual ArgInfo	&setMaxF(float max);
+		virtual ArgInfo	&setStoreTrue(bool storeTrue = true);
 
 		ArgType::Enum	type;
 		std::string		shortName;
@@ -34,12 +50,12 @@ class ArgInfo {
 		bool			required;
 
 	protected:
-		ArgInfo(ArgType::Enum type);
+		explicit ArgInfo(ArgType::Enum type);
 		ArgInfo(ArgInfo const &src);
 		ArgInfo &operator=(ArgInfo const &rhs);
+
 	private:
 		ArgInfo();
-
 };
 
 std::ostream & operator << (std::ostream &out, const ArgInfo &aInfo);
@@ -53,6 +69,10 @@ class StringArg : public ArgInfo {
 		StringArg &operator=(StringArg const &rhs);
 
 		virtual void print(std::ostream &out) const;
+
+		virtual ArgInfo	&setDefaultS(std::string defaultV);
+		virtual ArgInfo	&setMinI(int min);
+		virtual ArgInfo	&setMaxI(int max);
 
 		int				min;  // min string lenght
 		int				max;  // max string lenght
@@ -69,6 +89,9 @@ class BoolArg : public ArgInfo {
 
 		virtual void print(std::ostream &out) const;
 
+		virtual ArgInfo	&setDefaultB(bool defaultV);
+		virtual ArgInfo	&setStoreTrue(bool storeTrue = true);
+
 		bool	defaultV;
 		bool	storeTrue;  // allow to skip val for bool
 };
@@ -82,6 +105,10 @@ class IntArg : public ArgInfo {
 		IntArg &operator=(IntArg const &rhs);
 
 		virtual void print(std::ostream &out) const;
+
+		virtual ArgInfo	&setDefaultI(int defaultV);
+		virtual ArgInfo	&setMinI(int min);
+		virtual ArgInfo	&setMaxI(int max);
 
 		int		min;
 		int		max;
@@ -97,6 +124,10 @@ class FloatArg : public ArgInfo {
 		FloatArg &operator=(FloatArg const &rhs);
 
 		virtual void print(std::ostream &out) const;
+
+		virtual ArgInfo	&setDefaultF(float defaultV);
+		virtual ArgInfo	&setMinF(float min);
+		virtual ArgInfo	&setMaxF(float max);
 
 		float	min;
 		float	max;

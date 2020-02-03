@@ -1,5 +1,8 @@
 #include "ArgInfo.hpp"
 #include <limits>
+#include <iomanip>
+
+#include "Logging.hpp"
 
 // -- ArgInfo ------------------------------------------------------------------
 ArgInfo::ArgInfo()
@@ -31,9 +34,73 @@ ArgInfo &ArgInfo::operator=(ArgInfo const &rhs) {
 }
 
 void ArgInfo::print(std::ostream &out) const {
-	out << "{ type: " << ArgType::enumNames[type] << \
+	out << std::boolalpha << "{ type: " << ArgType::enumNames[type] << \
 	", shortName: \"" << shortName << "\", longName: \"" << longName << \
 	"\", help: \"" << help << "\", required: " << required;
+}
+
+ArgInfo	&ArgInfo::setShortName(std::string shortName) {
+	this->shortName = shortName;
+	return *this;
+}
+ArgInfo	&ArgInfo::setLongName(std::string longName) {
+	this->longName = longName;
+	return *this;
+}
+ArgInfo	&ArgInfo::setHelp(std::string help) {
+	this->help = help;
+	return *this;
+}
+ArgInfo	&ArgInfo::isRequired(bool required) {
+	this->required = required;
+	return *this;
+}
+
+ArgInfo	&ArgInfo::setMinI(int min) {
+	(void)min;
+	logErr("[" << ArgType::enumNames[type] << "] unknow setMinI function");
+	return *this;
+}
+ArgInfo	&ArgInfo::setMinF(float min) {
+	(void)min;
+	logErr("[" << ArgType::enumNames[type] << "] unknow setMinF function");
+	return *this;
+}
+ArgInfo	&ArgInfo::setMaxI(int max) {
+	(void)max;
+	logErr("[" << ArgType::enumNames[type] << "] unknow setMaxI function");
+	return *this;
+}
+ArgInfo	&ArgInfo::setMaxF(float max) {
+	(void)max;
+	logErr("[" << ArgType::enumNames[type] << "] unknow setMaxF function");
+	return *this;
+}
+ArgInfo	&ArgInfo::setStoreTrue(bool storeTrue) {
+	(void)storeTrue;
+	logErr("[" << ArgType::enumNames[type] << "] unknow setStoreTrue function");
+	return *this;
+}
+
+ArgInfo	&ArgInfo::setDefaultS(std::string defaultV) {
+	(void)defaultV;
+	logErr("[" << ArgType::enumNames[type] << "] unknow setDefaultS function");
+	return *this;
+}
+ArgInfo	&ArgInfo::setDefaultB(bool defaultV) {
+	(void)defaultV;
+	logErr("[" << ArgType::enumNames[type] << "] unknow setDefaultB function");
+	return *this;
+}
+ArgInfo	&ArgInfo::setDefaultI(int defaultV) {
+	(void)defaultV;
+	logErr("[" << ArgType::enumNames[type] << "] unknow setDefaultI function");
+	return *this;
+}
+ArgInfo	&ArgInfo::setDefaultF(float defaultV) {
+	(void)defaultV;
+	logErr("[" << ArgType::enumNames[type] << "] unknow setDefaultF function");
+	return *this;
 }
 
 std::ostream & operator << (std::ostream &out, const ArgInfo &aInfo) {
@@ -70,6 +137,19 @@ void StringArg::print(std::ostream &out) const {
 	out << ", min: " << min << ", max: " << max << ", defaultV: \"" << defaultV << "\" }";
 }
 
+ArgInfo	&StringArg::setDefaultS(std::string defaultV) {
+	this->defaultV = defaultV;
+	return *this;
+}
+ArgInfo	&StringArg::setMinI(int min) {
+	this->min = min;
+	return *this;
+}
+ArgInfo	&StringArg::setMaxI(int max) {
+	this->max = max;
+	return *this;
+}
+
 // -- BoolArg ------------------------------------------------------------------
 BoolArg::BoolArg()
 : ArgInfo(ArgType::BOOL),
@@ -96,6 +176,15 @@ BoolArg &BoolArg::operator=(BoolArg const &rhs) {
 void BoolArg::print(std::ostream &out) const {
 	ArgInfo::print(out);
 	out << ", defaultV: " << defaultV << ", storeTrue: " << storeTrue << " }";
+}
+
+ArgInfo	&BoolArg::setDefaultB(bool defaultV) {
+	this->defaultV = defaultV;
+	return *this;
+}
+ArgInfo	&BoolArg::setStoreTrue(bool storeTrue) {
+	this->storeTrue = storeTrue;
+	return *this;
 }
 
 // -- IntArg -------------------------------------------------------------------
@@ -128,6 +217,19 @@ void IntArg::print(std::ostream &out) const {
 	out << ", min: " << min << ", max: " << max << ", defaultV: " << defaultV << " }";
 }
 
+ArgInfo	&IntArg::setDefaultI(int defaultV) {
+	this->defaultV = defaultV;
+	return *this;
+};
+ArgInfo	&IntArg::setMinI(int min) {
+	this->min = min;
+	return *this;
+};
+ArgInfo	&IntArg::setMaxI(int max) {
+	this->max = max;
+	return *this;
+};
+
 // -- FloatArg -----------------------------------------------------------------
 FloatArg::FloatArg()
 : ArgInfo(ArgType::FLOAT),
@@ -157,3 +259,16 @@ void FloatArg::print(std::ostream &out) const {
 	ArgInfo::print(out);
 	out << ", min: " << min << ", max: " << max << ", defaultV: " << defaultV << " }";
 }
+
+ArgInfo	&FloatArg::setDefaultF(float defaultV) {
+	this->defaultV = defaultV;
+	return *this;
+};
+ArgInfo	&FloatArg::setMinF(float min) {
+	this->min = min;
+	return *this;
+};
+ArgInfo	&FloatArg::setMaxF(float max) {
+	this->max = max;
+	return *this;
+};
