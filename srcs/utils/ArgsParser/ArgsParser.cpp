@@ -5,6 +5,11 @@
 ArgsParser::ArgsParser() {
 }
 
+ArgsParser::ArgsParser(int ac, char * const *av)
+: _ac(ac),
+  _av(av) {
+}
+
 ArgsParser::~ArgsParser() {
 	// free _argsInfos vector
 	for (ArgInfo *argInfos : _argsInfos) {
@@ -27,21 +32,35 @@ ArgsParser &ArgsParser::operator=(ArgsParser const &rhs) {
 }
 
 void	ArgsParser::usage() const {
-	std::cout << "need to show usage" << std::endl;
-// "usage: ./ft_vox --size-s size [--usage|-u] [--gui|-g guiId] \
-// [--moveSpeed|-m moveSpeed] [--boardSize|-b boardSize]
-// --usage: display usage of the program
-// --width: set the windows width
-// --height: set the windows height
-// --gui: set the start gui id
-// --speed: change the speed
-// --boardSize: change the boardSize
-// "
+	std::cout << "usage: " << _av[0];
+	// print args possibilities
+	for (auto &&argInfos : _argsInfos) {
+		std::cout << (argInfos->required ? " " : " [");
+		std::cout << COLOR_BOLD "-" << argInfos->shortName << COLOR_EOC;
+
+		// if the arg need a value
+		if (!(argInfos->type == ArgType::BOOL && reinterpret_cast<BoolArg *>(argInfos)->storeTrue)) {
+			std::cout << " " COLOR_ULINE << argInfos->longName << COLOR_ULINE_R;
+		}
+
+		if (!argInfos->required) {
+			std::cout << "]";
+		}
+	}
+
+	// print args help
+	std::cout << "\n\narguments:" << std::endl;
+	for (auto &&argInfos : _argsInfos) {
+		std::cout << "  " << COLOR_BOLD "-" << argInfos->shortName << COLOR_EOC ", " \
+		COLOR_BOLD "--" << argInfos->longName << COLOR_EOC "  " << argInfos->help << std::endl;
+	}
 }
 
 
 void	ArgsParser::init() {
-	_opts = "uw:h:g:s:b:";
+	std::sort(_argsInfos.begin(), _argsInfos.end(), compareArgInfoPtr);
+
+	_opts = "uwgsb";
 
 	_longOpts = {
 		{"usage", no_argument, NULL, 'u'},
@@ -72,14 +91,16 @@ ArgInfo	&ArgsParser::addArgument(ArgType::Enum type) {
 	return *_argsInfos.back();
 }
 
-void	ArgsParser::parseArgs(int ac, char * const *av) {
+void	ArgsParser::parseArgs() {
 	int	opt;
 	int longIndex;
 
-	while ((opt = getopt_long(ac, av, _opts.c_str(), _longOpts.data(), &longIndex)) != -1) {
+	std::cout << "parseArgs ----------" << std::endl;
+
+	while ((opt = getopt_long(_ac, _av, _opts.c_str(), _longOpts.data(), &longIndex)) != -1) {
 		std::cout << "opt: " << static_cast<char>(opt) << std::endl;
 		switch (opt) {
-			case 'h': case 'u': case '?':
+			case 'u': case '?':
 				usage();
 				break;
 			case 'w':

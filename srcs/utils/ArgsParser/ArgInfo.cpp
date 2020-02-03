@@ -56,6 +56,27 @@ ArgInfo	&ArgInfo::isRequired(bool required) {
 	return *this;
 }
 
+ArgInfo	&ArgInfo::setDefaultS(std::string defaultV) {
+	(void)defaultV;
+	logErr("[" << ArgType::enumNames[type] << "] unknow setDefaultS function");
+	return *this;
+}
+ArgInfo	&ArgInfo::setDefaultB(bool defaultV) {
+	(void)defaultV;
+	logErr("[" << ArgType::enumNames[type] << "] unknow setDefaultB function");
+	return *this;
+}
+ArgInfo	&ArgInfo::setDefaultI(int defaultV) {
+	(void)defaultV;
+	logErr("[" << ArgType::enumNames[type] << "] unknow setDefaultI function");
+	return *this;
+}
+ArgInfo	&ArgInfo::setDefaultF(float defaultV) {
+	(void)defaultV;
+	logErr("[" << ArgType::enumNames[type] << "] unknow setDefaultF function");
+	return *this;
+}
+
 ArgInfo	&ArgInfo::setMinI(int min) {
 	(void)min;
 	logErr("[" << ArgType::enumNames[type] << "] unknow setMinI function");
@@ -82,28 +103,14 @@ ArgInfo	&ArgInfo::setStoreTrue(bool storeTrue) {
 	return *this;
 }
 
-ArgInfo	&ArgInfo::setDefaultS(std::string defaultV) {
-	(void)defaultV;
-	logErr("[" << ArgType::enumNames[type] << "] unknow setDefaultS function");
-	return *this;
-}
-ArgInfo	&ArgInfo::setDefaultB(bool defaultV) {
-	(void)defaultV;
-	logErr("[" << ArgType::enumNames[type] << "] unknow setDefaultB function");
-	return *this;
-}
-ArgInfo	&ArgInfo::setDefaultI(int defaultV) {
-	(void)defaultV;
-	logErr("[" << ArgType::enumNames[type] << "] unknow setDefaultI function");
-	return *this;
-}
-ArgInfo	&ArgInfo::setDefaultF(float defaultV) {
-	(void)defaultV;
-	logErr("[" << ArgType::enumNames[type] << "] unknow setDefaultF function");
-	return *this;
+// used to sort ArgInfo*
+bool	compareArgInfoPtr(ArgInfo *lhs, ArgInfo *rhs) {
+	// sort required args before and then alphabetically
+	return !((!lhs->required && rhs->required) ||
+		(lhs->required == rhs->required && lhs->shortName > rhs->longName));
 }
 
-std::ostream & operator << (std::ostream &out, const ArgInfo &aInfo) {
+std::ostream & operator << (std::ostream &out, ArgInfo const &aInfo) {
 	aInfo.print(out);  // delegate the work to the polymorphic member function
 	return out;
 }

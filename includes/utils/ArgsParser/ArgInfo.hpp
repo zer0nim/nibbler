@@ -58,6 +58,8 @@ class ArgInfo {
 		ArgInfo();
 };
 
+// used to sort ArgInfo*
+bool	compareArgInfoPtr(ArgInfo *lhs, ArgInfo *rhs);
 std::ostream & operator << (std::ostream &out, const ArgInfo &aInfo);
 
 // -- StringArg ----------------------------------------------------------------

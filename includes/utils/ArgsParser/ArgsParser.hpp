@@ -9,7 +9,7 @@
 
 class ArgsParser {
 	public:
-		ArgsParser();
+		ArgsParser(int ac, char * const *av);
 		virtual ~ArgsParser();
 		ArgsParser(ArgsParser const &src);
 		ArgsParser &operator=(ArgsParser const &rhs);
@@ -18,12 +18,16 @@ class ArgsParser {
 		void	init();
 		// create new arg of the specified type, add it to _argsInfos, then return a ref
 		ArgInfo	&addArgument(ArgType::Enum type = ArgType::STRING);
-		void	parseArgs(int ac, char * const *av);
+		void	parseArgs();
 
 	private:
+		int							_ac;
+		char * const				*_av;
 		std::string					_opts;
 		std::vector<struct option>	_longOpts;
 		std::vector<ArgInfo *>		_argsInfos;
+
+		ArgsParser();
 };
 
 #endif  // ARGSPARSER_HPP_
