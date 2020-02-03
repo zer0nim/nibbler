@@ -6,6 +6,11 @@ ArgsParser::ArgsParser() {
 }
 
 ArgsParser::~ArgsParser() {
+	// free _argsInfos vector
+	for (ArgInfo *argInfos : _argsInfos) {
+		delete argInfos;
+	}
+	_argsInfos.clear();
 }
 
 ArgsParser::ArgsParser(ArgsParser const &src) {
@@ -47,6 +52,24 @@ void	ArgsParser::init() {
 
 		{NULL, 0, NULL, 0}
 	};
+}
+
+// create new arg of the specified type, add it to _argsInfos, then return a ref
+ArgInfo	&ArgsParser::addArgument(ArgType::Enum type) {
+	if (type == ArgType::BOOL) {
+		_argsInfos.push_back(new BoolArg());
+	}
+	else if (type == ArgType::INT) {
+		_argsInfos.push_back(new IntArg());
+	}
+	else if (type == ArgType::FLOAT) {
+		_argsInfos.push_back(new FloatArg());
+	}
+	else {
+		_argsInfos.push_back(new StringArg());
+	}
+
+	return *_argsInfos.back();
 }
 
 void	ArgsParser::parseArgs(int ac, char * const *av) {
