@@ -17,7 +17,7 @@ class ArgsParser {
 		void	usage() const;
 		void	init();
 		// create new arg of the specified type, add it to _argsInfos, then return a ref
-		ArgInfo	&addArgument(ArgType::Enum type = ArgType::STRING);
+		ArgInfo	&addArgument(std::string name, ArgType::Enum type = ArgType::STRING);
 		void	parseArgs();
 
 	private:

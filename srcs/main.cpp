@@ -15,39 +15,33 @@ int main(int ac, char * const *av) {
 	// process args ------------------------------------------------------------
 	ArgsParser	argsParser(ac, av);
 
-	// --width -w
-	argsParser.addArgument(ArgType::INT)
-		.setShortName("w")
-		.setLongName("width")
+	// width
+	argsParser.addArgument("width", ArgType::INT)
 		.setHelp("set the windows width")
 		.setMinI(200)
 		.setMaxI(7680)
-		.setDefaultI(600)
-		.isRequired(true);
+		.setDefaultI(600);
+
 	// --gui -g
-	argsParser.addArgument(ArgType::INT)
-		.setShortName("g")
-		.setLongName("gui")
-		.setHelp("change the starting gui id");
+	argsParser.addArgument("gui", ArgType::INT)
+		.setOptional("gui", 'g')
+		.setHelp("change the starting gui id")
+		.setDefaultI(0);
 	// --speed -s
-	argsParser.addArgument(ArgType::FLOAT)
-		.setShortName("s")
-		.setLongName("speed")
+	argsParser.addArgument("speed", ArgType::FLOAT)
+		.setOptional("speed", 's')
 		.setHelp("change the game speed")
 		.setMinF(0.0f)
 		.setMaxF(100.0f)
-		.setDefaultF(10.0f)
-		.isRequired(true);
+		.setDefaultF(10.0f);
 	// --boardSize -b
-	argsParser.addArgument(ArgType::INT)
-		.setShortName("b")
-		.setLongName("boardSize")
+	argsParser.addArgument("boardSize", ArgType::INT)
+		.setOptional("boardSize", 'b')
 		.setHelp("set the board size")
-		.setDefaultI(true);
-	// --speed -s
-	argsParser.addArgument(ArgType::BOOL)
-		.setShortName("v")
-		.setLongName("verbose")
+		.setDefaultI(16);
+	// --verbose
+	argsParser.addArgument("verbose", ArgType::BOOL)
+		.setOptional("verbose")
 		.setHelp("activate verbose mode")
 		.setStoreTrue(true);
 

@@ -1,5 +1,7 @@
 #include "ArgsParser.hpp"
 
+#include <algorithm>
+
 #include "Logging.hpp"
 
 ArgsParser::ArgsParser() {
@@ -35,31 +37,64 @@ void	ArgsParser::usage() const {
 	std::cout << "usage: " << _av[0];
 	// print args possibilities
 	for (auto &&argInfos : _argsInfos) {
-		std::cout << (argInfos->required ? " " : " [");
-		std::cout << COLOR_BOLD "-" << argInfos->shortName << COLOR_EOC;
-
-		// if the arg need a value
-		if (!(argInfos->type == ArgType::BOOL && reinterpret_cast<BoolArg *>(argInfos)->storeTrue)) {
-			std::cout << " " COLOR_ULINE << argInfos->longName << COLOR_ULINE_R;
+		// positional arguments
+		if (argInfos->required) {
+			std::cout << " " COLOR_BOLD COLOR_ULINE << argInfos->name << COLOR_EOC;
 		}
+		// optional arguments
+		else {
+			// if the short option is not available
+			if (argInfos->shortName == A_NO_NAME) {
+				std::cout << " [" COLOR_BOLD "--" << argInfos->longName << COLOR_EOC;
+			}
+			else {
+				std::cout << " [" COLOR_BOLD "-" << argInfos->shortName << COLOR_EOC;
+			}
 
-		if (!argInfos->required) {
+			// if the arg need a value
+			if (!(argInfos->type == ArgType::BOOL && reinterpret_cast<BoolArg *>(argInfos)->storeTrue)) {
+				std::cout << " " COLOR_ULINE << argInfos->longName << COLOR_ULINE_R;
+			}
+
 			std::cout << "]";
 		}
 	}
 
-	// print args help
-	std::cout << "\n\narguments:" << std::endl;
-	for (auto &&argInfos : _argsInfos) {
-		std::cout << "  " << COLOR_BOLD "-" << argInfos->shortName << COLOR_EOC ", " \
-		COLOR_BOLD "--" << argInfos->longName << COLOR_EOC "  " << argInfos->help << std::endl;
+	uint32_t	nbPositional = std::count_if(std::begin(_argsInfos), std::end(_argsInfos),
+		[] (ArgInfo * const &arg) { return arg->required; });
+
+	// print positional args help
+	if (nbPositional > 0) {
+		std::cout << "\n\npositional arguments:" << std::endl;
+		for (auto &&argInfos : _argsInfos) {
+			if (argInfos->required) {
+				std::cout << "  " COLOR_BOLD COLOR_ULINE << argInfos->name << COLOR_EOC "  " << \
+				argInfos->help << std::endl;
+			}
+		}
+	}
+
+	// print optional args help
+	if (_argsInfos.size() - nbPositional > 0) {
+		std::cout << (nbPositional > 0 ? "\n" : "\n\n") << "optional arguments:" << std::endl;
+		for (auto &&argInfos : _argsInfos) {
+			if (!argInfos->required) {
+				// if the short option is not available
+				if (argInfos->shortName == A_NO_NAME) {
+					std::cout << "  ";
+				}
+				else {
+					std::cout << "  " << COLOR_BOLD "-" << argInfos->shortName << COLOR_EOC ", ";
+				}
+				std::cout << COLOR_BOLD "--" << argInfos->longName << COLOR_EOC "  " \
+				<< argInfos->help << std::endl;
+			}
+		}
 	}
 }
 
 
 void	ArgsParser::init() {
-	std::sort(_argsInfos.begin(), _argsInfos.end(), compareArgInfoPtr);
-
 	_opts = "uwgsb";
 
 	_longOpts = {
@@ -74,18 +109,18 @@ void	ArgsParser::init() {
 }
 
 // create new arg of the specified type, add it to _argsInfos, then return a ref
-ArgInfo	&ArgsParser::addArgument(ArgType::Enum type) {
+ArgInfo	&ArgsParser::addArgument(std::string name, ArgType::Enum type) {
 	if (type == ArgType::BOOL) {
-		_argsInfos.push_back(new BoolArg());
+		_argsInfos.push_back(new BoolArg(name));
 	}
 	else if (type == ArgType::INT) {
-		_argsInfos.push_back(new IntArg());
+		_argsInfos.push_back(new IntArg(name));
 	}
 	else if (type == ArgType::FLOAT) {
-		_argsInfos.push_back(new FloatArg());
+		_argsInfos.push_back(new FloatArg(name));
 	}
 	else {
-		_argsInfos.push_back(new StringArg());
+		_argsInfos.push_back(new StringArg(name));
 	}
 
 	return *_argsInfos.back();

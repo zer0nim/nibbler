@@ -7,12 +7,17 @@
 // -- ArgInfo ------------------------------------------------------------------
 ArgInfo::ArgInfo()
 : type(ArgType::STRING),
-  required(false) {
+  name("noName"),
+  shortName(A_NO_NAME),
+  required(true) {
+	  logErr("this constructor should not be called")
 }
 
-ArgInfo::ArgInfo(ArgType::Enum type)
+ArgInfo::ArgInfo(std::string name, ArgType::Enum type)
 : type(type),
-  required(false) {
+  name(name),
+  shortName(A_NO_NAME),
+  required(true) {
 }
 
 ArgInfo::~ArgInfo() {
@@ -25,6 +30,7 @@ ArgInfo::ArgInfo(ArgInfo const &src) {
 ArgInfo &ArgInfo::operator=(ArgInfo const &rhs) {
 	if (this != &rhs) {
 		type = rhs.type;
+		name = rhs.name;
 		shortName = rhs.shortName;
 		longName = rhs.longName;
 		help = rhs.help;
@@ -35,24 +41,21 @@ ArgInfo &ArgInfo::operator=(ArgInfo const &rhs) {
 
 void ArgInfo::print(std::ostream &out) const {
 	out << std::boolalpha << "{ type: " << ArgType::enumNames[type] << \
-	", shortName: \"" << shortName << "\", longName: \"" << longName << \
+	", name: \"" << name << "\", shortName: \"" << shortName << \
+	"\", longName: \"" << longName << \
 	"\", help: \"" << help << "\", required: " << required;
 }
 
-ArgInfo	&ArgInfo::setShortName(std::string shortName) {
+// set optionnals arguments name
+ArgInfo	&ArgInfo::setOptional(std::string longName, char shortName) {
+	required = false;  // disable required for optionnals args
 	this->shortName = shortName;
-	return *this;
-}
-ArgInfo	&ArgInfo::setLongName(std::string longName) {
 	this->longName = longName;
 	return *this;
 }
+
 ArgInfo	&ArgInfo::setHelp(std::string help) {
 	this->help = help;
-	return *this;
-}
-ArgInfo	&ArgInfo::isRequired(bool required) {
-	this->required = required;
 	return *this;
 }
 
@@ -103,21 +106,14 @@ ArgInfo	&ArgInfo::setStoreTrue(bool storeTrue) {
 	return *this;
 }
 
-// used to sort ArgInfo*
-bool	compareArgInfoPtr(ArgInfo *lhs, ArgInfo *rhs) {
-	// sort required args before and then alphabetically
-	return !((!lhs->required && rhs->required) ||
-		(lhs->required == rhs->required && lhs->shortName > rhs->longName));
-}
-
 std::ostream & operator << (std::ostream &out, ArgInfo const &aInfo) {
 	aInfo.print(out);  // delegate the work to the polymorphic member function
 	return out;
 }
 
 // -- StringArg ----------------------------------------------------------------
-StringArg::StringArg()
-: ArgInfo(ArgType::STRING),
+StringArg::StringArg(std::string name)
+: ArgInfo(name, ArgType::STRING),
   min(0),
   max(std::numeric_limits<int>::max()) {
 }
@@ -158,8 +154,8 @@ ArgInfo	&StringArg::setMaxI(int max) {
 }
 
 // -- BoolArg ------------------------------------------------------------------
-BoolArg::BoolArg()
-: ArgInfo(ArgType::BOOL),
+BoolArg::BoolArg(std::string name)
+: ArgInfo(name, ArgType::BOOL),
   defaultV(false),
   storeTrue(false) {
 }
@@ -195,8 +191,8 @@ ArgInfo	&BoolArg::setStoreTrue(bool storeTrue) {
 }
 
 // -- IntArg -------------------------------------------------------------------
-IntArg::IntArg()
-: ArgInfo(ArgType::INT),
+IntArg::IntArg(std::string name)
+: ArgInfo(name, ArgType::INT),
   min(std::numeric_limits<int>::lowest()),
   max(std::numeric_limits<int>::max()),
   defaultV(0) {
@@ -238,8 +234,8 @@ ArgInfo	&IntArg::setMaxI(int max) {
 };
 
 // -- FloatArg -----------------------------------------------------------------
-FloatArg::FloatArg()
-: ArgInfo(ArgType::FLOAT),
+FloatArg::FloatArg(std::string name)
+: ArgInfo(name, ArgType::FLOAT),
   min(std::numeric_limits<float>::lowest()),
   max(std::numeric_limits<float>::max()),
   defaultV(0.0f) {

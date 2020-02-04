@@ -1,6 +1,8 @@
 #ifndef ARGINFO_HPP_
 #define ARGINFO_HPP_
 
+#define A_NO_NAME 0
+
 #include <iostream>
 #include <string>
 #include <array>
@@ -21,16 +23,15 @@ namespace ArgType {
 	};
 }  // namespace ArgType
 
+
 // -- ArgInfo ------------------------------------------------------------------
 class ArgInfo {
 	public:
 		virtual ~ArgInfo();
 		virtual void print(std::ostream &out) const;
 
-		ArgInfo	&setShortName(std::string shortName);
-		ArgInfo	&setLongName(std::string longName);
+		ArgInfo	&setOptional(std::string longName, char shortName = A_NO_NAME);
 		ArgInfo	&setHelp(std::string help);
-		ArgInfo	&isRequired(bool required);
 
 		virtual ArgInfo	&setDefaultS(std::string defaultV);
 		virtual ArgInfo	&setDefaultB(bool defaultV);
@@ -44,13 +45,14 @@ class ArgInfo {
 		virtual ArgInfo	&setStoreTrue(bool storeTrue = true);
 
 		ArgType::Enum	type;
-		std::string		shortName;
+		std::string		name;
+		char			shortName;
 		std::string		longName;
 		std::string		help;
 		bool			required;
 
 	protected:
-		explicit ArgInfo(ArgType::Enum type);
+		explicit ArgInfo(std::string name, ArgType::Enum type);
 		ArgInfo(ArgInfo const &src);
 		ArgInfo &operator=(ArgInfo const &rhs);
 
@@ -65,7 +67,7 @@ std::ostream & operator << (std::ostream &out, const ArgInfo &aInfo);
 // -- StringArg ----------------------------------------------------------------
 class StringArg : public ArgInfo {
 	public:
-		StringArg();
+		explicit StringArg(std::string name);
 		virtual ~StringArg();
 		StringArg(StringArg const &src);
 		StringArg &operator=(StringArg const &rhs);
@@ -79,12 +81,15 @@ class StringArg : public ArgInfo {
 		int				min;  // min string lenght
 		int				max;  // max string lenght
 		std::string		defaultV;
+
+	private:
+		StringArg();
 };
 
 // -- BoolArg ------------------------------------------------------------------
 class BoolArg : public ArgInfo {
 	public:
-		BoolArg();
+		explicit BoolArg(std::string name);
 		virtual ~BoolArg();
 		BoolArg(BoolArg const &src);
 		BoolArg &operator=(BoolArg const &rhs);
@@ -96,12 +101,15 @@ class BoolArg : public ArgInfo {
 
 		bool	defaultV;
 		bool	storeTrue;  // allow to skip val for bool
+
+	private:
+		BoolArg();
 };
 
 // -- IntArg -------------------------------------------------------------------
 class IntArg : public ArgInfo {
 	public:
-		IntArg();
+		explicit IntArg(std::string name);
 		virtual ~IntArg();
 		IntArg(IntArg const &src);
 		IntArg &operator=(IntArg const &rhs);
@@ -115,12 +123,15 @@ class IntArg : public ArgInfo {
 		int		min;
 		int		max;
 		int		defaultV;
+
+	private:
+		IntArg();
 };
 
 // -- FloatArg -----------------------------------------------------------------
 class FloatArg : public ArgInfo {
 	public:
-		FloatArg();
+		explicit FloatArg(std::string name);
 		virtual ~FloatArg();
 		FloatArg(FloatArg const &src);
 		FloatArg &operator=(FloatArg const &rhs);
@@ -134,6 +145,9 @@ class FloatArg : public ArgInfo {
 		float	min;
 		float	max;
 		float	defaultV;
+
+	private:
+		FloatArg();
 };
 
 #endif  // ARGINFO_HPP_
