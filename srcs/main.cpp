@@ -20,44 +20,26 @@ int main(int ac, char * const *av) {
 		.setHelp("set the windows width")
 		.setMinI64(200)
 		.setMaxI64(7680)
-		.setDefaultI64(600);
-
-
-	argsParser.addArgument("test", ArgType::STRING)
-		.setOptional("test", 't')
-		.setHelp("test string")
-		.setMinLength(3)
-		.setMaxLength(22)
-		.setDefaultS("Hey !");
-	// --hey
-	argsParser.addArgument("hey", ArgType::BOOL)
-		.setOptional("hey", 'h')
-		.setHelp("test hey");
-	// --verbose
-	argsParser.addArgument("verbose", ArgType::BOOL)
-		.setOptional("verbose")
-		.setHelp("activate verbose mode")
-		.setStoreTrue(true);
+		.setDefaultI64(1200);
 
 	// --gui -g
-	argsParser.addArgument("gui", ArgType::INT32)
+	argsParser.addArgument("gui", ArgType::UINT32)
 		.setOptional("gui", 'g')
 		.setHelp("change the starting gui id")
-		.setMinI32(0)
-		.setMaxI32(2)
-		.setDefaultI32(0);
+		.setMaxUI32(2)
+		.setDefaultUI32(0);
 	// --boardSize -b
-	argsParser.addArgument("boardSize", ArgType::INT32)
+	argsParser.addArgument("boardSize", ArgType::UINT32)
 		.setOptional("boardSize", 'b')
 		.setHelp("set the board size")
-		.setDefaultI32(16);
+		.setDefaultUI32(16);
 	// --speed -s
 	argsParser.addArgument("speed", ArgType::FLOAT)
 		.setOptional("speed", 's')
 		.setHelp("change the game speed")
 		.setMinF(0.0f)
 		.setMaxF(100.0f)
-		.setDefaultF(10.0f);
+		.setDefaultF(10.5f);
 
 	argsParser.init();
 

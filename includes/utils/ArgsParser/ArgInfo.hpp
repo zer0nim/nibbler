@@ -7,6 +7,15 @@
 #include <string>
 #include <array>
 
+#include "Logging.hpp"
+
+// COLOR_GREEN
+#define COLOR_TYPE "\x1B[32m"
+// COLOR_CYAN
+#define COLOR_L_VAL "\x1B[36m"
+// COLOR_MAGENTA
+#define COLOR_R_VAL "\x1B[35m"
+
 namespace ArgType {
 	enum Enum {
 		STRING,

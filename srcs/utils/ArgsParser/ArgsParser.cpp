@@ -39,7 +39,7 @@ void	ArgsParser::usage() const {
 	for (auto &&argInfos : _argsInfos) {
 		// positional arguments
 		if (argInfos->required) {
-			std::cout << " " COLOR_BOLD COLOR_ULINE << argInfos->name << COLOR_EOC;
+			std::cout << " " COLOR_BOLD << argInfos->name << COLOR_EOC;
 		}
 		// optional arguments
 		else {
@@ -65,10 +65,10 @@ void	ArgsParser::usage() const {
 
 	// print positional args help
 	if (nbPositional > 0) {
-		std::cout << "\n\npositional arguments:" << std::endl;
+		std::cout << COLOR_ULINE "\n\npositional arguments:" COLOR_ULINE_R;
 		for (auto &&argInfos : _argsInfos) {
 			if (argInfos->required) {
-				std::cout << "  " COLOR_BOLD COLOR_ULINE << argInfos->name << COLOR_EOC "  " << \
+				std::cout << "\n  " COLOR_BOLD << argInfos->name << COLOR_EOC "  " << \
 				argInfos->help << std::endl;
 				std::cout << "  " << *argInfos << std::endl;
 			}
@@ -77,15 +77,15 @@ void	ArgsParser::usage() const {
 
 	// print optional args help
 	if (_argsInfos.size() - nbPositional > 0) {
-		std::cout << (nbPositional > 0 ? "\n" : "\n\n") << "optional arguments:" << std::endl;
+		std::cout << (nbPositional > 0 ? "\n" : "\n\n") << COLOR_ULINE "optional arguments:" COLOR_ULINE_R;
 		for (auto &&argInfos : _argsInfos) {
 			if (!argInfos->required) {
 				// if the short option is not available
 				if (argInfos->shortName == A_NO_NAME) {
-					std::cout << "  ";
+					std::cout << "\n  ";
 				}
 				else {
-					std::cout << "  " << COLOR_BOLD "-" << argInfos->shortName << COLOR_EOC ", ";
+					std::cout << "\n  " << COLOR_BOLD "-" << argInfos->shortName << COLOR_EOC ", ";
 				}
 				std::cout << COLOR_BOLD "--" << argInfos->longName << COLOR_EOC "  " \
 				<< argInfos->help << std::endl;

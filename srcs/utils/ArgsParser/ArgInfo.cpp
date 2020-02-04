@@ -2,8 +2,6 @@
 #include <limits>
 #include <iomanip>
 
-#include "Logging.hpp"
-
 // -- ArgInfo ------------------------------------------------------------------
 ArgInfo::ArgInfo()
 : type(ArgType::STRING),
@@ -40,7 +38,7 @@ ArgInfo &ArgInfo::operator=(ArgInfo const &rhs) {
 }
 
 void ArgInfo::print(std::ostream &out) const {
-	out << "<" << ArgType::enumNames[type];
+	out << "<" << COLOR_TYPE << ArgType::enumNames[type] << COLOR_WHITE;
 }
 
 // set optionnals arguments name
@@ -191,14 +189,15 @@ void StringArg::print(std::ostream &out) const {
 
 	// print defaut string value
 	if (defaultV != "") {
-		out << " default=\"" << defaultV << "\"";
+		out << " " COLOR_L_VAL "default" COLOR_WHITE "=" COLOR_R_VAL "\"" << defaultV << "\"" COLOR_WHITE;
 	}
 
 	// print string min/max
 	if (min != 0 || max != std::numeric_limits<uint32_t>::max()) {
-		out << " length=[" << (min != 0 ? std::to_string(min) : "") << ":" << \
+		out << " " COLOR_L_VAL "length" COLOR_WHITE "=" COLOR_R_VAL "[" << \
+		(min != 0 ? std::to_string(min) : "") << ":" << \
 		(max != std::numeric_limits<uint32_t>::max() ? std::to_string(max) : "") \
-		<< "]";
+		<< "]" COLOR_WHITE;
 	}
 
 	out << ">";
@@ -245,10 +244,10 @@ void BoolArg::print(std::ostream &out) const {
 
 	// print defaut string value
 	if (!storeTrue) {
-		out << " default=" << std::boolalpha << defaultV;
+		out << " " COLOR_L_VAL "default" COLOR_WHITE "=" COLOR_R_VAL << std::boolalpha << defaultV << COLOR_WHITE;
 	}
 	else {
-		out << " storeTrue";
+		out << " " COLOR_R_VAL "storeTrue" COLOR_WHITE;
 	}
 
 	out << ">";
@@ -292,14 +291,14 @@ void Int32Arg::print(std::ostream &out) const {
 	ArgInfo::print(out);
 
 	// print defaut int32_t value
-	out << " default=" << defaultV;
+	out << " " COLOR_L_VAL "default" COLOR_WHITE "=" COLOR_R_VAL << defaultV << COLOR_WHITE;
 
 	// print string min/max
 	if (min != std::numeric_limits<int32_t>::lowest() || max != std::numeric_limits<int32_t>::max()) {
-		out << " range=[" << \
+		out << " " COLOR_L_VAL "range" COLOR_WHITE "=" COLOR_R_VAL "[" << \
 			(min != std::numeric_limits<int32_t>::lowest() ? std::to_string(min) : "") << \
 			":" << (max != std::numeric_limits<int32_t>::max() ? std::to_string(max) : "") \
-			<< "]";
+			<< "]" COLOR_WHITE;
 	}
 
 	out << ">";
@@ -347,14 +346,14 @@ void Int64Arg::print(std::ostream &out) const {
 	ArgInfo::print(out);
 
 	// print defaut int64_t value
-	out << " default=" << defaultV;
+	out << " " COLOR_L_VAL "default" COLOR_WHITE "=" COLOR_R_VAL << defaultV << COLOR_WHITE;
 
 	// print string min/max
 	if (min != std::numeric_limits<int64_t>::lowest() || max != std::numeric_limits<int64_t>::max()) {
-		out << " range=[" << \
+		out << " " COLOR_L_VAL "range" COLOR_WHITE "=" COLOR_R_VAL "[" << \
 			(min != std::numeric_limits<int64_t>::lowest() ? std::to_string(min) : "") << \
 			":" << (max != std::numeric_limits<int64_t>::max() ? std::to_string(max) : "") \
-			<< "]";
+			<< "]" COLOR_WHITE;
 	}
 
 	out << ">";
@@ -402,14 +401,14 @@ void UInt32Arg::print(std::ostream &out) const {
 	ArgInfo::print(out);
 
 	// print defaut uint32_t value
-	out << " default=" << defaultV;
+	out << " " COLOR_L_VAL "default" COLOR_WHITE "=" COLOR_R_VAL << defaultV << COLOR_WHITE;
 
 	// print string min/max
-	if (min != std::numeric_limits<uint32_t>::lowest() || max != std::numeric_limits<uint32_t>::max()) {
-		out << " range=[" << \
-			(min != std::numeric_limits<uint32_t>::lowest() ? std::to_string(min) : "") << \
+	if (min != 0 || max != std::numeric_limits<uint32_t>::max()) {
+		out << " " COLOR_L_VAL "range" COLOR_WHITE "=" COLOR_R_VAL "[" << \
+			(min != 0 ? std::to_string(min) : "") << \
 			":" << (max != std::numeric_limits<uint32_t>::max() ? std::to_string(max) : "") \
-			<< "]";
+			<< "]" COLOR_WHITE;
 	}
 
 	out << ">";
@@ -457,14 +456,14 @@ void UInt64Arg::print(std::ostream &out) const {
 	ArgInfo::print(out);
 
 	// print defaut uint64_t value
-	out << " default=" << defaultV;
+	out << " " COLOR_L_VAL "default" COLOR_WHITE "=" COLOR_R_VAL << defaultV << COLOR_WHITE;
 
 	// print string min/max
-	if (min != std::numeric_limits<uint64_t>::lowest() || max != std::numeric_limits<uint64_t>::max()) {
-		out << " range=[" << \
-			(min != std::numeric_limits<uint64_t>::lowest() ? std::to_string(min) : "") << \
+	if (min != 0 || max != std::numeric_limits<uint64_t>::max()) {
+		out << " " COLOR_L_VAL "range" COLOR_WHITE "=" COLOR_R_VAL "[" << \
+			(min != 0 ? std::to_string(min) : "") << \
 			":" << (max != std::numeric_limits<uint64_t>::max() ? std::to_string(max) : "") \
-			<< "]";
+			<< "]" COLOR_WHITE;
 	}
 
 	out << ">";
@@ -512,11 +511,11 @@ void FloatArg::print(std::ostream &out) const {
 	ArgInfo::print(out);
 
 	// print defaut int value
-	out << " default=" << defaultV;
+	out << " " COLOR_L_VAL "default" COLOR_WHITE "=" COLOR_R_VAL << defaultV << COLOR_WHITE;
 
 	// print string min/max
 	if (min != std::numeric_limits<float>::lowest() || max != std::numeric_limits<float>::max()) {
-		out << " range=[";
+		out << " " COLOR_L_VAL "range" COLOR_WHITE "=" COLOR_R_VAL "[";
 		if (min != std::numeric_limits<float>::lowest()) {
 			out << std::fixed << std::setprecision(3) << min;
 		}
@@ -524,7 +523,7 @@ void FloatArg::print(std::ostream &out) const {
 		if (max != std::numeric_limits<float>::max()) {
 			out << std::fixed << std::setprecision(3) << max;
 		}
-		out << "]";
+		out << "]" COLOR_WHITE;
 	}
 
 	out << ">";
