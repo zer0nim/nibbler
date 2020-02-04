@@ -86,9 +86,12 @@ class ArgInfo {
 		ArgInfo();
 };
 
-// used to sort ArgInfo*
-bool	compareArgInfoPtr(ArgInfo *lhs, ArgInfo *rhs);
 std::ostream & operator << (std::ostream &out, const ArgInfo &aInfo);
+
+// used to avoid name duplicates
+struct ArgInfoPtrComp {
+	bool operator()(ArgInfo const *lhs, ArgInfo const *rhs) const;
+};
 
 // -- StringArg ----------------------------------------------------------------
 class StringArg : public ArgInfo {

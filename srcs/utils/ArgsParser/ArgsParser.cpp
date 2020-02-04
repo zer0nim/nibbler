@@ -1,6 +1,7 @@
 #include "ArgsParser.hpp"
 
 #include <algorithm>
+#include <set>
 
 #include "Logging.hpp"
 
@@ -121,29 +122,37 @@ void	ArgsParser::init() {
 
 // create new arg of the specified type, add it to _argsInfos, then return a ref
 ArgInfo	&ArgsParser::addArgument(std::string name, ArgType::Enum type) {
+	std::pair<std::set<ArgInfo *>::iterator, bool>	elem;
+
 	if (type == ArgType::BOOL) {
-		_argsInfos.push_back(new BoolArg(name));
+		elem = _argsInfos.insert(new BoolArg(name));
 	}
 	else if (type == ArgType::INT32) {
-		_argsInfos.push_back(new Int32Arg(name));
+		elem = _argsInfos.insert(new Int32Arg(name));
 	}
 	else if (type == ArgType::INT64) {
-		_argsInfos.push_back(new Int64Arg(name));
+		elem = _argsInfos.insert(new Int64Arg(name));
 	}
 	else if (type == ArgType::UINT32) {
-		_argsInfos.push_back(new UInt32Arg(name));
+		elem = _argsInfos.insert(new UInt32Arg(name));
 	}
 	else if (type == ArgType::INT64) {
-		_argsInfos.push_back(new UInt64Arg(name));
+		elem = _argsInfos.insert(new UInt64Arg(name));
 	}
 	else if (type == ArgType::FLOAT) {
-		_argsInfos.push_back(new FloatArg(name));
+		elem = _argsInfos.insert(new FloatArg(name));
 	}
 	else {
-		_argsInfos.push_back(new StringArg(name));
+		elem = _argsInfos.insert(new StringArg(name));
 	}
 
-	return *_argsInfos.back();
+	// check name duplication
+	if (!elem.second) {
+		logErr("argument name \"" << name << "\" is already taken");
+		throw ArgsParserException();
+	}
+
+	return *(*elem.first);
 }
 
 void	ArgsParser::parseArgs() {
@@ -174,3 +183,11 @@ void	ArgsParser::parseArgs() {
 }
 
 void	ArgsParser::setProgDescr(std::string const &progDescr) { _progDescr = progDescr; }
+
+// -- Exceptions errors --------------------------------------------------------
+ArgsParser::ArgsParserException::ArgsParserException()
+: std::runtime_error("[ArgsParserError]") {}
+
+ArgsParser::ArgsParserException::ArgsParserException(const char* what_arg)
+: std::runtime_error(std::string(std::string("[ArgsParserError] ") + what_arg).c_str()) {}
+

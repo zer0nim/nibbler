@@ -4,6 +4,7 @@
 #include <getopt.h>
 #include <string>
 #include <vector>
+#include <set>
 
 #include "ArgInfo.hpp"
 
@@ -21,13 +22,19 @@ class ArgsParser {
 		void	parseArgs();
 		void	setProgDescr(std::string const &progDescr);
 
+		class ArgsParserException : public std::runtime_error {
+			public:
+				ArgsParserException();
+				explicit ArgsParserException(const char* what_arg);
+		};
+
 	private:
 		int							_ac;
 		char * const				*_av;
 		std::string					_progDescr;
 		std::string					_opts;
 		std::vector<struct option>	_longOpts;
-		std::vector<ArgInfo *>		_argsInfos;
+		std::set<ArgInfo *, ArgInfoPtrComp>	_argsInfos;
 
 		ArgsParser();
 };
