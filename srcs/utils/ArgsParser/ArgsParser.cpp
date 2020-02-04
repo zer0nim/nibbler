@@ -65,7 +65,7 @@ void	ArgsParser::usage() const {
 
 	// print positional args help
 	if (nbPositional > 0) {
-		std::cout << COLOR_ULINE "\n\npositional arguments:" COLOR_ULINE_R;
+		std::cout << COLOR_ULINE "\n\npositional arguments" COLOR_ULINE_R;
 		for (auto &&argInfos : _argsInfos) {
 			if (argInfos->required) {
 				std::cout << "\n  " COLOR_BOLD << argInfos->name << COLOR_EOC "  " << \
@@ -77,7 +77,8 @@ void	ArgsParser::usage() const {
 
 	// print optional args help
 	if (_argsInfos.size() - nbPositional > 0) {
-		std::cout << (nbPositional > 0 ? "\n" : "\n\n") << COLOR_ULINE "optional arguments:" COLOR_ULINE_R;
+		std::cout << (nbPositional > 0 ? "\n" : "\n\n");
+		std::cout << COLOR_ULINE "optional arguments" COLOR_ULINE_R;
 		for (auto &&argInfos : _argsInfos) {
 			if (!argInfos->required) {
 				// if the short option is not available
@@ -92,6 +93,14 @@ void	ArgsParser::usage() const {
 				std::cout << "  " << *argInfos << std::endl;
 			}
 		}
+	}
+
+	// print program description
+	if (_progDescr != "") {
+		std::cout << (nbPositional > 0 || _argsInfos.size() - nbPositional > 0 \
+		? "\n" : "\n\n");
+		std::cout << COLOR_ULINE "description" COLOR_ULINE_R << std::endl;
+		std::cout << _progDescr << std::endl;
 	}
 }
 
@@ -163,3 +172,5 @@ void	ArgsParser::parseArgs() {
 		}
 	}
 }
+
+void	ArgsParser::setProgDescr(std::string const &progDescr) { _progDescr = progDescr; }

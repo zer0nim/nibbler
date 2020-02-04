@@ -15,6 +15,9 @@ int main(int ac, char * const *av) {
 	// process args ------------------------------------------------------------
 	ArgsParser	argsParser(ac, av);
 
+	argsParser.setProgDescr("The purpose of this project is to create our version of the game Snake,\n"\
+	"with at least 3 different GUIs. These GUIs being shared libraries.");
+
 	// width
 	argsParser.addArgument("width", ArgType::INT64)
 		.setHelp("set the windows width")

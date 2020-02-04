@@ -19,10 +19,12 @@ class ArgsParser {
 		// create new arg of the specified type, add it to _argsInfos, then return a ref
 		ArgInfo	&addArgument(std::string name, ArgType::Enum type = ArgType::STRING);
 		void	parseArgs();
+		void	setProgDescr(std::string const &progDescr);
 
 	private:
 		int							_ac;
 		char * const				*_av;
+		std::string					_progDescr;
 		std::string					_opts;
 		std::vector<struct option>	_longOpts;
 		std::vector<ArgInfo *>		_argsInfos;
