@@ -11,14 +11,20 @@ namespace ArgType {
 	enum Enum {
 		STRING,
 		BOOL,
-		INT,
+		INT32,
+		INT64,
+		UINT32,
+		UINT64,
 		FLOAT
 	};
 
-	const std::array<std::string, 4>	enumNames = {
+	const std::array<std::string, 7>	enumNames = {
 		"string",
 		"bool",
-		"int",
+		"int32",
+		"int64",
+		"uint32",
+		"uint64",
 		"float"
 	};
 }  // namespace ArgType
@@ -35,13 +41,24 @@ class ArgInfo {
 
 		virtual ArgInfo	&setDefaultS(std::string defaultV);
 		virtual ArgInfo	&setDefaultB(bool defaultV);
-		virtual ArgInfo	&setDefaultI(int defaultV);
+		virtual ArgInfo	&setDefaultI32(int32_t defaultV);
+		virtual ArgInfo	&setDefaultI64(int64_t defaultV);
+		virtual ArgInfo	&setDefaultUI32(uint32_t defaultV);
+		virtual ArgInfo	&setDefaultUI64(uint64_t defaultV);
 		virtual ArgInfo	&setDefaultF(float defaultV);
 
-		virtual ArgInfo	&setMinI(int min);
+		virtual ArgInfo	&setMinI32(int32_t min);
+		virtual ArgInfo	&setMaxI32(int32_t max);
+		virtual ArgInfo	&setMinI64(int64_t min);
+		virtual ArgInfo	&setMaxI64(int64_t max);
+		virtual ArgInfo	&setMinUI32(uint32_t min);
+		virtual ArgInfo	&setMaxUI32(uint32_t max);
+		virtual ArgInfo	&setMinUI64(uint64_t min);
+		virtual ArgInfo	&setMaxUI64(uint64_t max);
 		virtual ArgInfo	&setMinF(float min);
-		virtual ArgInfo	&setMaxI(int max);
 		virtual ArgInfo	&setMaxF(float max);
+		virtual ArgInfo	&setMinLength(uint32_t min);
+		virtual ArgInfo	&setMaxLength(uint32_t max);
 		virtual ArgInfo	&setStoreTrue(bool storeTrue = true);
 
 		ArgType::Enum	type;
@@ -75,11 +92,11 @@ class StringArg : public ArgInfo {
 		virtual void print(std::ostream &out) const;
 
 		virtual ArgInfo	&setDefaultS(std::string defaultV);
-		virtual ArgInfo	&setMinI(int min);
-		virtual ArgInfo	&setMaxI(int max);
+		virtual ArgInfo	&setMinLength(uint32_t min);
+		virtual ArgInfo	&setMaxLength(uint32_t max);
 
-		int				min;  // min string lenght
-		int				max;  // max string lenght
+		uint32_t		min;  // min string lenght
+		uint32_t		max;  // max string lenght
 		std::string		defaultV;
 
 	private:
@@ -106,26 +123,92 @@ class BoolArg : public ArgInfo {
 		BoolArg();
 };
 
-// -- IntArg -------------------------------------------------------------------
-class IntArg : public ArgInfo {
+// -- Int32Arg -------------------------------------------------------------------
+class Int32Arg : public ArgInfo {
 	public:
-		explicit IntArg(std::string name);
-		virtual ~IntArg();
-		IntArg(IntArg const &src);
-		IntArg &operator=(IntArg const &rhs);
+		explicit Int32Arg(std::string name);
+		virtual ~Int32Arg();
+		Int32Arg(Int32Arg const &src);
+		Int32Arg &operator=(Int32Arg const &rhs);
 
 		virtual void print(std::ostream &out) const;
 
-		virtual ArgInfo	&setDefaultI(int defaultV);
-		virtual ArgInfo	&setMinI(int min);
-		virtual ArgInfo	&setMaxI(int max);
+		virtual ArgInfo	&setDefaultI32(int32_t defaultV);
+		virtual ArgInfo	&setMinI32(int32_t min);
+		virtual ArgInfo	&setMaxI32(int32_t max);
 
-		int		min;
-		int		max;
-		int		defaultV;
+		int32_t	min;
+		int32_t	max;
+		int32_t	defaultV;
 
 	private:
-		IntArg();
+		Int32Arg();
+};
+
+// -- Int64Arg -------------------------------------------------------------------
+class Int64Arg : public ArgInfo {
+	public:
+		explicit Int64Arg(std::string name);
+		virtual ~Int64Arg();
+		Int64Arg(Int64Arg const &src);
+		Int64Arg &operator=(Int64Arg const &rhs);
+
+		virtual void print(std::ostream &out) const;
+
+		virtual ArgInfo	&setDefaultI64(int64_t defaultV);
+		virtual ArgInfo	&setMinI64(int64_t min);
+		virtual ArgInfo	&setMaxI64(int64_t max);
+
+		int64_t	min;
+		int64_t	max;
+		int64_t	defaultV;
+
+	private:
+		Int64Arg();
+};
+
+// -- UInt32Arg -------------------------------------------------------------------
+class UInt32Arg : public ArgInfo {
+	public:
+		explicit UInt32Arg(std::string name);
+		virtual ~UInt32Arg();
+		UInt32Arg(UInt32Arg const &src);
+		UInt32Arg &operator=(UInt32Arg const &rhs);
+
+		virtual void print(std::ostream &out) const;
+
+		virtual ArgInfo	&setDefaultUI32(uint32_t defaultV);
+		virtual ArgInfo	&setMinUI32(uint32_t min);
+		virtual ArgInfo	&setMaxUI32(uint32_t max);
+
+		uint32_t	min;
+		uint32_t	max;
+		uint32_t	defaultV;
+
+	private:
+		UInt32Arg();
+};
+
+// -- UInt64Arg -------------------------------------------------------------------
+class UInt64Arg : public ArgInfo {
+	public:
+		explicit UInt64Arg(std::string name);
+		virtual ~UInt64Arg();
+		UInt64Arg(UInt64Arg const &src);
+		UInt64Arg &operator=(UInt64Arg const &rhs);
+
+		virtual void print(std::ostream &out) const;
+
+		virtual ArgInfo	&setDefaultUI64(uint64_t defaultV);
+		virtual ArgInfo	&setMinUI64(uint64_t min);
+		virtual ArgInfo	&setMaxUI64(uint64_t max);
+
+		uint64_t	min;
+		uint64_t	max;
+		uint64_t	defaultV;
+
+	private:
+		UInt64Arg();
 };
 
 // -- FloatArg -----------------------------------------------------------------

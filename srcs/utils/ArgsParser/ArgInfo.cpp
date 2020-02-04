@@ -40,10 +40,7 @@ ArgInfo &ArgInfo::operator=(ArgInfo const &rhs) {
 }
 
 void ArgInfo::print(std::ostream &out) const {
-	out << std::boolalpha << "{ type: " << ArgType::enumNames[type] << \
-	", name: \"" << name << "\", shortName: \"" << shortName << \
-	"\", longName: \"" << longName << \
-	"\", help: \"" << help << "\", required: " << required;
+	out << "<" << ArgType::enumNames[type];
 }
 
 // set optionnals arguments name
@@ -69,9 +66,24 @@ ArgInfo	&ArgInfo::setDefaultB(bool defaultV) {
 	logErr("[" << ArgType::enumNames[type] << "] unknow setDefaultB function");
 	return *this;
 }
-ArgInfo	&ArgInfo::setDefaultI(int defaultV) {
+ArgInfo	&ArgInfo::setDefaultI32(int32_t defaultV) {
 	(void)defaultV;
-	logErr("[" << ArgType::enumNames[type] << "] unknow setDefaultI function");
+	logErr("[" << ArgType::enumNames[type] << "] unknow setDefaultI32 function");
+	return *this;
+}
+ArgInfo	&ArgInfo::setDefaultI64(int64_t defaultV) {
+	(void)defaultV;
+	logErr("[" << ArgType::enumNames[type] << "] unknow setDefaultI64 function");
+	return *this;
+}
+ArgInfo	&ArgInfo::setDefaultUI32(uint32_t defaultV) {
+	(void)defaultV;
+	logErr("[" << ArgType::enumNames[type] << "] unknow setDefaultUI32 function");
+	return *this;
+}
+ArgInfo	&ArgInfo::setDefaultUI64(uint64_t defaultV) {
+	(void)defaultV;
+	logErr("[" << ArgType::enumNames[type] << "] unknow setDefaultUI64 function");
 	return *this;
 }
 ArgInfo	&ArgInfo::setDefaultF(float defaultV) {
@@ -79,10 +91,44 @@ ArgInfo	&ArgInfo::setDefaultF(float defaultV) {
 	logErr("[" << ArgType::enumNames[type] << "] unknow setDefaultF function");
 	return *this;
 }
-
-ArgInfo	&ArgInfo::setMinI(int min) {
+ArgInfo	&ArgInfo::setMinI32(int32_t min) {
 	(void)min;
-	logErr("[" << ArgType::enumNames[type] << "] unknow setMinI function");
+	logErr("[" << ArgType::enumNames[type] << "] unknow setMinI32 function");
+	return *this;
+}
+ArgInfo	&ArgInfo::setMaxI32(int32_t max) {
+	(void)max;
+	logErr("[" << ArgType::enumNames[type] << "] unknow setMaxI32 function");
+	return *this;
+}
+ArgInfo	&ArgInfo::setMinI64(int64_t min) {
+	(void)min;
+	logErr("[" << ArgType::enumNames[type] << "] unknow setMinI64 function");
+	return *this;
+}
+ArgInfo	&ArgInfo::setMaxI64(int64_t max) {
+	(void)max;
+	logErr("[" << ArgType::enumNames[type] << "] unknow setMaxI64 function");
+	return *this;
+}
+ArgInfo	&ArgInfo::setMinUI32(uint32_t min) {
+	(void)min;
+	logErr("[" << ArgType::enumNames[type] << "] unknow setMinUI32 function");
+	return *this;
+}
+ArgInfo	&ArgInfo::setMaxUI32(uint32_t max) {
+	(void)max;
+	logErr("[" << ArgType::enumNames[type] << "] unknow setMaxUI32 function");
+	return *this;
+}
+ArgInfo	&ArgInfo::setMinUI64(uint64_t min) {
+	(void)min;
+	logErr("[" << ArgType::enumNames[type] << "] unknow setMinUI64 function");
+	return *this;
+}
+ArgInfo	&ArgInfo::setMaxUI64(uint64_t max) {
+	(void)max;
+	logErr("[" << ArgType::enumNames[type] << "] unknow setMaxUI64 function");
 	return *this;
 }
 ArgInfo	&ArgInfo::setMinF(float min) {
@@ -90,14 +136,19 @@ ArgInfo	&ArgInfo::setMinF(float min) {
 	logErr("[" << ArgType::enumNames[type] << "] unknow setMinF function");
 	return *this;
 }
-ArgInfo	&ArgInfo::setMaxI(int max) {
-	(void)max;
-	logErr("[" << ArgType::enumNames[type] << "] unknow setMaxI function");
-	return *this;
-}
 ArgInfo	&ArgInfo::setMaxF(float max) {
 	(void)max;
 	logErr("[" << ArgType::enumNames[type] << "] unknow setMaxF function");
+	return *this;
+}
+ArgInfo	&ArgInfo::setMinLength(uint32_t min) {
+	(void)min;
+	logErr("[" << ArgType::enumNames[type] << "] unknow setMinLength function");
+	return *this;
+}
+ArgInfo	&ArgInfo::setMaxLength(uint32_t max) {
+	(void)max;
+	logErr("[" << ArgType::enumNames[type] << "] unknow setMaxLength function");
 	return *this;
 }
 ArgInfo	&ArgInfo::setStoreTrue(bool storeTrue) {
@@ -115,7 +166,7 @@ std::ostream & operator << (std::ostream &out, ArgInfo const &aInfo) {
 StringArg::StringArg(std::string name)
 : ArgInfo(name, ArgType::STRING),
   min(0),
-  max(std::numeric_limits<int>::max()) {
+  max(std::numeric_limits<uint32_t>::max()) {
 }
 
 StringArg::~StringArg() {
@@ -137,18 +188,31 @@ StringArg &StringArg::operator=(StringArg const &rhs) {
 
 void StringArg::print(std::ostream &out) const {
 	ArgInfo::print(out);
-	out << ", min: " << min << ", max: " << max << ", defaultV: \"" << defaultV << "\" }";
+
+	// print defaut string value
+	if (defaultV != "") {
+		out << " default=\"" << defaultV << "\"";
+	}
+
+	// print string min/max
+	if (min != 0 || max != std::numeric_limits<uint32_t>::max()) {
+		out << " length=[" << (min != 0 ? std::to_string(min) : "") << ":" << \
+		(max != std::numeric_limits<uint32_t>::max() ? std::to_string(max) : "") \
+		<< "]";
+	}
+
+	out << ">";
 }
 
 ArgInfo	&StringArg::setDefaultS(std::string defaultV) {
 	this->defaultV = defaultV;
 	return *this;
 }
-ArgInfo	&StringArg::setMinI(int min) {
+ArgInfo	&StringArg::setMinLength(uint32_t min) {
 	this->min = min;
 	return *this;
 }
-ArgInfo	&StringArg::setMaxI(int max) {
+ArgInfo	&StringArg::setMaxLength(uint32_t max) {
 	this->max = max;
 	return *this;
 }
@@ -178,7 +242,16 @@ BoolArg &BoolArg::operator=(BoolArg const &rhs) {
 
 void BoolArg::print(std::ostream &out) const {
 	ArgInfo::print(out);
-	out << ", defaultV: " << defaultV << ", storeTrue: " << storeTrue << " }";
+
+	// print defaut string value
+	if (!storeTrue) {
+		out << " default=" << std::boolalpha << defaultV;
+	}
+	else {
+		out << " storeTrue";
+	}
+
+	out << ">";
 }
 
 ArgInfo	&BoolArg::setDefaultB(bool defaultV) {
@@ -190,22 +263,22 @@ ArgInfo	&BoolArg::setStoreTrue(bool storeTrue) {
 	return *this;
 }
 
-// -- IntArg -------------------------------------------------------------------
-IntArg::IntArg(std::string name)
-: ArgInfo(name, ArgType::INT),
-  min(std::numeric_limits<int>::lowest()),
-  max(std::numeric_limits<int>::max()),
+// -- Int32Arg -------------------------------------------------------------------
+Int32Arg::Int32Arg(std::string name)
+: ArgInfo(name, ArgType::INT32),
+  min(std::numeric_limits<int32_t>::lowest()),
+  max(std::numeric_limits<int32_t>::max()),
   defaultV(0) {
 }
 
-IntArg::~IntArg() {
+Int32Arg::~Int32Arg() {
 }
 
-IntArg::IntArg(IntArg const &src): ArgInfo(src) {
+Int32Arg::Int32Arg(Int32Arg const &src): ArgInfo(src) {
 	*this = src;
 }
 
-IntArg &IntArg::operator=(IntArg const &rhs) {
+Int32Arg &Int32Arg::operator=(Int32Arg const &rhs) {
 	ArgInfo::operator=(rhs);
 	if (this != &rhs) {
 		min = rhs.min;
@@ -215,20 +288,197 @@ IntArg &IntArg::operator=(IntArg const &rhs) {
 	return *this;
 }
 
-void IntArg::print(std::ostream &out) const {
+void Int32Arg::print(std::ostream &out) const {
 	ArgInfo::print(out);
-	out << ", min: " << min << ", max: " << max << ", defaultV: " << defaultV << " }";
+
+	// print defaut int32_t value
+	out << " default=" << defaultV;
+
+	// print string min/max
+	if (min != std::numeric_limits<int32_t>::lowest() || max != std::numeric_limits<int32_t>::max()) {
+		out << " range=[" << \
+			(min != std::numeric_limits<int32_t>::lowest() ? std::to_string(min) : "") << \
+			":" << (max != std::numeric_limits<int32_t>::max() ? std::to_string(max) : "") \
+			<< "]";
+	}
+
+	out << ">";
 }
 
-ArgInfo	&IntArg::setDefaultI(int defaultV) {
+ArgInfo	&Int32Arg::setDefaultI32(int32_t defaultV) {
 	this->defaultV = defaultV;
 	return *this;
 };
-ArgInfo	&IntArg::setMinI(int min) {
+ArgInfo	&Int32Arg::setMinI32(int32_t min) {
 	this->min = min;
 	return *this;
 };
-ArgInfo	&IntArg::setMaxI(int max) {
+ArgInfo	&Int32Arg::setMaxI32(int32_t max) {
+	this->max = max;
+	return *this;
+};
+
+// -- Int64Arg -------------------------------------------------------------------
+Int64Arg::Int64Arg(std::string name)
+: ArgInfo(name, ArgType::INT64),
+  min(std::numeric_limits<int64_t>::lowest()),
+  max(std::numeric_limits<int64_t>::max()),
+  defaultV(0) {
+}
+
+Int64Arg::~Int64Arg() {
+}
+
+Int64Arg::Int64Arg(Int64Arg const &src): ArgInfo(src) {
+	*this = src;
+}
+
+Int64Arg &Int64Arg::operator=(Int64Arg const &rhs) {
+	ArgInfo::operator=(rhs);
+	if (this != &rhs) {
+		min = rhs.min;
+		max = rhs.max;
+		defaultV = rhs.defaultV;
+	}
+	return *this;
+}
+
+void Int64Arg::print(std::ostream &out) const {
+	ArgInfo::print(out);
+
+	// print defaut int64_t value
+	out << " default=" << defaultV;
+
+	// print string min/max
+	if (min != std::numeric_limits<int64_t>::lowest() || max != std::numeric_limits<int64_t>::max()) {
+		out << " range=[" << \
+			(min != std::numeric_limits<int64_t>::lowest() ? std::to_string(min) : "") << \
+			":" << (max != std::numeric_limits<int64_t>::max() ? std::to_string(max) : "") \
+			<< "]";
+	}
+
+	out << ">";
+}
+
+ArgInfo	&Int64Arg::setDefaultI64(int64_t defaultV) {
+	this->defaultV = defaultV;
+	return *this;
+};
+ArgInfo	&Int64Arg::setMinI64(int64_t min) {
+	this->min = min;
+	return *this;
+};
+ArgInfo	&Int64Arg::setMaxI64(int64_t max) {
+	this->max = max;
+	return *this;
+};
+
+// -- UInt32Arg -------------------------------------------------------------------
+UInt32Arg::UInt32Arg(std::string name)
+: ArgInfo(name, ArgType::UINT32),
+  min(std::numeric_limits<uint32_t>::lowest()),
+  max(std::numeric_limits<uint32_t>::max()),
+  defaultV(0) {
+}
+
+UInt32Arg::~UInt32Arg() {
+}
+
+UInt32Arg::UInt32Arg(UInt32Arg const &src): ArgInfo(src) {
+	*this = src;
+}
+
+UInt32Arg &UInt32Arg::operator=(UInt32Arg const &rhs) {
+	ArgInfo::operator=(rhs);
+	if (this != &rhs) {
+		min = rhs.min;
+		max = rhs.max;
+		defaultV = rhs.defaultV;
+	}
+	return *this;
+}
+
+void UInt32Arg::print(std::ostream &out) const {
+	ArgInfo::print(out);
+
+	// print defaut uint32_t value
+	out << " default=" << defaultV;
+
+	// print string min/max
+	if (min != std::numeric_limits<uint32_t>::lowest() || max != std::numeric_limits<uint32_t>::max()) {
+		out << " range=[" << \
+			(min != std::numeric_limits<uint32_t>::lowest() ? std::to_string(min) : "") << \
+			":" << (max != std::numeric_limits<uint32_t>::max() ? std::to_string(max) : "") \
+			<< "]";
+	}
+
+	out << ">";
+}
+
+ArgInfo	&UInt32Arg::setDefaultUI32(uint32_t defaultV) {
+	this->defaultV = defaultV;
+	return *this;
+};
+ArgInfo	&UInt32Arg::setMinUI32(uint32_t min) {
+	this->min = min;
+	return *this;
+};
+ArgInfo	&UInt32Arg::setMaxUI32(uint32_t max) {
+	this->max = max;
+	return *this;
+};
+
+// -- UInt64Arg -------------------------------------------------------------------
+UInt64Arg::UInt64Arg(std::string name)
+: ArgInfo(name, ArgType::UINT64),
+  min(std::numeric_limits<uint64_t>::lowest()),
+  max(std::numeric_limits<uint64_t>::max()),
+  defaultV(0) {
+}
+
+UInt64Arg::~UInt64Arg() {
+}
+
+UInt64Arg::UInt64Arg(UInt64Arg const &src): ArgInfo(src) {
+	*this = src;
+}
+
+UInt64Arg &UInt64Arg::operator=(UInt64Arg const &rhs) {
+	ArgInfo::operator=(rhs);
+	if (this != &rhs) {
+		min = rhs.min;
+		max = rhs.max;
+		defaultV = rhs.defaultV;
+	}
+	return *this;
+}
+
+void UInt64Arg::print(std::ostream &out) const {
+	ArgInfo::print(out);
+
+	// print defaut uint64_t value
+	out << " default=" << defaultV;
+
+	// print string min/max
+	if (min != std::numeric_limits<uint64_t>::lowest() || max != std::numeric_limits<uint64_t>::max()) {
+		out << " range=[" << \
+			(min != std::numeric_limits<uint64_t>::lowest() ? std::to_string(min) : "") << \
+			":" << (max != std::numeric_limits<uint64_t>::max() ? std::to_string(max) : "") \
+			<< "]";
+	}
+
+	out << ">";
+}
+
+ArgInfo	&UInt64Arg::setDefaultUI64(uint64_t defaultV) {
+	this->defaultV = defaultV;
+	return *this;
+};
+ArgInfo	&UInt64Arg::setMinUI64(uint64_t min) {
+	this->min = min;
+	return *this;
+};
+ArgInfo	&UInt64Arg::setMaxUI64(uint64_t max) {
 	this->max = max;
 	return *this;
 };
@@ -260,7 +510,24 @@ FloatArg &FloatArg::operator=(FloatArg const &rhs) {
 
 void FloatArg::print(std::ostream &out) const {
 	ArgInfo::print(out);
-	out << ", min: " << min << ", max: " << max << ", defaultV: " << defaultV << " }";
+
+	// print defaut int value
+	out << " default=" << defaultV;
+
+	// print string min/max
+	if (min != std::numeric_limits<float>::lowest() || max != std::numeric_limits<float>::max()) {
+		out << " range=[";
+		if (min != std::numeric_limits<float>::lowest()) {
+			out << std::fixed << std::setprecision(3) << min;
+		}
+		out << ":";
+		if (max != std::numeric_limits<float>::max()) {
+			out << std::fixed << std::setprecision(3) << max;
+		}
+		out << "]";
+	}
+
+	out << ">";
 }
 
 ArgInfo	&FloatArg::setDefaultF(float defaultV) {

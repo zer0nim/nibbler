@@ -70,6 +70,7 @@ void	ArgsParser::usage() const {
 			if (argInfos->required) {
 				std::cout << "  " COLOR_BOLD COLOR_ULINE << argInfos->name << COLOR_EOC "  " << \
 				argInfos->help << std::endl;
+				std::cout << "  " << *argInfos << std::endl;
 			}
 		}
 	}
@@ -88,6 +89,7 @@ void	ArgsParser::usage() const {
 				}
 				std::cout << COLOR_BOLD "--" << argInfos->longName << COLOR_EOC "  " \
 				<< argInfos->help << std::endl;
+				std::cout << "  " << *argInfos << std::endl;
 			}
 		}
 	}
@@ -113,8 +115,17 @@ ArgInfo	&ArgsParser::addArgument(std::string name, ArgType::Enum type) {
 	if (type == ArgType::BOOL) {
 		_argsInfos.push_back(new BoolArg(name));
 	}
-	else if (type == ArgType::INT) {
-		_argsInfos.push_back(new IntArg(name));
+	else if (type == ArgType::INT32) {
+		_argsInfos.push_back(new Int32Arg(name));
+	}
+	else if (type == ArgType::INT64) {
+		_argsInfos.push_back(new Int64Arg(name));
+	}
+	else if (type == ArgType::UINT32) {
+		_argsInfos.push_back(new UInt32Arg(name));
+	}
+	else if (type == ArgType::INT64) {
+		_argsInfos.push_back(new UInt64Arg(name));
 	}
 	else if (type == ArgType::FLOAT) {
 		_argsInfos.push_back(new FloatArg(name));
