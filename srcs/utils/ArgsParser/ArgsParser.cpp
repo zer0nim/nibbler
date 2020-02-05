@@ -116,6 +116,12 @@ bool	ArgsParser::checkOptsAvailability(std::string const &longName, char shortNa
 		return EXIT_FAILURE;
 	}
 
+	// refuse char '-' at the begining of a long/short name
+	if (shortName == '-' || longName[0] == '-') {
+		logErr("you can't put char '-' at the begining of a long/short name");
+		return EXIT_FAILURE;
+	}
+
 	// refuse empty longName && empty shortName
 	if (longName.empty() && shortName == A_NO_NAME) {
 		logErr("you need to specify at least a shortName or a longName");
