@@ -39,22 +39,20 @@ void	ArgsParser::usage() const {
 	// print args possibilities
 	for (auto &&argInfos : _argsInfos) {
 		// positional arguments
-		if (argInfos->required) {
-			std::cout << " " COLOR_BOLD << argInfos->name << COLOR_EOC;
+		if (argInfos->getRequired()) {
+			std::cout << " " COLOR_BOLD << argInfos->getName() << COLOR_EOC;
 		}
 		// optional arguments
 		else {
-			// if the short option is not available
-			if (argInfos->shortName == A_NO_NAME) {
-				std::cout << " [" COLOR_BOLD "--" << argInfos->longName << COLOR_EOC;
+			if (argInfos->getShortName() == A_NO_NAME) {
+				std::cout << " [" COLOR_BOLD "--" << argInfos->getLongName() << COLOR_EOC;
 			}
 			else {
-				std::cout << " [" COLOR_BOLD "-" << argInfos->shortName << COLOR_EOC;
+				std::cout << " [" COLOR_BOLD "-" << argInfos->getShortName() << COLOR_EOC;
 			}
 
-			// if the arg need a value
-			if (!(argInfos->type == ArgType::BOOL && reinterpret_cast<BoolArg *>(argInfos)->storeTrue)) {
-				std::cout << " " COLOR_ULINE << argInfos->longName << COLOR_ULINE_R;
+			if (argInfos->needArgument()) {
+				std::cout << " " COLOR_ULINE << argInfos->getLongName() << COLOR_ULINE_R;
 			}
 
 			std::cout << "]";
@@ -62,15 +60,15 @@ void	ArgsParser::usage() const {
 	}
 
 	uint32_t	nbPositional = std::count_if(std::begin(_argsInfos), std::end(_argsInfos),
-		[] (ArgInfo * const &arg) { return arg->required; });
+		[] (ArgInfo * const &arg) { return arg->getRequired(); });
 
 	// print positional args help
 	if (nbPositional > 0) {
 		std::cout << COLOR_ULINE "\n\npositional arguments" COLOR_ULINE_R;
 		for (auto &&argInfos : _argsInfos) {
-			if (argInfos->required) {
-				std::cout << "\n  " COLOR_BOLD << argInfos->name << COLOR_EOC "  " << \
-				argInfos->help << std::endl;
+			if (argInfos->getRequired()) {
+				std::cout << "\n  " COLOR_BOLD << argInfos->getName() << COLOR_EOC "  " << \
+				argInfos->getHelp() << std::endl;
 				std::cout << "  " << *argInfos << std::endl;
 			}
 		}
@@ -81,21 +79,21 @@ void	ArgsParser::usage() const {
 		std::cout << (nbPositional > 0 ? "\n" : "\n\n");
 		std::cout << COLOR_ULINE "optional arguments" COLOR_ULINE_R;
 		for (auto &&argInfos : _argsInfos) {
-			if (!argInfos->required) {
+			if (!argInfos->getRequired()) {
 				// if the short option is not available
-				if (argInfos->shortName == A_NO_NAME) {
+				if (argInfos->getShortName() == A_NO_NAME) {
 					std::cout << "\n  ";
 				}
 				else {
-					std::cout << "\n  " << COLOR_BOLD "-" << argInfos->shortName << COLOR_EOC;
-					if (!argInfos->longName.empty()) {
+					std::cout << "\n  " << COLOR_BOLD "-" << argInfos->getShortName() << COLOR_EOC;
+					if (!argInfos->getLongName().empty()) {
 						std::cout << ", ";
 					}
 				}
-				if (!argInfos->longName.empty()) {
-					std::cout << COLOR_BOLD "--" << argInfos->longName << COLOR_EOC;
+				if (!argInfos->getLongName().empty()) {
+					std::cout << COLOR_BOLD "--" << argInfos->getLongName() << COLOR_EOC;
 				}
-				std::cout << "  " << argInfos->help << "\n  " << *argInfos << std::endl;
+				std::cout << "  " << argInfos->getHelp() << "\n  " << *argInfos << std::endl;
 			}
 		}
 	}
@@ -131,8 +129,8 @@ bool	ArgsParser::checkOptsAvailability(std::string const &longName, char shortNa
 	// check shortName/longName duplicates
 	uint32_t	nbDuplicates = std::count_if(std::begin(_argsInfos), std::end(_argsInfos),
 		[longName, shortName] (ArgInfo * const &arg) {
-			return (arg->shortName != A_NO_NAME && shortName != A_NO_NAME && \
-				arg->shortName == shortName) || (!arg->longName.empty() && arg->longName == longName);
+			return (arg->getShortName() != A_NO_NAME && shortName != A_NO_NAME && \
+				arg->getShortName() == shortName) || (!arg->getLongName().empty() && arg->getLongName() == longName);
 		});
 	if (nbDuplicates > 0) {
 		logErr("duplicate optional arg name: " << "-" << shortName << ", --" << longName);
@@ -140,20 +138,6 @@ bool	ArgsParser::checkOptsAvailability(std::string const &longName, char shortNa
 	}
 
 	return EXIT_SUCCESS;
-}
-
-void	ArgsParser::init() {
-	_opts = "uw:g:s:b:";
-
-	_longOpts = {
-		{"usage", no_argument, NULL, 'u'},
-		{"width", required_argument, NULL, 'w'},
-		{"gui", required_argument, NULL, 'g'},
-		{"speed", required_argument, NULL, 's'},
-		{"boardSize", required_argument, NULL, 0},
-
-		{NULL, 0, NULL, 0}
-	};
 }
 
 // create new arg of the specified type, add it to _argsInfos, then return a ref
@@ -204,6 +188,30 @@ ArgInfo	&ArgsParser::addArgument(std::string name, ArgType::Enum type) {
 	return *(*elem.first);
 }
 
+void	ArgsParser::init() {
+	// fill _opts string
+	for (auto &&argInfos : _argsInfos) {
+		if (!argInfos->getRequired()) {
+			// fill shortName string
+			if (argInfos->getShortName() != A_NO_NAME) {
+				_opts += argInfos->getShortName();
+				if (argInfos->needArgument()) {
+					_opts += ':';
+				}
+			}
+			// fill longName struct
+			if (!argInfos->getLongName().empty()) {
+				_longOpts.push_back({
+					argInfos->getLongName().c_str(),
+					argInfos->needArgument() ? required_argument : no_argument, NULL,
+					argInfos->getShortName() != A_NO_NAME ? argInfos->getShortName() : 0
+				});
+			}
+		}
+	}
+
+	_longOpts.push_back({NULL, 0, NULL, 0});
+}
 
 // The variable optind is the index of the next element to be processed in argv.
 // The system initializes this value to 1. The caller can reset it to 1 to restart scanning of the same argv,
@@ -214,18 +222,18 @@ ArgInfo	&ArgsParser::addArgument(std::string name, ArgType::Enum type) {
 
 void	ArgsParser::parseArgs() {
 	int	opt;
-	int longIndex;
+	int	longIndex = 0;
 
 	init();  // init getopt_long args
-
-	std::cout << "parseArgs ----------" << std::endl;
 
 	while ((opt = getopt_long(_ac, _av, _opts.c_str(), _longOpts.data(), &longIndex)) != -1) {
 		std::cout << "opt: " << static_cast<char>(opt) << std::endl;
 		switch (opt) {
-			case 'u': case '?':
-				std::cout << "// usage();" << std::endl;
-				// usage();
+			case 0:
+				std::cout << "long opt: " << _longOpts[longIndex].name << std::endl;
+				if (optarg) {
+					std::cout << "with arg \"" << optarg << "\"" << std::endl;
+				}
 				break;
 			case 'w':
 				std::cout << "optarg: " << optarg << std::endl;
@@ -239,8 +247,10 @@ void	ArgsParser::parseArgs() {
 			case 'b':
 				std::cout << "optarg: " << optarg << std::endl;
 				break;
-			default:
-				logErr("parsing args error");
+			case 'u': case '?': default:
+				std::cout << "// usage();" << std::endl;
+				// usage();
+				break;
 			break;
 		}
 	}

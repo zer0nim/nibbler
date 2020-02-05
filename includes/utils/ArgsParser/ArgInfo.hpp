@@ -46,6 +46,7 @@ class ArgInfo {
 	public:
 		virtual ~ArgInfo();
 		virtual void print(std::ostream &out) const;
+		bool	needArgument() const;
 
 		ArgInfo	&setOptional(std::string const &longName, char shortName = A_NO_NAME);
 		ArgInfo	&setOptional(char shortName, std::string const &longName = "");
@@ -73,17 +74,24 @@ class ArgInfo {
 		virtual ArgInfo	&setMaxLength(uint32_t max);
 		virtual ArgInfo	&setStoreTrue(bool storeTrue = true);
 
-		ArgType::Enum	type;
-		std::string		name;
-		char			shortName;
-		std::string		longName;
-		std::string		help;
-		bool			required;
+		ArgType::Enum		getType() const;
+		std::string const	&getName() const;
+		char				getShortName() const;
+		std::string const	&getLongName() const;
+		std::string const	&getHelp() const;
+		bool				getRequired() const;
 
 	protected:
 		explicit ArgInfo(ArgsParser *argsParser, std::string name, ArgType::Enum type);
 		ArgInfo(ArgInfo const &src);
 		ArgInfo &operator=(ArgInfo const &rhs);
+
+		ArgType::Enum	_type;
+		std::string		_name;
+		char			_shortName;
+		std::string		_longName;
+		std::string		_help;
+		bool			_required;
 
 	private:
 		ArgInfo();
@@ -112,12 +120,16 @@ class StringArg : public ArgInfo {
 		virtual ArgInfo	&setMinLength(uint32_t min);
 		virtual ArgInfo	&setMaxLength(uint32_t max);
 
-		uint32_t		min;  // min string lenght
-		uint32_t		max;  // max string lenght
-		std::string		defaultV;
+		uint32_t		getMin() const;  // min string lenght
+		uint32_t		getMax() const;  // max string lenght
+		std::string		getDefaultV() const;
 
 	private:
 		StringArg();
+
+		uint32_t		_min;  // min string lenght
+		uint32_t		_max;  // max string lenght
+		std::string		_defaultV;
 };
 
 // -- BoolArg ------------------------------------------------------------------
@@ -133,11 +145,14 @@ class BoolArg : public ArgInfo {
 		virtual ArgInfo	&setDefaultB(bool defaultV);
 		virtual ArgInfo	&setStoreTrue(bool storeTrue = true);
 
-		bool	defaultV;
-		bool	storeTrue;  // allow to skip val for bool
+		bool	getDefaultV() const;
+		bool	getStoreTrue() const;  // allow to skip val for bool
 
 	private:
 		BoolArg();
+
+		bool	_defaultV;
+		bool	_storeTrue;  // allow to skip val for bool
 };
 
 // -- Int32Arg -------------------------------------------------------------------
@@ -154,12 +169,16 @@ class Int32Arg : public ArgInfo {
 		virtual ArgInfo	&setMinI32(int32_t min);
 		virtual ArgInfo	&setMaxI32(int32_t max);
 
-		int32_t	min;
-		int32_t	max;
-		int32_t	defaultV;
+		int32_t	getMin() const;
+		int32_t	getMax() const;
+		int32_t	getDefaultV() const;
 
 	private:
 		Int32Arg();
+
+		int32_t	_min;
+		int32_t	_max;
+		int32_t	_defaultV;
 };
 
 // -- Int64Arg -------------------------------------------------------------------
@@ -176,12 +195,16 @@ class Int64Arg : public ArgInfo {
 		virtual ArgInfo	&setMinI64(int64_t min);
 		virtual ArgInfo	&setMaxI64(int64_t max);
 
-		int64_t	min;
-		int64_t	max;
-		int64_t	defaultV;
+		int64_t	getMin() const;
+		int64_t	getMax() const;
+		int64_t	getDefaultV() const;
 
 	private:
 		Int64Arg();
+
+		int64_t	_min;
+		int64_t	_max;
+		int64_t	_defaultV;
 };
 
 // -- UInt32Arg -------------------------------------------------------------------
@@ -198,12 +221,16 @@ class UInt32Arg : public ArgInfo {
 		virtual ArgInfo	&setMinUI32(uint32_t min);
 		virtual ArgInfo	&setMaxUI32(uint32_t max);
 
-		uint32_t	min;
-		uint32_t	max;
-		uint32_t	defaultV;
+		uint32_t	getMin() const;
+		uint32_t	getMax() const;
+		uint32_t	getDefaultV() const;
 
 	private:
 		UInt32Arg();
+
+		uint32_t	_min;
+		uint32_t	_max;
+		uint32_t	_defaultV;
 };
 
 // -- UInt64Arg -------------------------------------------------------------------
@@ -220,12 +247,16 @@ class UInt64Arg : public ArgInfo {
 		virtual ArgInfo	&setMinUI64(uint64_t min);
 		virtual ArgInfo	&setMaxUI64(uint64_t max);
 
-		uint64_t	min;
-		uint64_t	max;
-		uint64_t	defaultV;
+		uint64_t	getMin() const;
+		uint64_t	getMax() const;
+		uint64_t	getDefaultV() const;
 
 	private:
 		UInt64Arg();
+
+		uint64_t	_min;
+		uint64_t	_max;
+		uint64_t	_defaultV;
 };
 
 // -- FloatArg -----------------------------------------------------------------
@@ -242,12 +273,16 @@ class FloatArg : public ArgInfo {
 		virtual ArgInfo	&setMinF(float min);
 		virtual ArgInfo	&setMaxF(float max);
 
-		float	min;
-		float	max;
-		float	defaultV;
+		float	getMin() const;
+		float	getMax() const;
+		float	getDefaultV() const;
 
 	private:
 		FloatArg();
+
+		float	_min;
+		float	_max;
+		float	_defaultV;
 };
 
 #endif  // ARGINFO_HPP_

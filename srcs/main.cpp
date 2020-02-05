@@ -45,6 +45,17 @@ int main(int ac, char * const *av) {
 		.setMaxF(100.0f)
 		.setDefaultF(10.5f);
 
+	argsParser.addArgument("test", ArgType::BOOL)
+		.setOptional("test", 't')
+		.setStoreTrue();
+
+	argsParser.addArgument("zzz", ArgType::BOOL)
+		.setOptional("zzz");
+
+	argsParser.addArgument("yyy", ArgType::BOOL)
+		.setOptional('y');
+
+
 	argsParser.parseArgs();
 
 	// run the game ------------------------------------------------------------
