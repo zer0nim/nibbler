@@ -2,20 +2,24 @@
 #include <limits>
 #include <iomanip>
 
+#include "ArgsParser.hpp"
+
 // -- ArgInfo ------------------------------------------------------------------
 ArgInfo::ArgInfo()
 : type(ArgType::STRING),
   name("noName"),
   shortName(A_NO_NAME),
-  required(true) {
+  required(true),
+  _argsParser(nullptr) {
 	  logErr("this constructor should not be called")
 }
 
-ArgInfo::ArgInfo(std::string name, ArgType::Enum type)
+ArgInfo::ArgInfo(ArgsParser	*argsParser, std::string name, ArgType::Enum type)
 : type(type),
   name(name),
   shortName(A_NO_NAME),
-  required(true) {
+  required(true),
+  _argsParser(argsParser) {
 }
 
 ArgInfo::~ArgInfo() {
@@ -42,12 +46,23 @@ void ArgInfo::print(std::ostream &out) const {
 }
 
 // set optionnals arguments name
-ArgInfo	&ArgInfo::setOptional(std::string longName, char shortName) {
+ArgInfo	&ArgInfo::setOptional(std::string const &longName, char shortName) {
+	// verify option name availability
+	if (_argsParser->checkOptsAvailability(longName, shortName) == EXIT_FAILURE) {
+		return *this;
+	}
+
 	required = false;  // disable required for optionnals args
+
 	this->shortName = shortName;
 	this->longName = longName;
 	return *this;
 }
+// idem but allow to set shortName without longName
+ArgInfo	&ArgInfo::setOptional(char shortName = A_NO_NAME, std::string const &longName) {
+	return setOptional(longName, shortName);
+}
+
 
 ArgInfo	&ArgInfo::setHelp(std::string help) {
 	this->help = help;
@@ -166,8 +181,8 @@ bool ArgInfoPtrComp::operator()(ArgInfo const *lhs, ArgInfo const *rhs) const {
 }
 
 // -- StringArg ----------------------------------------------------------------
-StringArg::StringArg(std::string name)
-: ArgInfo(name, ArgType::STRING),
+StringArg::StringArg(ArgsParser *argsParser, std::string name)
+: ArgInfo(argsParser, name, ArgType::STRING),
   min(0),
   max(std::numeric_limits<uint32_t>::max()) {
 }
@@ -193,7 +208,7 @@ void StringArg::print(std::ostream &out) const {
 	ArgInfo::print(out);
 
 	// print defaut string value
-	if (defaultV != "") {
+	if (!defaultV.empty()) {
 		out << " " COLOR_L_VAL "default" COLOR_WHITE "=" COLOR_R_VAL "\"" << defaultV << "\"" COLOR_WHITE;
 	}
 
@@ -222,8 +237,8 @@ ArgInfo	&StringArg::setMaxLength(uint32_t max) {
 }
 
 // -- BoolArg ------------------------------------------------------------------
-BoolArg::BoolArg(std::string name)
-: ArgInfo(name, ArgType::BOOL),
+BoolArg::BoolArg(ArgsParser *argsParser, std::string name)
+: ArgInfo(argsParser, name, ArgType::BOOL),
   defaultV(false),
   storeTrue(false) {
 }
@@ -268,8 +283,8 @@ ArgInfo	&BoolArg::setStoreTrue(bool storeTrue) {
 }
 
 // -- Int32Arg -------------------------------------------------------------------
-Int32Arg::Int32Arg(std::string name)
-: ArgInfo(name, ArgType::INT32),
+Int32Arg::Int32Arg(ArgsParser *argsParser, std::string name)
+: ArgInfo(argsParser, name, ArgType::INT32),
   min(std::numeric_limits<int32_t>::lowest()),
   max(std::numeric_limits<int32_t>::max()),
   defaultV(0) {
@@ -323,8 +338,8 @@ ArgInfo	&Int32Arg::setMaxI32(int32_t max) {
 };
 
 // -- Int64Arg -------------------------------------------------------------------
-Int64Arg::Int64Arg(std::string name)
-: ArgInfo(name, ArgType::INT64),
+Int64Arg::Int64Arg(ArgsParser *argsParser, std::string name)
+: ArgInfo(argsParser, name, ArgType::INT64),
   min(std::numeric_limits<int64_t>::lowest()),
   max(std::numeric_limits<int64_t>::max()),
   defaultV(0) {
@@ -378,8 +393,8 @@ ArgInfo	&Int64Arg::setMaxI64(int64_t max) {
 };
 
 // -- UInt32Arg -------------------------------------------------------------------
-UInt32Arg::UInt32Arg(std::string name)
-: ArgInfo(name, ArgType::UINT32),
+UInt32Arg::UInt32Arg(ArgsParser *argsParser, std::string name)
+: ArgInfo(argsParser, name, ArgType::UINT32),
   min(std::numeric_limits<uint32_t>::lowest()),
   max(std::numeric_limits<uint32_t>::max()),
   defaultV(0) {
@@ -433,8 +448,8 @@ ArgInfo	&UInt32Arg::setMaxUI32(uint32_t max) {
 };
 
 // -- UInt64Arg -------------------------------------------------------------------
-UInt64Arg::UInt64Arg(std::string name)
-: ArgInfo(name, ArgType::UINT64),
+UInt64Arg::UInt64Arg(ArgsParser *argsParser, std::string name)
+: ArgInfo(argsParser, name, ArgType::UINT64),
   min(std::numeric_limits<uint64_t>::lowest()),
   max(std::numeric_limits<uint64_t>::max()),
   defaultV(0) {
@@ -488,8 +503,8 @@ ArgInfo	&UInt64Arg::setMaxUI64(uint64_t max) {
 };
 
 // -- FloatArg -----------------------------------------------------------------
-FloatArg::FloatArg(std::string name)
-: ArgInfo(name, ArgType::FLOAT),
+FloatArg::FloatArg(ArgsParser *argsParser, std::string name)
+: ArgInfo(argsParser, name, ArgType::FLOAT),
   min(std::numeric_limits<float>::lowest()),
   max(std::numeric_limits<float>::max()),
   defaultV(0.0f) {

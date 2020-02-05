@@ -16,7 +16,7 @@ class ArgsParser {
 		ArgsParser &operator=(ArgsParser const &rhs);
 
 		void	usage() const;
-		void	init();
+		bool	checkOptsAvailability(std::string const &longName, char shortName);
 		// create new arg of the specified type, add it to _argsInfos, then return a ref
 		ArgInfo	&addArgument(std::string name, ArgType::Enum type = ArgType::STRING);
 		void	parseArgs();
@@ -36,6 +36,7 @@ class ArgsParser {
 		std::vector<struct option>	_longOpts;
 		std::set<ArgInfo *, ArgInfoPtrComp>	_argsInfos;
 
+		void	init();
 		ArgsParser();
 };
 

@@ -9,6 +9,8 @@
 
 #include "Logging.hpp"
 
+class ArgsParser;  // to avoid circular dependency
+
 // COLOR_GREEN
 #define COLOR_TYPE "\x1B[32m"
 // COLOR_CYAN
@@ -45,7 +47,8 @@ class ArgInfo {
 		virtual ~ArgInfo();
 		virtual void print(std::ostream &out) const;
 
-		ArgInfo	&setOptional(std::string longName, char shortName = A_NO_NAME);
+		ArgInfo	&setOptional(std::string const &longName, char shortName = A_NO_NAME);
+		ArgInfo	&setOptional(char shortName, std::string const &longName = "");
 		ArgInfo	&setHelp(std::string help);
 
 		virtual ArgInfo	&setDefaultS(std::string defaultV);
@@ -78,12 +81,14 @@ class ArgInfo {
 		bool			required;
 
 	protected:
-		explicit ArgInfo(std::string name, ArgType::Enum type);
+		explicit ArgInfo(ArgsParser *argsParser, std::string name, ArgType::Enum type);
 		ArgInfo(ArgInfo const &src);
 		ArgInfo &operator=(ArgInfo const &rhs);
 
 	private:
 		ArgInfo();
+
+		ArgsParser	*_argsParser;
 };
 
 std::ostream & operator << (std::ostream &out, const ArgInfo &aInfo);
@@ -96,7 +101,7 @@ struct ArgInfoPtrComp {
 // -- StringArg ----------------------------------------------------------------
 class StringArg : public ArgInfo {
 	public:
-		explicit StringArg(std::string name);
+		StringArg(ArgsParser *argsParser, std::string name);
 		virtual ~StringArg();
 		StringArg(StringArg const &src);
 		StringArg &operator=(StringArg const &rhs);
@@ -118,7 +123,7 @@ class StringArg : public ArgInfo {
 // -- BoolArg ------------------------------------------------------------------
 class BoolArg : public ArgInfo {
 	public:
-		explicit BoolArg(std::string name);
+		BoolArg(ArgsParser *argsParser, std::string name);
 		virtual ~BoolArg();
 		BoolArg(BoolArg const &src);
 		BoolArg &operator=(BoolArg const &rhs);
@@ -138,7 +143,7 @@ class BoolArg : public ArgInfo {
 // -- Int32Arg -------------------------------------------------------------------
 class Int32Arg : public ArgInfo {
 	public:
-		explicit Int32Arg(std::string name);
+		Int32Arg(ArgsParser *argsParser, std::string name);
 		virtual ~Int32Arg();
 		Int32Arg(Int32Arg const &src);
 		Int32Arg &operator=(Int32Arg const &rhs);
@@ -160,7 +165,7 @@ class Int32Arg : public ArgInfo {
 // -- Int64Arg -------------------------------------------------------------------
 class Int64Arg : public ArgInfo {
 	public:
-		explicit Int64Arg(std::string name);
+		Int64Arg(ArgsParser *argsParser, std::string name);
 		virtual ~Int64Arg();
 		Int64Arg(Int64Arg const &src);
 		Int64Arg &operator=(Int64Arg const &rhs);
@@ -182,7 +187,7 @@ class Int64Arg : public ArgInfo {
 // -- UInt32Arg -------------------------------------------------------------------
 class UInt32Arg : public ArgInfo {
 	public:
-		explicit UInt32Arg(std::string name);
+		UInt32Arg(ArgsParser *argsParser, std::string name);
 		virtual ~UInt32Arg();
 		UInt32Arg(UInt32Arg const &src);
 		UInt32Arg &operator=(UInt32Arg const &rhs);
@@ -204,7 +209,7 @@ class UInt32Arg : public ArgInfo {
 // -- UInt64Arg -------------------------------------------------------------------
 class UInt64Arg : public ArgInfo {
 	public:
-		explicit UInt64Arg(std::string name);
+		UInt64Arg(ArgsParser *argsParser, std::string name);
 		virtual ~UInt64Arg();
 		UInt64Arg(UInt64Arg const &src);
 		UInt64Arg &operator=(UInt64Arg const &rhs);
@@ -226,7 +231,7 @@ class UInt64Arg : public ArgInfo {
 // -- FloatArg -----------------------------------------------------------------
 class FloatArg : public ArgInfo {
 	public:
-		explicit FloatArg(std::string name);
+		FloatArg(ArgsParser *argsParser, std::string name);
 		virtual ~FloatArg();
 		FloatArg(FloatArg const &src);
 		FloatArg &operator=(FloatArg const &rhs);

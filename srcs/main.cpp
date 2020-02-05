@@ -31,6 +31,7 @@ int main(int ac, char * const *av) {
 		.setHelp("change the starting gui id")
 		.setMaxUI32(2)
 		.setDefaultUI32(0);
+
 	// --boardSize -b
 	argsParser.addArgument("boardSize", ArgType::UINT32)
 		.setOptional("boardSize", 'b')
@@ -43,8 +44,6 @@ int main(int ac, char * const *av) {
 		.setMinF(0.0f)
 		.setMaxF(100.0f)
 		.setDefaultF(10.5f);
-
-	argsParser.init();
 
 	argsParser.parseArgs();
 
