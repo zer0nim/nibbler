@@ -4,7 +4,7 @@
 #include <getopt.h>
 #include <string>
 #include <vector>
-#include <set>
+#include <map>
 #include <unordered_map>
 
 #include "ArgInfo.hpp"
@@ -35,9 +35,7 @@ class ArgsParser {
 		std::string					_progDescr;
 		std::string					_opts;
 		std::vector<struct option>	_longOpts;
-		std::set<ArgInfo *, ArgInfoPtrComp>	_argsInfos;
-
-		// std::unordered_map<std::string, ArgInfo &>	_args;
+		std::unordered_map<std::string, ArgInfo *>	_argsInfos;
 
 		void	init();
 		ArgsParser();

@@ -1,7 +1,7 @@
 #include "ArgsParser.hpp"
 
 #include <algorithm>
-#include <set>
+#include <utility>
 
 #include "Logging.hpp"
 
@@ -15,8 +15,8 @@ ArgsParser::ArgsParser(int ac, char * const *av)
 
 ArgsParser::~ArgsParser() {
 	// free _argsInfos vector
-	for (ArgInfo *argInfos : _argsInfos) {
-		delete argInfos;
+	for (auto &&argInfos : _argsInfos) {
+		delete argInfos.second;
 	}
 	_argsInfos.clear();
 }
@@ -36,23 +36,24 @@ ArgsParser &ArgsParser::operator=(ArgsParser const &rhs) {
 
 void	ArgsParser::usage() const {
 	std::cout << "usage: " << _av[0];
-	// print args possibilities
+	// print positional arguments
 	for (auto &&argInfos : _argsInfos) {
-		// positional arguments
-		if (argInfos->getRequired()) {
-			std::cout << " " COLOR_BOLD << argInfos->getName() << COLOR_EOC;
+		if (argInfos.second->getRequired()) {
+			std::cout << " " COLOR_ULINE << argInfos.second->getName() << COLOR_EOC;
 		}
-		// optional arguments
-		else {
-			if (argInfos->getShortName() == A_NO_NAME) {
-				std::cout << " [" COLOR_BOLD "--" << argInfos->getLongName() << COLOR_EOC;
+	}
+	// print optional arguments
+	for (auto &&argInfos : _argsInfos) {
+		if (!argInfos.second->getRequired()) {
+			if (argInfos.second->getShortName() == A_NO_NAME) {
+				std::cout << " [" COLOR_BOLD "--" << argInfos.second->getLongName() << COLOR_EOC;
 			}
 			else {
-				std::cout << " [" COLOR_BOLD "-" << argInfos->getShortName() << COLOR_EOC;
+				std::cout << " [" COLOR_BOLD "-" << argInfos.second->getShortName() << COLOR_EOC;
 			}
 
-			if (argInfos->needArgument()) {
-				std::cout << " " COLOR_ULINE << argInfos->getLongName() << COLOR_ULINE_R;
+			if (argInfos.second->needArgument()) {
+				std::cout << " " COLOR_ULINE << argInfos.second->getLongName() << COLOR_ULINE_R;
 			}
 
 			std::cout << "]";
@@ -60,16 +61,17 @@ void	ArgsParser::usage() const {
 	}
 
 	uint32_t	nbPositional = std::count_if(std::begin(_argsInfos), std::end(_argsInfos),
-		[] (ArgInfo * const &arg) { return arg->getRequired(); });
+		[] (std::pair<std::string, ArgInfo *> const aPair) {
+			return aPair.second->getRequired(); });
 
 	// print positional args help
 	if (nbPositional > 0) {
 		std::cout << COLOR_ULINE "\n\npositional arguments" COLOR_ULINE_R;
 		for (auto &&argInfos : _argsInfos) {
-			if (argInfos->getRequired()) {
-				std::cout << "\n  " COLOR_BOLD << argInfos->getName() << COLOR_EOC "  " << \
-				argInfos->getHelp() << std::endl;
-				std::cout << "  " << *argInfos << std::endl;
+			if (argInfos.second->getRequired()) {
+				std::cout << "\n  " COLOR_ULINE << argInfos.second->getName() << COLOR_EOC ":  " << \
+				argInfos.second->getHelp() << std::endl;
+				std::cout << "  " << *argInfos.second << std::endl;
 			}
 		}
 	}
@@ -79,21 +81,20 @@ void	ArgsParser::usage() const {
 		std::cout << (nbPositional > 0 ? "\n" : "\n\n");
 		std::cout << COLOR_ULINE "optional arguments" COLOR_ULINE_R;
 		for (auto &&argInfos : _argsInfos) {
-			if (!argInfos->getRequired()) {
-				// if the short option is not available
-				if (argInfos->getShortName() == A_NO_NAME) {
-					std::cout << "\n  ";
-				}
-				else {
-					std::cout << "\n  " << COLOR_BOLD "-" << argInfos->getShortName() << COLOR_EOC;
-					if (!argInfos->getLongName().empty()) {
+			if (!argInfos.second->getRequired()) {
+				std::cout << "\n  " COLOR_ULINE << argInfos.second->getName() << COLOR_EOC ":  ";
+
+				// if the short name is available
+				if (argInfos.second->getShortName() != A_NO_NAME) {
+					std::cout << COLOR_BOLD "-" << argInfos.second->getShortName() << COLOR_EOC;
+					if (!argInfos.second->getLongName().empty()) {
 						std::cout << ", ";
 					}
 				}
-				if (!argInfos->getLongName().empty()) {
-					std::cout << COLOR_BOLD "--" << argInfos->getLongName() << COLOR_EOC;
+				if (!argInfos.second->getLongName().empty()) {
+					std::cout << COLOR_BOLD "--" << argInfos.second->getLongName() << COLOR_EOC;
 				}
-				std::cout << "  " << argInfos->getHelp() << "\n  " << *argInfos << std::endl;
+				std::cout << "  " << argInfos.second->getHelp() << "\n  " << *argInfos.second << std::endl;
 			}
 		}
 	}
@@ -128,7 +129,8 @@ bool	ArgsParser::checkOptsAvailability(std::string const &longName, char shortNa
 
 	// check shortName/longName duplicates
 	uint32_t	nbDuplicates = std::count_if(std::begin(_argsInfos), std::end(_argsInfos),
-		[longName, shortName] (ArgInfo * const &arg) {
+		[longName, shortName] (std::pair<std::string, ArgInfo *> const aPair) {
+			ArgInfo	const *arg = aPair.second;
 			return (arg->getShortName() != A_NO_NAME && shortName != A_NO_NAME && \
 				arg->getShortName() == shortName) || (!arg->getLongName().empty() && arg->getLongName() == longName);
 		});
@@ -143,7 +145,6 @@ bool	ArgsParser::checkOptsAvailability(std::string const &longName, char shortNa
 // create new arg of the specified type, add it to _argsInfos, then return a ref
 ArgInfo	&ArgsParser::addArgument(std::string name, ArgType::Enum type) {
 	ArgInfo	*newElem = nullptr;
-	std::pair<std::set<ArgInfo *>::iterator, bool>	elem;
 
 	// refuse empty name
 	if (name.empty()) {
@@ -176,35 +177,36 @@ ArgInfo	&ArgsParser::addArgument(std::string name, ArgType::Enum type) {
 		break;
 	}
 
-	elem = _argsInfos.insert(newElem);
+	// try to insert the element, fail on name duplicate
+	auto elem = _argsInfos.insert(std::pair<std::string, ArgInfo *>(name, newElem));
 
 	// check name duplication
 	if (!elem.second) {
 		logErr("argument name \"" << name << "\" is already taken");
 		delete newElem;
-		return *(*elem.first);  // return the existing element
+		return *((*elem.first).second);  // return the existing element
 	}
 
-	return *(*elem.first);
+	return *((*elem.first).second);
 }
 
 void	ArgsParser::init() {
 	// fill _opts string
 	for (auto &&argInfos : _argsInfos) {
-		if (!argInfos->getRequired()) {
+		if (!argInfos.second->getRequired()) {
 			// fill shortName string
-			if (argInfos->getShortName() != A_NO_NAME) {
-				_opts += argInfos->getShortName();
-				if (argInfos->needArgument()) {
+			if (argInfos.second->getShortName() != A_NO_NAME) {
+				_opts += argInfos.second->getShortName();
+				if (argInfos.second->needArgument()) {
 					_opts += ':';
 				}
 			}
 			// fill longName struct
-			if (!argInfos->getLongName().empty()) {
+			if (!argInfos.second->getLongName().empty()) {
 				_longOpts.push_back({
-					argInfos->getLongName().c_str(),
-					argInfos->needArgument() ? required_argument : no_argument, NULL,
-					argInfos->getShortName() != A_NO_NAME ? argInfos->getShortName() : 0
+					argInfos.second->getLongName().c_str(),
+					argInfos.second->needArgument() ? required_argument : no_argument, NULL,
+					argInfos.second->getShortName() != A_NO_NAME ? argInfos.second->getShortName() : 0
 				});
 			}
 		}
@@ -249,7 +251,7 @@ void	ArgsParser::parseArgs() {
 				break;
 			case 'u': case '?': default:
 				std::cout << "// usage();" << std::endl;
-				// usage();
+				usage();
 				break;
 			break;
 		}

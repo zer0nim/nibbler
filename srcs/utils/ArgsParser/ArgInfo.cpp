@@ -187,11 +187,6 @@ std::ostream & operator << (std::ostream &out, ArgInfo const &aInfo) {
 	return out;
 }
 
-// used to avoid name duplicates
-bool ArgInfoPtrComp::operator()(ArgInfo const *lhs, ArgInfo const *rhs) const {
-	return lhs->getName() < rhs->getName();
-}
-
 // -- StringArg ----------------------------------------------------------------
 StringArg::StringArg(ArgsParser *argsParser, std::string name)
 : ArgInfo(argsParser, name, ArgType::STRING),
