@@ -19,11 +19,18 @@ int main(int ac, char * const *av) {
 	"with at least 3 different GUIs. These GUIs being shared libraries.");
 
 	// width
-	argsParser.addArgument("width", ArgType::INT64)
+	argsParser.addArgument("width", ArgType::UINT32)
 		.setHelp("set the windows width")
-		.setMinI64(200)
-		.setMaxI64(7680)
-		.setDefaultI64(1200);
+		.setMinUI32(200)
+		.setMaxUI32(7680)
+		.setDefaultUI32(1200);
+
+	// height
+	argsParser.addArgument("height", ArgType::UINT32)
+		.setHelp("set the windows height")
+		.setMinUI32(200)
+		.setMaxUI32(4320)
+		.setDefaultUI32(800);
 
 	// --gui -g
 	argsParser.addArgument("gui", ArgType::UINT32)
@@ -44,17 +51,6 @@ int main(int ac, char * const *av) {
 		.setMinF(0.0f)
 		.setMaxF(100.0f)
 		.setDefaultF(10.5f);
-
-	argsParser.addArgument("test", ArgType::BOOL)
-		.setOptional("test", 't')
-		.setStoreTrue();
-
-	argsParser.addArgument("zzz", ArgType::BOOL)
-		.setOptional("zzz");
-
-	argsParser.addArgument("yyy", ArgType::BOOL)
-		.setOptional('y');
-
 
 	argsParser.parseArgs();
 

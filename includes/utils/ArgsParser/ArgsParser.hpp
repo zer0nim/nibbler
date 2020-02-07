@@ -7,7 +7,7 @@
 #include <map>
 #include <unordered_map>
 
-#include "ArgInfo.hpp"
+#include "AInfoArg.hpp"
 
 class ArgsParser {
 	public:
@@ -19,7 +19,7 @@ class ArgsParser {
 		void	usage() const;
 		bool	checkOptsAvailability(std::string const &longName, char shortName);
 		// create new arg of the specified type, add it to _argsInfos, then return a ref
-		ArgInfo	&addArgument(std::string name, ArgType::Enum type = ArgType::STRING);
+		AInfoArg	&addArgument(std::string name, ArgType::Enum type = ArgType::STRING);
 		void	parseArgs();
 		void	setProgDescr(std::string const &progDescr);
 
@@ -35,7 +35,9 @@ class ArgsParser {
 		std::string					_progDescr;
 		std::string					_opts;
 		std::vector<struct option>	_longOpts;
-		std::unordered_map<std::string, ArgInfo *>	_argsInfos;
+
+		std::vector<AInfoArg *>	_argsInfos;
+		std::unordered_map<std::string, uint32_t>	_argsId;
 
 		void	init();
 		ArgsParser();

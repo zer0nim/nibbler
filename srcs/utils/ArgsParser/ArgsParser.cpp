@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <utility>
+#include <iomanip>
 
 #include "Logging.hpp"
 
@@ -16,7 +17,7 @@ ArgsParser::ArgsParser(int ac, char * const *av)
 ArgsParser::~ArgsParser() {
 	// free _argsInfos vector
 	for (auto &&argInfos : _argsInfos) {
-		delete argInfos.second;
+		delete argInfos;
 	}
 	_argsInfos.clear();
 }
@@ -36,24 +37,23 @@ ArgsParser &ArgsParser::operator=(ArgsParser const &rhs) {
 
 void	ArgsParser::usage() const {
 	std::cout << "usage: " << _av[0];
-	// print positional arguments
+	// print arguments list
 	for (auto &&argInfos : _argsInfos) {
-		if (argInfos.second->getRequired()) {
-			std::cout << " " COLOR_ULINE << argInfos.second->getName() << COLOR_EOC;
+		// print positional arguments
+		if (argInfos->getRequired()) {
+			std::cout << " " COLOR_ULINE << argInfos->getName() << COLOR_EOC;
 		}
-	}
-	// print optional arguments
-	for (auto &&argInfos : _argsInfos) {
-		if (!argInfos.second->getRequired()) {
-			if (argInfos.second->getShortName() == A_NO_NAME) {
-				std::cout << " [" COLOR_BOLD "--" << argInfos.second->getLongName() << COLOR_EOC;
+		// print optional arguments
+		if (!argInfos->getRequired()) {
+			if (argInfos->getShortName() == A_NO_NAME) {
+				std::cout << " [" COLOR_BOLD "--" << argInfos->getLongName() << COLOR_EOC;
 			}
 			else {
-				std::cout << " [" COLOR_BOLD "-" << argInfos.second->getShortName() << COLOR_EOC;
+				std::cout << " [" COLOR_BOLD "-" << argInfos->getShortName() << COLOR_EOC;
 			}
 
-			if (argInfos.second->needArgument()) {
-				std::cout << " " COLOR_ULINE << argInfos.second->getLongName() << COLOR_ULINE_R;
+			if (argInfos->needArgument()) {
+				std::cout << " " COLOR_ULINE << argInfos->getName() << COLOR_ULINE_R;
 			}
 
 			std::cout << "]";
@@ -61,17 +61,17 @@ void	ArgsParser::usage() const {
 	}
 
 	uint32_t	nbPositional = std::count_if(std::begin(_argsInfos), std::end(_argsInfos),
-		[] (std::pair<std::string, ArgInfo *> const aPair) {
-			return aPair.second->getRequired(); });
+		[] (AInfoArg * const argInfos) {
+			return argInfos->getRequired(); });
 
 	// print positional args help
 	if (nbPositional > 0) {
 		std::cout << COLOR_ULINE "\n\npositional arguments" COLOR_ULINE_R;
 		for (auto &&argInfos : _argsInfos) {
-			if (argInfos.second->getRequired()) {
-				std::cout << "\n  " COLOR_ULINE << argInfos.second->getName() << COLOR_EOC ":  " << \
-				argInfos.second->getHelp() << std::endl;
-				std::cout << "  " << *argInfos.second << std::endl;
+			if (argInfos->getRequired()) {
+				std::cout << "\n  " COLOR_ULINE << argInfos->getName() << COLOR_EOC ":  " << \
+				argInfos->getHelp() << std::endl;
+				std::cout << "  " << *argInfos << std::endl;
 			}
 		}
 	}
@@ -81,20 +81,20 @@ void	ArgsParser::usage() const {
 		std::cout << (nbPositional > 0 ? "\n" : "\n\n");
 		std::cout << COLOR_ULINE "optional arguments" COLOR_ULINE_R;
 		for (auto &&argInfos : _argsInfos) {
-			if (!argInfos.second->getRequired()) {
-				std::cout << "\n  " COLOR_ULINE << argInfos.second->getName() << COLOR_EOC ":  ";
+			if (!argInfos->getRequired()) {
+				std::cout << "\n  " COLOR_ULINE << argInfos->getName() << COLOR_EOC ":  ";
 
 				// if the short name is available
-				if (argInfos.second->getShortName() != A_NO_NAME) {
-					std::cout << COLOR_BOLD "-" << argInfos.second->getShortName() << COLOR_EOC;
-					if (!argInfos.second->getLongName().empty()) {
+				if (argInfos->getShortName() != A_NO_NAME) {
+					std::cout << COLOR_BOLD "-" << argInfos->getShortName() << COLOR_EOC;
+					if (!argInfos->getLongName().empty()) {
 						std::cout << ", ";
 					}
 				}
-				if (!argInfos.second->getLongName().empty()) {
-					std::cout << COLOR_BOLD "--" << argInfos.second->getLongName() << COLOR_EOC;
+				if (!argInfos->getLongName().empty()) {
+					std::cout << COLOR_BOLD "--" << argInfos->getLongName() << COLOR_EOC;
 				}
-				std::cout << "  " << argInfos.second->getHelp() << "\n  " << *argInfos.second << std::endl;
+				std::cout << "  " << argInfos->getHelp() << "\n  " << *argInfos << std::endl;
 			}
 		}
 	}
@@ -129,10 +129,9 @@ bool	ArgsParser::checkOptsAvailability(std::string const &longName, char shortNa
 
 	// check shortName/longName duplicates
 	uint32_t	nbDuplicates = std::count_if(std::begin(_argsInfos), std::end(_argsInfos),
-		[longName, shortName] (std::pair<std::string, ArgInfo *> const aPair) {
-			ArgInfo	const *arg = aPair.second;
-			return (arg->getShortName() != A_NO_NAME && shortName != A_NO_NAME && \
-				arg->getShortName() == shortName) || (!arg->getLongName().empty() && arg->getLongName() == longName);
+		[longName, shortName] (AInfoArg * const argInfos) {
+			return (argInfos->getShortName() != A_NO_NAME && shortName != A_NO_NAME && \
+				argInfos->getShortName() == shortName) || (!argInfos->getLongName().empty() && argInfos->getLongName() == longName);
 		});
 	if (nbDuplicates > 0) {
 		logErr("duplicate optional arg name: " << "-" << shortName << ", --" << longName);
@@ -143,8 +142,8 @@ bool	ArgsParser::checkOptsAvailability(std::string const &longName, char shortNa
 }
 
 // create new arg of the specified type, add it to _argsInfos, then return a ref
-ArgInfo	&ArgsParser::addArgument(std::string name, ArgType::Enum type) {
-	ArgInfo	*newElem = nullptr;
+AInfoArg	&ArgsParser::addArgument(std::string name, ArgType::Enum type) {
+	AInfoArg	*newElem = nullptr;
 
 	// refuse empty name
 	if (name.empty()) {
@@ -178,35 +177,36 @@ ArgInfo	&ArgsParser::addArgument(std::string name, ArgType::Enum type) {
 	}
 
 	// try to insert the element, fail on name duplicate
-	auto elem = _argsInfos.insert(std::pair<std::string, ArgInfo *>(name, newElem));
+	auto elem = _argsId.insert(std::pair<std::string, uint32_t>(name, _argsInfos.size()));
 
 	// check name duplication
 	if (!elem.second) {
 		logErr("argument name \"" << name << "\" is already taken");
 		delete newElem;
-		return *((*elem.first).second);  // return the existing element
+		return (*_argsInfos[elem.first->second]);  // return the existing element
 	}
 
-	return *((*elem.first).second);
+	_argsInfos.push_back(newElem);
+	return (*_argsInfos.back());  // return the new element
 }
 
 void	ArgsParser::init() {
 	// fill _opts string
 	for (auto &&argInfos : _argsInfos) {
-		if (!argInfos.second->getRequired()) {
+		if (!argInfos->getRequired()) {
 			// fill shortName string
-			if (argInfos.second->getShortName() != A_NO_NAME) {
-				_opts += argInfos.second->getShortName();
-				if (argInfos.second->needArgument()) {
+			if (argInfos->getShortName() != A_NO_NAME) {
+				_opts += argInfos->getShortName();
+				if (argInfos->needArgument()) {
 					_opts += ':';
 				}
 			}
 			// fill longName struct
-			if (!argInfos.second->getLongName().empty()) {
+			if (!argInfos->getLongName().empty()) {
 				_longOpts.push_back({
-					argInfos.second->getLongName().c_str(),
-					argInfos.second->needArgument() ? required_argument : no_argument, NULL,
-					argInfos.second->getShortName() != A_NO_NAME ? argInfos.second->getShortName() : 0
+					argInfos->getLongName().c_str(),
+					argInfos->needArgument() ? required_argument : no_argument, NULL,
+					argInfos->getShortName() != A_NO_NAME ? argInfos->getShortName() : 0
 				});
 			}
 		}
@@ -223,39 +223,133 @@ void	ArgsParser::init() {
 // then option processing stops as soon as a nonoption argument is encountered
 
 void	ArgsParser::parseArgs() {
-	int	opt;
-	int	longIndex = 0;
+	// int	opt;
+	// int	longIndex = 0;
+	(void)_ac;
 
 	init();  // init getopt_long args
 
-	while ((opt = getopt_long(_ac, _av, _opts.c_str(), _longOpts.data(), &longIndex)) != -1) {
-		std::cout << "opt: " << static_cast<char>(opt) << std::endl;
-		switch (opt) {
-			case 0:
-				std::cout << "long opt: " << _longOpts[longIndex].name << std::endl;
-				if (optarg) {
-					std::cout << "with arg \"" << optarg << "\"" << std::endl;
+	for (auto &&argInfos : _argsInfos) {
+		std::cout << "________________________________" << std::endl;
+
+		switch (argInfos->getType()) {
+			case ArgType::BOOL:
+				 {
+					auto val = reinterpret_cast<BoolArg *>(argInfos)->getVal();
+					std::cout << "[BOOL]" << argInfos->getName() << " ";
+					if (val.second) {
+						std::cout << "val: " << std::boolalpha << val.first << std::endl;
+					}
+					else {
+						std::cout << "empty" << std::endl;
+					}
 				}
 				break;
-			case 'w':
-				std::cout << "optarg: " << optarg << std::endl;
+			case ArgType::INT32:
+				 {
+					auto val = reinterpret_cast<Int32Arg *>(argInfos)->getVal();
+					std::cout << "[INT32]" << argInfos->getName() << " ";
+					if (val.second) {
+						std::cout << "val: " << val.first << std::endl;
+					}
+					else {
+						std::cout << "empty" << std::endl;
+					}
+				}
 				break;
-			case 'g':
-				std::cout << "optarg: " << optarg << std::endl;
+			case ArgType::INT64:
+				 {
+					auto val = reinterpret_cast<Int64Arg *>(argInfos)->getVal();
+					std::cout << "[INT64]" << argInfos->getName() << " ";
+					if (val.second) {
+						std::cout << "val: " << val.first << std::endl;
+					}
+					else {
+						std::cout << "empty" << std::endl;
+					}
+				}
 				break;
-			case 's':
-				std::cout << "optarg: " << optarg << std::endl;
+			case ArgType::UINT32:
+				 {
+					auto val = reinterpret_cast<UInt32Arg *>(argInfos)->getVal();
+					std::cout << "[UINT32]" << argInfos->getName() << " ";
+					if (val.second) {
+						std::cout << "val: " << +val.first << std::endl;
+					}
+					else {
+						std::cout << "empty" << std::endl;
+					}
+				}
 				break;
-			case 'b':
-				std::cout << "optarg: " << optarg << std::endl;
+			case ArgType::UINT64:
+				 {
+					auto val = reinterpret_cast<UInt64Arg *>(argInfos)->getVal();
+					std::cout << "[UINT64]" << argInfos->getName() << " ";
+					if (val.second) {
+						std::cout << "val: " << +val.first << std::endl;
+					}
+					else {
+						std::cout << "empty" << std::endl;
+					}
+				}
 				break;
-			case 'u': case '?': default:
-				std::cout << "// usage();" << std::endl;
-				usage();
+			case ArgType::FLOAT:
+				 {
+					auto val = reinterpret_cast<FloatArg *>(argInfos)->getVal();
+					std::cout << "[FLOAT]" << argInfos->getName() << " ";
+					if (val.second) {
+						std::cout << "val: " << val.first << std::endl;
+					}
+					else {
+						std::cout << "empty" << std::endl;
+					}
+				}
 				break;
+			default:
+				 {
+					auto val = reinterpret_cast<StringArg *>(argInfos)->getVal();
+					std::cout << "[STRING]" << argInfos->getName() << " ";
+					if (val.second) {
+						std::cout << "val: " << val.first << std::endl;
+					}
+					else {
+						std::cout << "empty" << std::endl;
+					}
+				}
 			break;
 		}
 	}
+
+	usage();
+
+	// while ((opt = getopt_long(_ac, _av, _opts.c_str(), _longOpts.data(), &longIndex)) != -1) {
+	// 	std::cout << "opt: " << static_cast<char>(opt) << std::endl;
+	// 	switch (opt) {
+	// 		case 0:
+	// 			std::cout << "long opt: " << _longOpts[longIndex].name << std::endl;
+	// 			if (optarg) {
+	// 				std::cout << "with arg \"" << optarg << "\"" << std::endl;
+	// 			}
+	// 			break;
+	// 		case 'w':
+	// 			std::cout << "optarg: " << optarg << std::endl;
+	// 			break;
+	// 		case 'g':
+	// 			std::cout << "optarg: " << optarg << std::endl;
+	// 			break;
+	// 		case 's':
+	// 			std::cout << "optarg: " << optarg << std::endl;
+	// 			break;
+	// 		case 'b':
+	// 			std::cout << "optarg: " << optarg << std::endl;
+	// 			break;
+	// 		case 'u': case '?': default:
+	// 			std::cout << "// usage();" << std::endl;
+	// 			usage();
+	// 			break;
+	// 		break;
+	// 	}
+	// }
 }
 
 void	ArgsParser::setProgDescr(std::string const &progDescr) { _progDescr = progDescr; }
