@@ -1,6 +1,8 @@
 #include "AInfoArg.hpp"
-#include <limits>
+#include <algorithm>
 #include <iomanip>
+#include <limits>
+#include <locale>
 
 #include "ArgsParser.hpp"
 
@@ -261,8 +263,10 @@ uint32_t		StringArg::getMin() const { return _min; }
 uint32_t		StringArg::getMax() const { return _max; }
 std::string		StringArg::getDefaultV() const { return _defaultV; }
 std::pair<std::string, bool>	StringArg::getVal() const { return _value; }
-void			StringArg::setVal(std::string strVal) {
-	_value = {strVal, true};
+
+// test the input string and save it
+void			StringArg::setVal(std::string input) {
+	_value = {input, true};
 }
 // -- BoolArg ------------------------------------------------------------------
 BoolArg::BoolArg(ArgsParser *argsParser, std::string name)
@@ -315,9 +319,29 @@ AInfoArg	&BoolArg::setStoreTrue(bool storeTrue) {
 bool	BoolArg::getDefaultV() const { return _defaultV; }
 bool	BoolArg::getStoreTrue() const { return _storeTrue; }
 std::pair<bool, bool>	BoolArg::getVal() const { return _value; }
-void	BoolArg::setVal(std::string strVal) {
-	(void)strVal;
-	_value = {false, true};
+
+// convert the input string to bool
+void	BoolArg::setVal(std::string input) {
+	std::string lowInput = input;
+	std::array<std::string, 3> trueStr = {"true", "t", "1"};
+	std::array<std::string, 3> falseStr = {"false", "f", "0"};
+
+	// transform the string to lowercase
+	std::transform(lowInput.begin(), lowInput.end(), lowInput.begin(), ::tolower);
+
+	// compare lowInput with valid true string
+	if (std::any_of(trueStr.begin(), trueStr.end(),
+		[lowInput] (std::string const str) { return str == lowInput; })) {
+		_value = {true, true};
+	}
+	// compare lowInput with valid false string
+	else if (std::any_of(falseStr.begin(), falseStr.end(),
+		[lowInput] (std::string const str) { return str == lowInput; })) {
+		_value = {false, true};
+	}
+	else {
+		logErr("Failed to cast input \"" << input << "\" to bool");
+	}
 }
 // -- Int32Arg -------------------------------------------------------------------
 Int32Arg::Int32Arg(ArgsParser *argsParser, std::string name)
@@ -395,8 +419,10 @@ int32_t	Int32Arg::getMin() const { return _min; }
 int32_t	Int32Arg::getMax() const { return _max; };
 std::pair<int32_t, bool>	Int32Arg::getDefaultV() const { return _defaultV; }
 std::pair<int32_t, bool>	Int32Arg::getVal() const { return _value; }
-void	Int32Arg::setVal(std::string strVal) {
-	(void)strVal;
+
+// convert the input string to int32_t
+void	Int32Arg::setVal(std::string input) {
+	(void)input;
 	_value = {42, true};
 }
 // -- Int64Arg -------------------------------------------------------------------
@@ -475,8 +501,11 @@ int64_t	Int64Arg::getMin() const { return _min; }
 int64_t	Int64Arg::getMax() const { return _max; };
 std::pair<int64_t, bool>	Int64Arg::getDefaultV() const { return _defaultV; }
 std::pair<int64_t, bool>	Int64Arg::getVal() const { return _value; }
-void	Int64Arg::setVal(std::string strVal) {
-	(void)strVal;
+
+
+// convert the input string to int64_t
+void	Int64Arg::setVal(std::string input) {
+	(void)input;
 	_value = {42, true};
 }
 // -- UInt32Arg -------------------------------------------------------------------
@@ -555,8 +584,10 @@ uint32_t	UInt32Arg::getMin() const { return _min; }
 uint32_t	UInt32Arg::getMax() const { return _max; };
 std::pair<uint32_t, bool>	UInt32Arg::getDefaultV() const { return _defaultV; }
 std::pair<uint32_t, bool>	UInt32Arg::getVal() const { return _value; }
-void		UInt32Arg::setVal(std::string strVal) {
-	(void)strVal;
+
+// convert the input string to uint32_t
+void		UInt32Arg::setVal(std::string input) {
+	(void)input;
 	_value = {42, true};
 }
 // -- UInt64Arg -------------------------------------------------------------------
@@ -635,8 +666,10 @@ uint64_t	UInt64Arg::getMin() const { return _min; }
 uint64_t	UInt64Arg::getMax() const { return _max; };
 std::pair<uint64_t, bool>	UInt64Arg::getDefaultV() const { return _defaultV; }
 std::pair<uint64_t, bool>	UInt64Arg::getVal() const { return _value; }
-void		UInt64Arg::setVal(std::string strVal) {
-	(void)strVal;
+
+// convert the input string to uint64_t
+void		UInt64Arg::setVal(std::string input) {
+	(void)input;
 	_value = {42, true};
 }
 // -- FloatArg -----------------------------------------------------------------
@@ -708,8 +741,10 @@ float	FloatArg::getMin() const { return _min; }
 float	FloatArg::getMax() const { return _max; };
 std::pair<float, bool>	FloatArg::getDefaultV() const { return _defaultV; }
 std::pair<float, bool>	FloatArg::getVal() const { return _value; }
-void	FloatArg::setVal(std::string strVal) {
-	(void)strVal;
+
+// convert the input string to float
+void	FloatArg::setVal(std::string input) {
+	(void)input;
 	_value = {42.0, true};
 }
 // --

@@ -229,6 +229,8 @@ void	ArgsParser::parseArgs() {
 
 	init();  // init getopt_long args
 
+	usage();
+
 	for (auto &&argInfos : _argsInfos) {
 		std::cout << "________________________________" << std::endl;
 
@@ -242,6 +244,24 @@ void	ArgsParser::parseArgs() {
 					}
 					else {
 						std::cout << "empty" << std::endl;
+					}
+
+					std::vector<std::string> testStrs = {
+						"true", "t", "1", "True", "tTrue",
+						"11", "false", "f", "0", "00", "fALse", "FFalse",
+						" 0", "0 "
+					};
+					for (std::string const &testStr : testStrs) {
+						std::cout << "___" << std::endl;
+						argInfos->setVal(testStr);
+						val = reinterpret_cast<BoolArg *>(argInfos)->getVal();
+						std::cout << "\"" << testStr << "\" => ";
+						if (val.second) {
+							std::cout << std::boolalpha << val.first << std::endl;
+						}
+						else {
+							std::cout << "empty" << std::endl;
+						}
 					}
 				}
 				break;
@@ -319,8 +339,6 @@ void	ArgsParser::parseArgs() {
 			break;
 		}
 	}
-
-	usage();
 
 	// while ((opt = getopt_long(_ac, _av, _opts.c_str(), _longOpts.data(), &longIndex)) != -1) {
 	// 	std::cout << "opt: " << static_cast<char>(opt) << std::endl;

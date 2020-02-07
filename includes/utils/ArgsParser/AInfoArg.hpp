@@ -75,7 +75,7 @@ class AInfoArg {
 		virtual AInfoArg	&setStoreTrue(bool storeTrue = true);
 
 		// transform the string val to the type val
-		virtual	void	setVal(std::string strVal) = 0;
+		virtual	void	setVal(std::string input) = 0;
 
 		ArgType::Enum		getType() const;
 		std::string const	&getName() const;
@@ -123,7 +123,7 @@ class StringArg : public AInfoArg {
 		std::string		getDefaultV() const;
 		std::pair<std::string, bool>	getVal() const;
 
-		virtual	void	setVal(std::string strVal);
+		virtual	void	setVal(std::string input);
 
 	private:
 		StringArg();
@@ -151,7 +151,7 @@ class BoolArg : public AInfoArg {
 		bool	getStoreTrue() const;  // allow to skip val for bool
 		std::pair<bool, bool>	getVal() const;
 
-		virtual	void	setVal(std::string strVal);
+		virtual	void	setVal(std::string input);
 
 	private:
 		BoolArg();
@@ -180,7 +180,7 @@ class Int32Arg : public AInfoArg {
 		std::pair<int32_t, bool>	getDefaultV() const;
 		std::pair<int32_t, bool>	getVal() const;
 
-		virtual	void	setVal(std::string strVal);
+		virtual	void	setVal(std::string input);
 
 	private:
 		Int32Arg();
@@ -210,7 +210,7 @@ class Int64Arg : public AInfoArg {
 		std::pair<int64_t, bool>	getDefaultV() const;
 		std::pair<int64_t, bool>	getVal() const;
 
-		virtual	void	setVal(std::string strVal);
+		virtual	void	setVal(std::string input);
 
 	private:
 		Int64Arg();
@@ -240,7 +240,7 @@ class UInt32Arg : public AInfoArg {
 		std::pair<uint32_t, bool>	getDefaultV() const;
 		std::pair<uint32_t, bool>	getVal() const;
 
-		virtual	void	setVal(std::string strVal);
+		virtual	void	setVal(std::string input);
 
 	private:
 		UInt32Arg();
@@ -270,7 +270,7 @@ class UInt64Arg : public AInfoArg {
 		std::pair<uint64_t, bool>	getDefaultV() const;
 		std::pair<uint64_t, bool>	getVal() const;
 
-		virtual	void	setVal(std::string strVal);
+		virtual	void	setVal(std::string input);
 
 	private:
 		UInt64Arg();
@@ -300,7 +300,7 @@ class FloatArg : public AInfoArg {
 		std::pair<float, bool>	getDefaultV() const;
 		std::pair<float, bool>	getVal() const;
 
-		virtual	void	setVal(std::string strVal);
+		virtual	void	setVal(std::string input);
 
 	private:
 		FloatArg();

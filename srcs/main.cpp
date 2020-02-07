@@ -18,39 +18,41 @@ int main(int ac, char * const *av) {
 	argsParser.setProgDescr("The purpose of this project is to create our version of the game Snake,\n"\
 	"with at least 3 different GUIs. These GUIs being shared libraries.");
 
-	// width
-	argsParser.addArgument("width", ArgType::UINT32)
-		.setHelp("set the windows width")
-		.setMinUI32(200)
-		.setMaxUI32(7680)
-		.setDefaultUI32(1200);
+	argsParser.addArgument("testBool", ArgType::BOOL);
 
-	// height
-	argsParser.addArgument("height", ArgType::UINT32)
-		.setHelp("set the windows height")
-		.setMinUI32(200)
-		.setMaxUI32(4320)
-		.setDefaultUI32(800);
+	// // width
+	// argsParser.addArgument("width", ArgType::UINT32)
+	// 	.setHelp("set the windows width")
+	// 	.setMinUI32(200)
+	// 	.setMaxUI32(7680)
+	// 	.setDefaultUI32(1200);
 
-	// --gui -g
-	argsParser.addArgument("gui", ArgType::UINT32)
-		.setOptional("gui", 'g')
-		.setHelp("change the starting gui id")
-		.setMaxUI32(2)
-		.setDefaultUI32(0);
+	// // height
+	// argsParser.addArgument("height", ArgType::UINT32)
+	// 	.setHelp("set the windows height")
+	// 	.setMinUI32(200)
+	// 	.setMaxUI32(4320)
+	// 	.setDefaultUI32(800);
 
-	// --boardSize -b
-	argsParser.addArgument("boardSize", ArgType::UINT32)
-		.setOptional("boardSize", 'b')
-		.setHelp("set the board size")
-		.setDefaultUI32(16);
-	// --speed -s
-	argsParser.addArgument("speed", ArgType::FLOAT)
-		.setOptional("speed", 's')
-		.setHelp("change the game speed")
-		.setMinF(0.0f)
-		.setMaxF(100.0f)
-		.setDefaultF(10.5f);
+	// // --gui -g
+	// argsParser.addArgument("gui", ArgType::UINT32)
+	// 	.setOptional("gui", 'g')
+	// 	.setHelp("change the starting gui id")
+	// 	.setMaxUI32(2)
+	// 	.setDefaultUI32(0);
+
+	// // --boardSize -b
+	// argsParser.addArgument("boardSize", ArgType::UINT32)
+	// 	.setOptional("boardSize", 'b')
+	// 	.setHelp("set the board size")
+	// 	.setDefaultUI32(16);
+	// // --speed -s
+	// argsParser.addArgument("speed", ArgType::FLOAT)
+	// 	.setOptional("speed", 's')
+	// 	.setHelp("change the game speed")
+	// 	.setMinF(0.0f)
+	// 	.setMaxF(100.0f)
+	// 	.setDefaultF(10.5f);
 
 	argsParser.parseArgs();
 
