@@ -36,4 +36,8 @@
 *.vim
 *.swp
 .dep
+libs/*
+libsGui/nibblerSDL/libs/*
+libsGui/nibblerSFML/libs/*
+libsGui/nibblerOpenGL/libs/*
 nibbler

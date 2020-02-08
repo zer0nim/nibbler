@@ -88,6 +88,7 @@ SRCS_DIR	= srcs
 OBJS_DIR	= objs
 INC_DIR		= includes
 LIBS_DIR	= libs
+DYN_LIBS_DIR	= libsGui
 DEP_DIR		= .dep
 # this will create a DEBUG file if we are in debug mode (make DEBUG=1)
 DEBUG_DIR	= $(DEP_DIR)
@@ -134,11 +135,12 @@ LIBS_FLAGS_OSX		=
 LIBS_FLAGS_LINUX	=
 # includes dir for external libs
 LIBS_INC			= ~/.brew/include \
-					  libs \
+					  $(LIBS_DIR) \
+					  $(DYN_LIBS_DIR) \
 
 # libs created by user
-UNCOMPILED_LIBS		= libs/nibblerSDL \
-					  libs/nibblerSFML \
+UNCOMPILED_LIBS		= $(DYN_LIBS_DIR)/nibblerSDL \
+					  $(DYN_LIBS_DIR)/nibblerSFML \
 # libs that need to be maked
 NEED_MAKE			= $(UNCOMPILED_LIBS)
 
@@ -155,6 +157,8 @@ if [[ "$$OSTYPE" == "linux-gnu" ]]; then
 # Mac OSX
 elif [[ "$$OSTYPE" == "darwin"* ]]; then
 	echo "install osx dependencies"
+	# glm
+	brew install glm
 fi
 
 exit 0
@@ -164,11 +168,24 @@ export CONFIGURE
 ################################################################################
 # linter config
 
+# installation script for cpp linter
+define CONFIGURE_LINTER
+#!/bin/sh
+
+if [[ ! -d ~/.cpplinter ]]; then
+	git clone https://www.github.com/tnicolas42/cpplinter ~/.cpplinter
+	echo "source ~/.cpplinter/alias.zsh" >> ~/.zshrc
+else
+	echo "linter already installed"
+fi
+endef
+export CONFIGURE_LINTER
+
 # download the cpp linter (https://github.com/isocpp/CppCoreGuidelines)
 # set command to launch linter on LINTER
 # add rules for linter in LINTER_RULES
 LINTER = $(CPPLINT)
-LINTER_RULES =	--filter=-whitespace/tab,-legal/copyright,-build/c++11,-whitespace/newline,-readability/braces,-whitespace/indent,-build/include_what_you_use,-build/header_guard,-runtime/references \
+LINTER_RULES = --filter=-whitespace/tab,-legal/copyright,-build/c++11,-whitespace/newline,-readability/braces,-whitespace/indent,-build/include_what_you_use,-build/header_guard,-runtime/references,-runtime/threadsafe_fn \
 				--linelength=120 --quiet
 
 ################################################################################
