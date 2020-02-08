@@ -452,7 +452,7 @@ std::pair<int32_t, bool>	Int32Arg::getVal() const { return _value; }
 
 // convert the input string to int32_t
 void	Int32Arg::setVal(std::string input) {
-	int64_t val = 0;
+	int64_t	val = 0;
 	try {
 		val = std::stoi(input);
 
@@ -559,8 +559,26 @@ std::pair<int64_t, bool>	Int64Arg::getVal() const { return _value; }
 
 // convert the input string to int64_t
 void	Int64Arg::setVal(std::string input) {
-	(void)input;
-	_value = {42, true};
+	int64_t	val = 0;
+	try {
+		val = std::stoll(input);
+
+		if (val < _min) {
+			logErr("parseArgs(): argument \"" << _name << "\": out of range, val:" << val << " < min:" << _min);
+		}
+		else if (val > _max) {
+			logErr("parseArgs(): argument \"" << _name << "\": out of range, val:" << val << " > max:" << _max);
+		}
+		else {
+			_value = {val, true};
+		}
+	}
+	catch (const std::out_of_range &e) {
+		logErr("parseArgs(): argument \"" << _name << "\": out of range input \"" << input << "\"");
+	}
+	catch (const std::invalid_argument &e) {
+		logErr("parseArgs(): argument \"" << _name << "\": failed to convert input \"" << input << "\"");
+	}
 }
 // -- UInt32Arg -------------------------------------------------------------------
 UInt32Arg::UInt32Arg(ArgsParser *argsParser, std::string name)
@@ -647,8 +665,26 @@ std::pair<uint32_t, bool>	UInt32Arg::getVal() const { return _value; }
 
 // convert the input string to uint32_t
 void		UInt32Arg::setVal(std::string input) {
-	(void)input;
-	_value = {42, true};
+	uint32_t	val = 0;
+	try {
+		val = std::stoul(input);
+
+		if (val < _min) {
+			logErr("parseArgs(): argument \"" << _name << "\": out of range, val:" << val << " < min:" << _min);
+		}
+		else if (val > _max) {
+			logErr("parseArgs(): argument \"" << _name << "\": out of range, val:" << val << " > max:" << _max);
+		}
+		else {
+			_value = {val, true};
+		}
+	}
+	catch (const std::out_of_range &e) {
+		logErr("parseArgs(): argument \"" << _name << "\": out of range input \"" << input << "\"");
+	}
+	catch (const std::invalid_argument &e) {
+		logErr("parseArgs(): argument \"" << _name << "\": failed to convert input \"" << input << "\"");
+	}
 }
 // -- UInt64Arg -------------------------------------------------------------------
 UInt64Arg::UInt64Arg(ArgsParser *argsParser, std::string name)
@@ -735,8 +771,26 @@ std::pair<uint64_t, bool>	UInt64Arg::getVal() const { return _value; }
 
 // convert the input string to uint64_t
 void		UInt64Arg::setVal(std::string input) {
-	(void)input;
-	_value = {42, true};
+	uint64_t	val = 0;
+	try {
+		val = std::stoull(input);
+
+		if (val < _min) {
+			logErr("parseArgs(): argument \"" << _name << "\": out of range, val:" << val << " < min:" << _min);
+		}
+		else if (val > _max) {
+			logErr("parseArgs(): argument \"" << _name << "\": out of range, val:" << val << " > max:" << _max);
+		}
+		else {
+			_value = {val, true};
+		}
+	}
+	catch (const std::out_of_range &e) {
+		logErr("parseArgs(): argument \"" << _name << "\": out of range input \"" << input << "\"");
+	}
+	catch (const std::invalid_argument &e) {
+		logErr("parseArgs(): argument \"" << _name << "\": failed to convert input \"" << input << "\"");
+	}
 }
 // -- FloatArg -----------------------------------------------------------------
 FloatArg::FloatArg(ArgsParser *argsParser, std::string name)
@@ -828,7 +882,25 @@ std::pair<float, bool>	FloatArg::getVal() const { return _value; }
 
 // convert the input string to float
 void	FloatArg::setVal(std::string input) {
-	(void)input;
-	_value = {42.0, true};
+	float	val = 0.0f;
+	try {
+		val = std::stof(input);
+
+		if (val < _min) {
+			logErr("parseArgs(): argument \"" << _name << "\": out of range, val:" << val << " < min:" << _min);
+		}
+		else if (val > _max) {
+			logErr("parseArgs(): argument \"" << _name << "\": out of range, val:" << val << " > max:" << _max);
+		}
+		else {
+			_value = {val, true};
+		}
+	}
+	catch (const std::out_of_range &e) {
+		logErr("parseArgs(): argument \"" << _name << "\": out of range input \"" << input << "\"");
+	}
+	catch (const std::invalid_argument &e) {
+		logErr("parseArgs(): argument \"" << _name << "\": failed to convert input \"" << input << "\"");
+	}
 }
 // --

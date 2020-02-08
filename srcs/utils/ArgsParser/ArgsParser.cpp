@@ -454,48 +454,744 @@ void	ArgsParser::parseArgs() {
 			case ArgType::INT64:
 				 {
 					auto val = reinterpret_cast<Int64Arg *>(argInfos)->getVal();
-					std::cout << "[INT64]" << argInfos->getName() << " ";
+					std::cout << "[INT32]" << argInfos->getName() << " ";
 					if (val.second) {
 						std::cout << "val: " << val.first << std::endl;
 					}
 					else {
 						std::cout << "empty" << std::endl;
+					}
+					{
+						std::cout << "______ should be ok" << std::endl;
+						std::string input = "42";
+						argInfos->setVal(input);
+						val = reinterpret_cast<Int64Arg *>(argInfos)->getVal();
+						std::cout << "\"" << input << "\" => ";
+						if (val.second) {
+							std::cout << std::boolalpha << val.first << std::endl;
+						}
+						else {
+							std::cout << "empty" << std::endl;
+						}
+					}
+					{
+						std::cout << "______ should be ok" << std::endl;
+						std::string input = "0";
+						argInfos->setVal(input);
+						val = reinterpret_cast<Int64Arg *>(argInfos)->getVal();
+						std::cout << "\"" << input << "\" => ";
+						if (val.second) {
+							std::cout << std::boolalpha << val.first << std::endl;
+						}
+						else {
+							std::cout << "empty" << std::endl;
+						}
+					}
+					{
+						std::cout << "______ should be ok" << std::endl;
+						std::string input = "   00042aaa  ";
+						argInfos->setVal(input);
+						val = reinterpret_cast<Int64Arg *>(argInfos)->getVal();
+						std::cout << "\"" << input << "\" => ";
+						if (val.second) {
+							std::cout << std::boolalpha << val.first << std::endl;
+						}
+						else {
+							std::cout << "empty" << std::endl;
+						}
+					}
+					{
+						std::cout << "______ should fail to convert" << std::endl;
+						std::string input = "aa42";
+						argInfos->setVal(input);
+						val = reinterpret_cast<Int64Arg *>(argInfos)->getVal();
+						std::cout << "\"" << input << "\" => ";
+						if (val.second) {
+							std::cout << std::boolalpha << val.first << std::endl;
+						}
+						else {
+							std::cout << "empty" << std::endl;
+						}
+					}
+					{
+						std::cout << "______ should fail to convert" << std::endl;
+						std::string input = "";
+						argInfos->setVal(input);
+						val = reinterpret_cast<Int64Arg *>(argInfos)->getVal();
+						std::cout << "\"" << input << "\" => ";
+						if (val.second) {
+							std::cout << std::boolalpha << val.first << std::endl;
+						}
+						else {
+							std::cout << "empty" << std::endl;
+						}
+					}
+					{
+						std::cout << "______ should work" << std::endl;
+						std::string input = "-9223372036854775808";
+						argInfos->setVal(input);
+						val = reinterpret_cast<Int64Arg *>(argInfos)->getVal();
+						std::cout << "\"" << input << "\" => ";
+						if (val.second) {
+							std::cout << std::boolalpha << val.first << std::endl;
+						}
+						else {
+							std::cout << "empty" << std::endl;
+						}
+					}
+					{
+						std::cout << "______ should underflow" << std::endl;
+						std::string input = "-9223372036854775809";
+						argInfos->setVal(input);
+						val = reinterpret_cast<Int64Arg *>(argInfos)->getVal();
+						std::cout << "\"" << input << "\" => ";
+						if (val.second) {
+							std::cout << std::boolalpha << val.first << std::endl;
+						}
+						else {
+							std::cout << "empty" << std::endl;
+						}
+					}
+					{
+						std::cout << "______ should work" << std::endl;
+						std::string input = "9223372036854775807";
+						argInfos->setVal(input);
+						val = reinterpret_cast<Int64Arg *>(argInfos)->getVal();
+						std::cout << "\"" << input << "\" => ";
+						if (val.second) {
+							std::cout << std::boolalpha << val.first << std::endl;
+						}
+						else {
+							std::cout << "empty" << std::endl;
+						}
+					}
+					{
+						std::cout << "______ should overflow" << std::endl;
+						std::string input = "9223372036854775808";
+						argInfos->setVal(input);
+						val = reinterpret_cast<Int64Arg *>(argInfos)->getVal();
+						std::cout << "\"" << input << "\" => ";
+						if (val.second) {
+							std::cout << std::boolalpha << val.first << std::endl;
+						}
+						else {
+							std::cout << "empty" << std::endl;
+						}
+					}
+					// test min max
+					{
+						std::cout << "______ should work" << std::endl;
+						std::string input = "1";
+						argInfos->setVal(input);
+						argInfos->setMinI64(1);
+						val = reinterpret_cast<Int64Arg *>(argInfos)->getVal();
+						std::cout << "\"" << input << "\" => ";
+						if (val.second) {
+							std::cout << std::boolalpha << val.first << std::endl;
+						}
+						else {
+							std::cout << "empty" << std::endl;
+						}
+					}
+					{
+						std::cout << "______ should fail input < min 1" << std::endl;
+						std::string input = "0";
+						argInfos->setVal(input);
+						argInfos->setMinI64(1);
+						val = reinterpret_cast<Int64Arg *>(argInfos)->getVal();
+						std::cout << "\"" << input << "\" => ";
+						if (val.second) {
+							std::cout << std::boolalpha << val.first << std::endl;
+						}
+						else {
+							std::cout << "empty" << std::endl;
+						}
+					}
+					{
+						std::cout << "______ should work" << std::endl;
+						std::string input = "2";
+						argInfos->setVal(input);
+						argInfos->setMaxI64(2);
+						val = reinterpret_cast<Int64Arg *>(argInfos)->getVal();
+						std::cout << "\"" << input << "\" => ";
+						if (val.second) {
+							std::cout << std::boolalpha << val.first << std::endl;
+						}
+						else {
+							std::cout << "empty" << std::endl;
+						}
+					}
+					 {
+						std::cout << "______ should fail input > max 2" << std::endl;
+						std::string input = "3";
+						argInfos->setVal(input);
+						argInfos->setMinI64(1);
+						val = reinterpret_cast<Int64Arg *>(argInfos)->getVal();
+						std::cout << "\"" << input << "\" => ";
+						if (val.second) {
+							std::cout << std::boolalpha << val.first << std::endl;
+						}
+						else {
+							std::cout << "empty" << std::endl;
+						}
 					}
 				}
 				break;
 			case ArgType::UINT32:
 				 {
 					auto val = reinterpret_cast<UInt32Arg *>(argInfos)->getVal();
-					std::cout << "[UINT32]" << argInfos->getName() << " ";
+					std::cout << "[INT32]" << argInfos->getName() << " ";
 					if (val.second) {
-						std::cout << "val: " << +val.first << std::endl;
+						std::cout << "val: " << val.first << std::endl;
 					}
 					else {
 						std::cout << "empty" << std::endl;
+					}
+					{
+						std::cout << "______ should be ok" << std::endl;
+						std::string input = "42";
+						argInfos->setVal(input);
+						val = reinterpret_cast<UInt32Arg *>(argInfos)->getVal();
+						std::cout << "\"" << input << "\" => ";
+						if (val.second) {
+							std::cout << std::boolalpha << val.first << std::endl;
+						}
+						else {
+							std::cout << "empty" << std::endl;
+						}
+					}
+					{
+						std::cout << "______ should be ok" << std::endl;
+						std::string input = "0";
+						argInfos->setVal(input);
+						val = reinterpret_cast<UInt32Arg *>(argInfos)->getVal();
+						std::cout << "\"" << input << "\" => ";
+						if (val.second) {
+							std::cout << std::boolalpha << val.first << std::endl;
+						}
+						else {
+							std::cout << "empty" << std::endl;
+						}
+					}
+					{
+						std::cout << "______ should be ok" << std::endl;
+						std::string input = "   00042aaa  ";
+						argInfos->setVal(input);
+						val = reinterpret_cast<UInt32Arg *>(argInfos)->getVal();
+						std::cout << "\"" << input << "\" => ";
+						if (val.second) {
+							std::cout << std::boolalpha << val.first << std::endl;
+						}
+						else {
+							std::cout << "empty" << std::endl;
+						}
+					}
+					{
+						std::cout << "______ should fail to convert" << std::endl;
+						std::string input = "aa42";
+						argInfos->setVal(input);
+						val = reinterpret_cast<UInt32Arg *>(argInfos)->getVal();
+						std::cout << "\"" << input << "\" => ";
+						if (val.second) {
+							std::cout << std::boolalpha << val.first << std::endl;
+						}
+						else {
+							std::cout << "empty" << std::endl;
+						}
+					}
+					{
+						std::cout << "______ should fail to convert" << std::endl;
+						std::string input = "";
+						argInfos->setVal(input);
+						val = reinterpret_cast<UInt32Arg *>(argInfos)->getVal();
+						std::cout << "\"" << input << "\" => ";
+						if (val.second) {
+							std::cout << std::boolalpha << val.first << std::endl;
+						}
+						else {
+							std::cout << "empty" << std::endl;
+						}
+					}
+					{
+						std::cout << "______ should work" << std::endl;
+						std::string input = "0";
+						argInfos->setVal(input);
+						val = reinterpret_cast<UInt32Arg *>(argInfos)->getVal();
+						std::cout << "\"" << input << "\" => ";
+						if (val.second) {
+							std::cout << std::boolalpha << val.first << std::endl;
+						}
+						else {
+							std::cout << "empty" << std::endl;
+						}
+					}
+					{
+						std::cout << "______ should underflow" << std::endl;
+						std::string input = "-1";
+						argInfos->setVal(input);
+						val = reinterpret_cast<UInt32Arg *>(argInfos)->getVal();
+						std::cout << "\"" << input << "\" => ";
+						if (val.second) {
+							std::cout << std::boolalpha << val.first << std::endl;
+						}
+						else {
+							std::cout << "empty" << std::endl;
+						}
+					}
+					{
+						std::cout << "______ should work" << std::endl;
+						std::string input = "4294967295";
+						argInfos->setVal(input);
+						val = reinterpret_cast<UInt32Arg *>(argInfos)->getVal();
+						std::cout << "\"" << input << "\" => ";
+						if (val.second) {
+							std::cout << std::boolalpha << val.first << std::endl;
+						}
+						else {
+							std::cout << "empty" << std::endl;
+						}
+					}
+					{
+						std::cout << "______ should overflow" << std::endl;
+						std::string input = "4294967296";
+						argInfos->setVal(input);
+						val = reinterpret_cast<UInt32Arg *>(argInfos)->getVal();
+						std::cout << "\"" << input << "\" => ";
+						if (val.second) {
+							std::cout << std::boolalpha << val.first << std::endl;
+						}
+						else {
+							std::cout << "empty" << std::endl;
+						}
+					}
+					// test min max
+					{
+						std::cout << "______ should work" << std::endl;
+						std::string input = "1";
+						argInfos->setVal(input);
+						argInfos->setMinUI32(1);
+						val = reinterpret_cast<UInt32Arg *>(argInfos)->getVal();
+						std::cout << "\"" << input << "\" => ";
+						if (val.second) {
+							std::cout << std::boolalpha << val.first << std::endl;
+						}
+						else {
+							std::cout << "empty" << std::endl;
+						}
+					}
+					{
+						std::cout << "______ should fail input < min 1" << std::endl;
+						std::string input = "0";
+						argInfos->setVal(input);
+						argInfos->setMinUI32(1);
+						val = reinterpret_cast<UInt32Arg *>(argInfos)->getVal();
+						std::cout << "\"" << input << "\" => ";
+						if (val.second) {
+							std::cout << std::boolalpha << val.first << std::endl;
+						}
+						else {
+							std::cout << "empty" << std::endl;
+						}
+					}
+					{
+						std::cout << "______ should work" << std::endl;
+						std::string input = "2";
+						argInfos->setVal(input);
+						argInfos->setMaxUI32(2);
+						val = reinterpret_cast<UInt32Arg *>(argInfos)->getVal();
+						std::cout << "\"" << input << "\" => ";
+						if (val.second) {
+							std::cout << std::boolalpha << val.first << std::endl;
+						}
+						else {
+							std::cout << "empty" << std::endl;
+						}
+					}
+					 {
+						std::cout << "______ should fail input > max 2" << std::endl;
+						std::string input = "3";
+						argInfos->setVal(input);
+						argInfos->setMinUI32(1);
+						val = reinterpret_cast<UInt32Arg *>(argInfos)->getVal();
+						std::cout << "\"" << input << "\" => ";
+						if (val.second) {
+							std::cout << std::boolalpha << val.first << std::endl;
+						}
+						else {
+							std::cout << "empty" << std::endl;
+						}
 					}
 				}
 				break;
 			case ArgType::UINT64:
 				 {
 					auto val = reinterpret_cast<UInt64Arg *>(argInfos)->getVal();
-					std::cout << "[UINT64]" << argInfos->getName() << " ";
+					std::cout << "[INT32]" << argInfos->getName() << " ";
 					if (val.second) {
-						std::cout << "val: " << +val.first << std::endl;
+						std::cout << "val: " << val.first << std::endl;
 					}
 					else {
 						std::cout << "empty" << std::endl;
+					}
+					{
+						std::cout << "______ should be ok" << std::endl;
+						std::string input = "42";
+						argInfos->setVal(input);
+						val = reinterpret_cast<UInt64Arg *>(argInfos)->getVal();
+						std::cout << "\"" << input << "\" => ";
+						if (val.second) {
+							std::cout << std::boolalpha << val.first << std::endl;
+						}
+						else {
+							std::cout << "empty" << std::endl;
+						}
+					}
+					{
+						std::cout << "______ should be ok" << std::endl;
+						std::string input = "0";
+						argInfos->setVal(input);
+						val = reinterpret_cast<UInt64Arg *>(argInfos)->getVal();
+						std::cout << "\"" << input << "\" => ";
+						if (val.second) {
+							std::cout << std::boolalpha << val.first << std::endl;
+						}
+						else {
+							std::cout << "empty" << std::endl;
+						}
+					}
+					{
+						std::cout << "______ should be ok" << std::endl;
+						std::string input = "   00042aaa  ";
+						argInfos->setVal(input);
+						val = reinterpret_cast<UInt64Arg *>(argInfos)->getVal();
+						std::cout << "\"" << input << "\" => ";
+						if (val.second) {
+							std::cout << std::boolalpha << val.first << std::endl;
+						}
+						else {
+							std::cout << "empty" << std::endl;
+						}
+					}
+					{
+						std::cout << "______ should fail to convert" << std::endl;
+						std::string input = "aa42";
+						argInfos->setVal(input);
+						val = reinterpret_cast<UInt64Arg *>(argInfos)->getVal();
+						std::cout << "\"" << input << "\" => ";
+						if (val.second) {
+							std::cout << std::boolalpha << val.first << std::endl;
+						}
+						else {
+							std::cout << "empty" << std::endl;
+						}
+					}
+					{
+						std::cout << "______ should fail to convert" << std::endl;
+						std::string input = "";
+						argInfos->setVal(input);
+						val = reinterpret_cast<UInt64Arg *>(argInfos)->getVal();
+						std::cout << "\"" << input << "\" => ";
+						if (val.second) {
+							std::cout << std::boolalpha << val.first << std::endl;
+						}
+						else {
+							std::cout << "empty" << std::endl;
+						}
+					}
+					{
+						std::cout << "______ should work" << std::endl;
+						std::string input = "0";
+						argInfos->setVal(input);
+						val = reinterpret_cast<UInt64Arg *>(argInfos)->getVal();
+						std::cout << "\"" << input << "\" => ";
+						if (val.second) {
+							std::cout << std::boolalpha << val.first << std::endl;
+						}
+						else {
+							std::cout << "empty" << std::endl;
+						}
+					}
+					{
+						std::cout << "______ should underflow" << std::endl;
+						std::string input = "-1";
+						argInfos->setVal(input);
+						val = reinterpret_cast<UInt64Arg *>(argInfos)->getVal();
+						std::cout << "\"" << input << "\" => ";
+						if (val.second) {
+							std::cout << std::boolalpha << val.first << std::endl;
+						}
+						else {
+							std::cout << "empty" << std::endl;
+						}
+					}
+					{
+						std::cout << "______ should work" << std::endl;
+						std::string input = "18446744073709551615";
+						argInfos->setVal(input);
+						val = reinterpret_cast<UInt64Arg *>(argInfos)->getVal();
+						std::cout << "\"" << input << "\" => ";
+						if (val.second) {
+							std::cout << std::boolalpha << val.first << std::endl;
+						}
+						else {
+							std::cout << "empty" << std::endl;
+						}
+					}
+					{
+						std::cout << "______ should overflow" << std::endl;
+						std::string input = "18446744073709551616";
+						argInfos->setVal(input);
+						val = reinterpret_cast<UInt64Arg *>(argInfos)->getVal();
+						std::cout << "\"" << input << "\" => ";
+						if (val.second) {
+							std::cout << std::boolalpha << val.first << std::endl;
+						}
+						else {
+							std::cout << "empty" << std::endl;
+						}
+					}
+					// test min max
+					{
+						std::cout << "______ should work" << std::endl;
+						std::string input = "1";
+						argInfos->setVal(input);
+						argInfos->setMinUI64(1);
+						val = reinterpret_cast<UInt64Arg *>(argInfos)->getVal();
+						std::cout << "\"" << input << "\" => ";
+						if (val.second) {
+							std::cout << std::boolalpha << val.first << std::endl;
+						}
+						else {
+							std::cout << "empty" << std::endl;
+						}
+					}
+					{
+						std::cout << "______ should fail input < min 1" << std::endl;
+						std::string input = "0";
+						argInfos->setVal(input);
+						argInfos->setMinUI64(1);
+						val = reinterpret_cast<UInt64Arg *>(argInfos)->getVal();
+						std::cout << "\"" << input << "\" => ";
+						if (val.second) {
+							std::cout << std::boolalpha << val.first << std::endl;
+						}
+						else {
+							std::cout << "empty" << std::endl;
+						}
+					}
+					{
+						std::cout << "______ should work" << std::endl;
+						std::string input = "2";
+						argInfos->setVal(input);
+						argInfos->setMaxUI64(2);
+						val = reinterpret_cast<UInt64Arg *>(argInfos)->getVal();
+						std::cout << "\"" << input << "\" => ";
+						if (val.second) {
+							std::cout << std::boolalpha << val.first << std::endl;
+						}
+						else {
+							std::cout << "empty" << std::endl;
+						}
+					}
+					 {
+						std::cout << "______ should fail input > max 2" << std::endl;
+						std::string input = "3";
+						argInfos->setVal(input);
+						argInfos->setMinUI64(1);
+						val = reinterpret_cast<UInt64Arg *>(argInfos)->getVal();
+						std::cout << "\"" << input << "\" => ";
+						if (val.second) {
+							std::cout << std::boolalpha << val.first << std::endl;
+						}
+						else {
+							std::cout << "empty" << std::endl;
+						}
 					}
 				}
 				break;
 			case ArgType::FLOAT:
 				 {
 					auto val = reinterpret_cast<FloatArg *>(argInfos)->getVal();
-					std::cout << "[FLOAT]" << argInfos->getName() << " ";
+					std::cout << "[INT32]" << argInfos->getName() << " ";
 					if (val.second) {
 						std::cout << "val: " << val.first << std::endl;
 					}
 					else {
 						std::cout << "empty" << std::endl;
+					}
+					{
+						std::cout << "______ should be ok" << std::endl;
+						std::string input = "42";
+						argInfos->setVal(input);
+						val = reinterpret_cast<FloatArg *>(argInfos)->getVal();
+						std::cout << "\"" << input << "\" => ";
+						if (val.second) {
+							std::cout << std::boolalpha << val.first << std::endl;
+						}
+						else {
+							std::cout << "empty" << std::endl;
+						}
+					}
+					{
+						std::cout << "______ should be ok" << std::endl;
+						std::string input = "0";
+						argInfos->setVal(input);
+						val = reinterpret_cast<FloatArg *>(argInfos)->getVal();
+						std::cout << "\"" << input << "\" => ";
+						if (val.second) {
+							std::cout << std::boolalpha << val.first << std::endl;
+						}
+						else {
+							std::cout << "empty" << std::endl;
+						}
+					}
+					{
+						std::cout << "______ should be ok" << std::endl;
+						std::string input = "   00042aaa  ";
+						argInfos->setVal(input);
+						val = reinterpret_cast<FloatArg *>(argInfos)->getVal();
+						std::cout << "\"" << input << "\" => ";
+						if (val.second) {
+							std::cout << std::boolalpha << val.first << std::endl;
+						}
+						else {
+							std::cout << "empty" << std::endl;
+						}
+					}
+					{
+						std::cout << "______ should fail to convert" << std::endl;
+						std::string input = "aa42";
+						argInfos->setVal(input);
+						val = reinterpret_cast<FloatArg *>(argInfos)->getVal();
+						std::cout << "\"" << input << "\" => ";
+						if (val.second) {
+							std::cout << std::boolalpha << val.first << std::endl;
+						}
+						else {
+							std::cout << "empty" << std::endl;
+						}
+					}
+					{
+						std::cout << "______ should fail to convert" << std::endl;
+						std::string input = "";
+						argInfos->setVal(input);
+						val = reinterpret_cast<FloatArg *>(argInfos)->getVal();
+						std::cout << "\"" << input << "\" => ";
+						if (val.second) {
+							std::cout << std::boolalpha << val.first << std::endl;
+						}
+						else {
+							std::cout << "empty" << std::endl;
+						}
+					}
+					{
+						std::cout << "______ should work" << std::endl;
+						std::string input = "-340282346638528859811704183484516925440.000000";
+						argInfos->setVal(input);
+						val = reinterpret_cast<FloatArg *>(argInfos)->getVal();
+						std::cout << "\"" << input << "\" => ";
+						if (val.second) {
+							std::cout << std::boolalpha << val.first << std::endl;
+						}
+						else {
+							std::cout << "empty" << std::endl;
+						}
+					}
+					{
+						std::cout << "______ should underflow" << std::endl;
+						std::string input = "-340282346638528859811704183484516925440.000001";
+						argInfos->setVal(input);
+						val = reinterpret_cast<FloatArg *>(argInfos)->getVal();
+						std::cout << "\"" << input << "\" => ";
+						if (val.second) {
+							std::cout << std::boolalpha << val.first << std::endl;
+						}
+						else {
+							std::cout << "empty" << std::endl;
+						}
+					}
+					{
+						std::cout << "______ should work" << std::endl;
+						std::string input = "340282346638528859811704183484516925440.000000";
+						argInfos->setVal(input);
+						val = reinterpret_cast<FloatArg *>(argInfos)->getVal();
+						std::cout << "\"" << input << "\" => ";
+						if (val.second) {
+							std::cout << std::boolalpha << val.first << std::endl;
+						}
+						else {
+							std::cout << "empty" << std::endl;
+						}
+					}
+					{
+						std::cout << "______ should overflow" << std::endl;
+						std::string input = "340282346638528859811704183484516925440.000001";
+						argInfos->setVal(input);
+						val = reinterpret_cast<FloatArg *>(argInfos)->getVal();
+						std::cout << "\"" << input << "\" => ";
+						if (val.second) {
+							std::cout << std::boolalpha << val.first << std::endl;
+						}
+						else {
+							std::cout << "empty" << std::endl;
+						}
+					}
+					// test min max
+					{
+						std::cout << "______ should work" << std::endl;
+						std::string input = "1";
+						argInfos->setVal(input);
+						argInfos->setMinF(1);
+						val = reinterpret_cast<FloatArg *>(argInfos)->getVal();
+						std::cout << "\"" << input << "\" => ";
+						if (val.second) {
+							std::cout << std::boolalpha << val.first << std::endl;
+						}
+						else {
+							std::cout << "empty" << std::endl;
+						}
+					}
+					{
+						std::cout << "______ should fail input < min 1" << std::endl;
+						std::string input = "0";
+						argInfos->setVal(input);
+						argInfos->setMinF(1);
+						val = reinterpret_cast<FloatArg *>(argInfos)->getVal();
+						std::cout << "\"" << input << "\" => ";
+						if (val.second) {
+							std::cout << std::boolalpha << val.first << std::endl;
+						}
+						else {
+							std::cout << "empty" << std::endl;
+						}
+					}
+					{
+						std::cout << "______ should work" << std::endl;
+						std::string input = "2";
+						argInfos->setVal(input);
+						argInfos->setMaxF(2);
+						val = reinterpret_cast<FloatArg *>(argInfos)->getVal();
+						std::cout << "\"" << input << "\" => ";
+						if (val.second) {
+							std::cout << std::boolalpha << val.first << std::endl;
+						}
+						else {
+							std::cout << "empty" << std::endl;
+						}
+					}
+					 {
+						std::cout << "______ should fail input > max 2" << std::endl;
+						std::string input = "3";
+						argInfos->setVal(input);
+						argInfos->setMinF(1);
+						val = reinterpret_cast<FloatArg *>(argInfos)->getVal();
+						std::cout << "\"" << input << "\" => ";
+						if (val.second) {
+							std::cout << std::boolalpha << val.first << std::endl;
+						}
+						else {
+							std::cout << "empty" << std::endl;
+						}
 					}
 				}
 				break;

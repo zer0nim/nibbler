@@ -20,7 +20,12 @@ int main(int ac, char * const *av) {
 
 	// argsParser.addArgument("testBool", ArgType::STRING);
 	// argsParser.addArgument("testString", ArgType::BOOL);
-	argsParser.addArgument("testInt32", ArgType::INT32);
+	// argsParser.addArgument("testInt32", ArgType::INT32);
+
+	// argsParser.addArgument("testInt64", ArgType::INT64);
+	argsParser.addArgument("testUint32", ArgType::UINT32);
+	// argsParser.addArgument("testUint64", ArgType::UINT64);
+	// argsParser.addArgument("testFloat", ArgType::FLOAT);
 
 	// // width
 	// argsParser.addArgument("width", ArgType::UINT32)
