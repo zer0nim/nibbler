@@ -78,102 +78,102 @@ AInfoArg	&AInfoArg::setHelp(std::string help) {
 
 AInfoArg	&AInfoArg::setDefaultS(std::string defaultV) {
 	(void)defaultV;
-	logErr("[" << ArgType::enumNames[_type] << "] unknow setDefaultS function");
+	logErr("argument of type " << ArgType::enumNames[_type] << " can't use \"setDefaultS\"");
 	return *this;
 }
 AInfoArg	&AInfoArg::setDefaultB(bool defaultV) {
 	(void)defaultV;
-	logErr("[" << ArgType::enumNames[_type] << "] unknow setDefaultB function");
+	logErr("argument of type " << ArgType::enumNames[_type] << " can't use \"setDefaultB\"");
 	return *this;
 }
 AInfoArg	&AInfoArg::setDefaultI32(int32_t defaultV) {
 	(void)defaultV;
-	logErr("[" << ArgType::enumNames[_type] << "] unknow setDefaultI32 function");
+	logErr("argument of type " << ArgType::enumNames[_type] << " can't use \"setDefaultI32\"");
 	return *this;
 }
 AInfoArg	&AInfoArg::setDefaultI64(int64_t defaultV) {
 	(void)defaultV;
-	logErr("[" << ArgType::enumNames[_type] << "] unknow setDefaultI64 function");
+	logErr("argument of type " << ArgType::enumNames[_type] << " can't use \"setDefaultI64\"");
 	return *this;
 }
 AInfoArg	&AInfoArg::setDefaultUI32(uint32_t defaultV) {
 	(void)defaultV;
-	logErr("[" << ArgType::enumNames[_type] << "] unknow setDefaultUI32 function");
+	logErr("argument of type " << ArgType::enumNames[_type] << " can't use \"setDefaultUI32\"");
 	return *this;
 }
 AInfoArg	&AInfoArg::setDefaultUI64(uint64_t defaultV) {
 	(void)defaultV;
-	logErr("[" << ArgType::enumNames[_type] << "] unknow setDefaultUI64 function");
+	logErr("argument of type " << ArgType::enumNames[_type] << " can't use \"setDefaultUI64\"");
 	return *this;
 }
 AInfoArg	&AInfoArg::setDefaultF(float defaultV) {
 	(void)defaultV;
-	logErr("[" << ArgType::enumNames[_type] << "] unknow setDefaultF function");
+	logErr("argument of type " << ArgType::enumNames[_type] << " can't use \"setDefaultF\"");
 	return *this;
 }
 AInfoArg	&AInfoArg::setMinI32(int32_t min) {
 	(void)min;
-	logErr("[" << ArgType::enumNames[_type] << "] unknow setMinI32 function");
+	logErr("argument of type " << ArgType::enumNames[_type] << " can't use \"setMinI32\"");
 	return *this;
 }
 AInfoArg	&AInfoArg::setMaxI32(int32_t max) {
 	(void)max;
-	logErr("[" << ArgType::enumNames[_type] << "] unknow setMaxI32 function");
+	logErr("argument of type " << ArgType::enumNames[_type] << " can't use \"setMaxI32\"");
 	return *this;
 }
 AInfoArg	&AInfoArg::setMinI64(int64_t min) {
 	(void)min;
-	logErr("[" << ArgType::enumNames[_type] << "] unknow setMinI64 function");
+	logErr("argument of type " << ArgType::enumNames[_type] << " can't use \"setMinI64\"");
 	return *this;
 }
 AInfoArg	&AInfoArg::setMaxI64(int64_t max) {
 	(void)max;
-	logErr("[" << ArgType::enumNames[_type] << "] unknow setMaxI64 function");
+	logErr("argument of type " << ArgType::enumNames[_type] << " can't use \"setMaxI64\"");
 	return *this;
 }
 AInfoArg	&AInfoArg::setMinUI32(uint32_t min) {
 	(void)min;
-	logErr("[" << ArgType::enumNames[_type] << "] unknow setMinUI32 function");
+	logErr("argument of type " << ArgType::enumNames[_type] << " can't use \"setMinUI32\"");
 	return *this;
 }
 AInfoArg	&AInfoArg::setMaxUI32(uint32_t max) {
 	(void)max;
-	logErr("[" << ArgType::enumNames[_type] << "] unknow setMaxUI32 function");
+	logErr("argument of type " << ArgType::enumNames[_type] << " can't use \"setMaxUI32\"");
 	return *this;
 }
 AInfoArg	&AInfoArg::setMinUI64(uint64_t min) {
 	(void)min;
-	logErr("[" << ArgType::enumNames[_type] << "] unknow setMinUI64 function");
+	logErr("argument of type " << ArgType::enumNames[_type] << " can't use \"setMinUI64\"");
 	return *this;
 }
 AInfoArg	&AInfoArg::setMaxUI64(uint64_t max) {
 	(void)max;
-	logErr("[" << ArgType::enumNames[_type] << "] unknow setMaxUI64 function");
+	logErr("argument of type " << ArgType::enumNames[_type] << " can't use \"setMaxUI64\"");
 	return *this;
 }
 AInfoArg	&AInfoArg::setMinF(float min) {
 	(void)min;
-	logErr("[" << ArgType::enumNames[_type] << "] unknow setMinF function");
+	logErr("argument of type " << ArgType::enumNames[_type] << " can't use \"setMinF\"");
 	return *this;
 }
 AInfoArg	&AInfoArg::setMaxF(float max) {
 	(void)max;
-	logErr("[" << ArgType::enumNames[_type] << "] unknow setMaxF function");
+	logErr("argument of type " << ArgType::enumNames[_type] << " can't use \"setMaxF\"");
 	return *this;
 }
 AInfoArg	&AInfoArg::setMinLength(uint32_t min) {
 	(void)min;
-	logErr("[" << ArgType::enumNames[_type] << "] unknow setMinLength function");
+	logErr("argument of type " << ArgType::enumNames[_type] << " can't use \"setMinLength\"");
 	return *this;
 }
 AInfoArg	&AInfoArg::setMaxLength(uint32_t max) {
 	(void)max;
-	logErr("[" << ArgType::enumNames[_type] << "] unknow setMaxLength function");
+	logErr("argument of type " << ArgType::enumNames[_type] << " can't use \"setMaxLength\"");
 	return *this;
 }
 AInfoArg	&AInfoArg::setStoreTrue(bool storeTrue) {
 	(void)storeTrue;
-	logErr("[" << ArgType::enumNames[_type] << "] unknow setStoreTrue function");
+	logErr("argument of type " << ArgType::enumNames[_type] << " can't use \"setStoreTrue\"");
 	return *this;
 }
 
@@ -193,7 +193,8 @@ std::ostream & operator << (std::ostream &out, AInfoArg const &aInfo) {
 StringArg::StringArg(ArgsParser *argsParser, std::string name)
 : AInfoArg(argsParser, name, ArgType::STRING),
   _min(0),
-  _max(std::numeric_limits<uint32_t>::max()) {
+  _max(std::numeric_limits<uint32_t>::max()),
+  _defaultV({"", false}) {
 }
 
 StringArg::~StringArg() {
@@ -218,8 +219,8 @@ void StringArg::print(std::ostream &out) const {
 	AInfoArg::print(out);
 
 	// print defaut string value
-	if (!_defaultV.empty()) {
-		out << " " COLOR_L_VAL "default" COLOR_WHITE "=" COLOR_R_VAL "\"" << _defaultV << "\"" COLOR_WHITE;
+	if (_defaultV.second) {
+		out << " " COLOR_L_VAL "default" COLOR_WHITE "=" COLOR_R_VAL "\"" << _defaultV.first << "\"" COLOR_WHITE;
 	}
 
 	// print string min/max
@@ -234,39 +235,62 @@ void StringArg::print(std::ostream &out) const {
 }
 
 AInfoArg	&StringArg::setDefaultS(std::string defaultV) {
-	if (defaultV.size() < _min) {
-		logWarn("your default string length is lesser than the minimal length");
+	if (defaultV.empty()) {
+		logErr("argument \"" << _name << "\": setDefaultS(): default val can't be empty");
+	}
+	else if (defaultV.size() < _min) {
+		logErr("argument \"" << _name << "\": setDefaultS(): default val length(" << defaultV.size() << ") < min:" << _min);
 	}
 	else if (defaultV.size() > _max) {
-		logWarn("your default string length is bigger than the maximal length");
+		logErr("argument \"" << _name << "\": setDefaultS(): default val length(" << defaultV.size() << ") > max:" << _max);
 	}
-	this->_defaultV = defaultV;
-	_value = {defaultV, true};  // update _value accordingly
+	else {
+		this->_defaultV = {defaultV, true};
+		_value = {defaultV, true};  // update _value accordingly
+	}
 	return *this;
 }
 AInfoArg	&StringArg::setMinLength(uint32_t min) {
-	if (min > _defaultV.size()) {
-		logWarn("your minimal length is bigger than the default string length");
+	if (_defaultV.second && min > _defaultV.first.size()) {
+		logErr("argument \"" << _name << "\": setMinLength(): min length(" << min << \
+			") > default val length(" << _defaultV.first.size() << ")");
+	} else {
+		this->_min = min;
 	}
-	this->_min = min;
 	return *this;
 }
 AInfoArg	&StringArg::setMaxLength(uint32_t max) {
-	if (max < _defaultV.size()) {
-		logWarn("your maximal length is lesser than the default string length");
+	if (_defaultV.second && max < _defaultV.first.size()) {
+		logErr("argument \"" << _name << "\": setMaxLength(): max length(" << max << \
+			") < default val length(" << _defaultV.first.size() << ")");
 	}
-	this->_max = max;
+	else {
+		this->_max = max;
+	}
 	return *this;
 }
 
 uint32_t		StringArg::getMin() const { return _min; }
 uint32_t		StringArg::getMax() const { return _max; }
-std::string		StringArg::getDefaultV() const { return _defaultV; }
+std::pair<std::string, bool>	StringArg::getDefaultV() const { return _defaultV; }
 std::pair<std::string, bool>	StringArg::getVal() const { return _value; }
 
 // test the input string and save it
 void			StringArg::setVal(std::string input) {
-	_value = {input, true};
+	if (input.empty()) {
+		logErr("parseArgs(): argument \"" << _name << "\": input can't be empty");
+	}
+	else if (input.size() < _min) {
+		logErr("parseArgs(): argument \"" << _name << "\": input length(" << input.size() << \
+			") < min length(" << _min << ")");
+	}
+	else if (input.size() > _max) {
+		logErr("parseArgs(): argument \"" << _name << "\": input length(" << input.size() << \
+			") > max length(" << _max << ")");
+	}
+	else {
+		_value = {input, true};
+	}
 }
 // -- BoolArg ------------------------------------------------------------------
 BoolArg::BoolArg(ArgsParser *argsParser, std::string name)
@@ -340,7 +364,7 @@ void	BoolArg::setVal(std::string input) {
 		_value = {false, true};
 	}
 	else {
-		logErr("Failed to cast input \"" << input << "\" to bool");
+		logErr("failed to cast input \"" << input << "\" to bool");
 	}
 }
 // -- Int32Arg -------------------------------------------------------------------
@@ -391,27 +415,33 @@ void Int32Arg::print(std::ostream &out) const {
 
 AInfoArg	&Int32Arg::setDefaultI32(int32_t defaultV) {
 	if (defaultV < _min) {
-		logWarn("you have set a default value lesser than the minimal value");
+		logErr("argument \"" << _name << "\": setDefaultI32(): default:" << defaultV << " < min:" << _min);
 	}
 	else if (defaultV > _max) {
-		logWarn("you have set a default value bigger than the maximal value");
+		logErr("argument \"" << _name << "\": setDefaultI32(): default:" << defaultV << " > max:" << _max);
 	}
-	this->_defaultV = {defaultV, true};
-	_value = {defaultV, true};  // update _value accordingly
+	else {
+		this->_defaultV = {defaultV, true};
+		_value = {defaultV, true};  // update _value accordingly
+	}
 	return *this;
 };
 AInfoArg	&Int32Arg::setMinI32(int32_t min) {
 	if (_defaultV.second && _defaultV.first < min) {
-		logWarn("you have set a minimal value bigger than the default value");
+		logErr("argument \"" << _name << "\": setMinI32(): min:" << min << " > default:" << _defaultV.first);
 	}
-	this->_min = min;
+	else {
+		this->_min = min;
+	}
 	return *this;
 };
 AInfoArg	&Int32Arg::setMaxI32(int32_t max) {
 	if (_defaultV.second && _defaultV.first > max) {
-		logWarn("you have set a maximal value lesser than the default value");
+		logErr("argument \"" << _name << "\": setMaxI32(): max:" << max << " < default:" << _defaultV.first);
 	}
-	this->_max = max;
+	else {
+		this->_max = max;
+	}
 	return *this;
 };
 
@@ -422,8 +452,26 @@ std::pair<int32_t, bool>	Int32Arg::getVal() const { return _value; }
 
 // convert the input string to int32_t
 void	Int32Arg::setVal(std::string input) {
-	(void)input;
-	_value = {42, true};
+	int64_t val = 0;
+	try {
+		val = std::stoi(input);
+
+		if (val < _min) {
+			logErr("parseArgs(): argument \"" << _name << "\": out of range, val:" << val << " < min:" << _min);
+		}
+		else if (val > _max) {
+			logErr("parseArgs(): argument \"" << _name << "\": out of range, val:" << val << " > max:" << _max);
+		}
+		else {
+			_value = {val, true};
+		}
+	}
+	catch (const std::out_of_range &e) {
+		logErr("parseArgs(): argument \"" << _name << "\": out of range input \"" << input << "\"");
+	}
+	catch (const std::invalid_argument &e) {
+		logErr("parseArgs(): argument \"" << _name << "\": failed to convert input \"" << input << "\"");
+	}
 }
 // -- Int64Arg -------------------------------------------------------------------
 Int64Arg::Int64Arg(ArgsParser *argsParser, std::string name)
@@ -473,27 +521,33 @@ void Int64Arg::print(std::ostream &out) const {
 
 AInfoArg	&Int64Arg::setDefaultI64(int64_t defaultV) {
 	if (defaultV < _min) {
-		logWarn("you have set a default value lesser than the minimal value");
+		logErr("argument \"" << _name << "\": setDefaultI64(): default:" << defaultV << " < min:" << _min);
 	}
 	else if (defaultV > _max) {
-		logWarn("you have set a default value bigger than the maximal value");
+		logErr("argument \"" << _name << "\": setDefaultI64(): default:" << defaultV << " > max:" << _max);
 	}
-	this->_defaultV = {defaultV, true};
-	_value = {defaultV, true};  // update _value accordingly
+	else {
+		this->_defaultV = {defaultV, true};
+		_value = {defaultV, true};  // update _value accordingly
+	}
 	return *this;
 };
 AInfoArg	&Int64Arg::setMinI64(int64_t min) {
 	if (_defaultV.second && _defaultV.first < min) {
-		logWarn("you have set a minimal value bigger than the default value");
+		logErr("argument \"" << _name << "\": setMinI64(): min:" << min << " > default:" << _defaultV.first);
 	}
-	this->_min = min;
+	else {
+		this->_min = min;
+	}
 	return *this;
 };
 AInfoArg	&Int64Arg::setMaxI64(int64_t max) {
 	if (_defaultV.second && _defaultV.first > max) {
-		logWarn("you have set a maximal value lesser than the default value");
+		logErr("argument \"" << _name << "\": setMaxI64(): max:" << max << " < default:" << _defaultV.first);
 	}
-	this->_max = max;
+	else {
+		this->_max = max;
+	}
 	return *this;
 };
 
@@ -556,27 +610,33 @@ void UInt32Arg::print(std::ostream &out) const {
 
 AInfoArg	&UInt32Arg::setDefaultUI32(uint32_t defaultV) {
 	if (defaultV < _min) {
-		logWarn("you have set a default value lesser than the minimal value");
+		logErr("argument \"" << _name << "\": setDefaultUI32(): default:" << defaultV << " < min:" << _min);
 	}
 	else if (defaultV > _max) {
-		logWarn("you have set a default value bigger than the maximal value");
+		logErr("argument \"" << _name << "\": setDefaultUI32(): default:" << defaultV << " > max:" << _max);
 	}
-	this->_defaultV = {defaultV, true};
-	_value = {defaultV, true};  // update _value accordingly
+	else {
+		this->_defaultV = {defaultV, true};
+		_value = {defaultV, true};  // update _value accordingly
+	}
 	return *this;
 };
 AInfoArg	&UInt32Arg::setMinUI32(uint32_t min) {
 	if (_defaultV.second && _defaultV.first < min) {
-		logWarn("you have set a minimal value bigger than the default value");
+		logErr("argument \"" << _name << "\": setMinUI32(): min:" << min << " > default:" << _defaultV.first);
 	}
-	this->_min = min;
+	else {
+		this->_min = min;
+	}
 	return *this;
 };
 AInfoArg	&UInt32Arg::setMaxUI32(uint32_t max) {
 	if (_defaultV.second && _defaultV.first > max) {
-		logWarn("you have set a maximal value lesser than the default value");
+		logErr("argument \"" << _name << "\": setMaxUI32(): max:" << max << " < default:" << _defaultV.first);
 	}
-	this->_max = max;
+	else {
+		this->_max = max;
+	}
 	return *this;
 };
 
@@ -638,27 +698,33 @@ void UInt64Arg::print(std::ostream &out) const {
 
 AInfoArg	&UInt64Arg::setDefaultUI64(uint64_t defaultV) {
 	if (defaultV < _min) {
-		logWarn("you have set a default value lesser than the minimal value");
+		logErr("argument \"" << _name << "\": setDefaultUI64(): default:" << defaultV << " < min:" << _min);
 	}
 	else if (defaultV > _max) {
-		logWarn("you have set a default value bigger than the maximal value");
+		logErr("argument \"" << _name << "\": setDefaultUI64(): default:" << defaultV << " > max:" << _max);
 	}
-	this->_defaultV = {defaultV, true};
-	_value = {defaultV, true};  // update _value accordingly
+	else {
+		this->_defaultV = {defaultV, true};
+		_value = {defaultV, true};  // update _value accordingly
+	}
 	return *this;
 };
 AInfoArg	&UInt64Arg::setMinUI64(uint64_t min) {
 	if (_defaultV.second && _defaultV.first < min) {
-		logWarn("you have set a minimal value bigger than the default value");
+		logErr("argument \"" << _name << "\": setMinUI64(): min:" << min << " > default:" << _defaultV.first);
 	}
-	this->_min = min;
+	else {
+		this->_min = min;
+	}
 	return *this;
 };
 AInfoArg	&UInt64Arg::setMaxUI64(uint64_t max) {
 	if (_defaultV.second && _defaultV.first > max) {
-		logWarn("you have set a maximal value lesser than the default value");
+		logErr("argument \"" << _name << "\": setMaxUI64(): max:" << max << " < default:" << _defaultV.first);
 	}
-	this->_max = max;
+	else {
+		this->_max = max;
+	}
 	return *this;
 };
 
@@ -724,16 +790,34 @@ void FloatArg::print(std::ostream &out) const {
 }
 
 AInfoArg	&FloatArg::setDefaultF(float defaultV) {
-	this->_defaultV = {defaultV, true};
-	_value = {defaultV, true};  // update _value accordingly
+	if (defaultV < _min) {
+		logErr("argument \"" << _name << "\": setDefaultF(): default:" << defaultV << " < min:" << _min);
+	}
+	else if (defaultV > _max) {
+		logErr("argument \"" << _name << "\": setDefaultF(): default:" << defaultV << " > max:" << _max);
+	}
+	else {
+		this->_defaultV = {defaultV, true};
+		_value = {defaultV, true};  // update _value accordingly
+	}
 	return *this;
 };
 AInfoArg	&FloatArg::setMinF(float min) {
-	this->_min = min;
+	if (_defaultV.second && _defaultV.first < min) {
+		logErr("argument \"" << _name << "\": setMinF(): min:" << min << " > default:" << _defaultV.first);
+	}
+	else {
+		this->_min = min;
+	}
 	return *this;
 };
 AInfoArg	&FloatArg::setMaxF(float max) {
-	this->_max = max;
+	if (_defaultV.second && _defaultV.first > max) {
+		logErr("argument \"" << _name << "\": setMaxF(): max:" << max << " < default:" << _defaultV.first);
+	}
+	else {
+		this->_max = max;
+	}
 	return *this;
 };
 

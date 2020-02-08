@@ -120,7 +120,7 @@ class StringArg : public AInfoArg {
 
 		uint32_t		getMin() const;  // min string lenght
 		uint32_t		getMax() const;  // max string lenght
-		std::string		getDefaultV() const;
+		std::pair<std::string, bool>	getDefaultV() const;
 		std::pair<std::string, bool>	getVal() const;
 
 		virtual	void	setVal(std::string input);
@@ -130,7 +130,7 @@ class StringArg : public AInfoArg {
 
 		uint32_t		_min;  // min string lenght
 		uint32_t		_max;  // max string lenght
-		std::string		_defaultV;
+		std::pair<std::string, bool>	_defaultV;
 		std::pair<std::string, bool>	_value;
 };
 

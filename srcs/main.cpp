@@ -18,7 +18,9 @@ int main(int ac, char * const *av) {
 	argsParser.setProgDescr("The purpose of this project is to create our version of the game Snake,\n"\
 	"with at least 3 different GUIs. These GUIs being shared libraries.");
 
-	argsParser.addArgument("testBool", ArgType::BOOL);
+	// argsParser.addArgument("testBool", ArgType::STRING);
+	// argsParser.addArgument("testString", ArgType::BOOL);
+	argsParser.addArgument("testInt32", ArgType::INT32);
 
 	// // width
 	// argsParser.addArgument("width", ArgType::UINT32)
