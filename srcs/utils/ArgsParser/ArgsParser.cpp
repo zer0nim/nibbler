@@ -231,7 +231,8 @@ AInfoArg	&ArgsParser::addArgument(std::string name, ArgType::Enum type) {
 	return (*_argsInfos.back());  // return the new element
 }
 
-void	ArgsParser::init() {
+// generate getopt_long parameters
+void	ArgsParser::initGetopt() {
 	_opts = 'u';
 	_longOpts = {{ "usage", no_argument, NULL, 'u' }};
 
@@ -259,19 +260,13 @@ void	ArgsParser::init() {
 	_longOpts.push_back({NULL, 0, NULL, 0});
 }
 
-// The variable optind is the index of the next element to be processed in argv.
-// The system initializes this value to 1. The caller can reset it to 1 to restart scanning of the same argv,
-// or when scanning a new argument vector.
-
-// If the first character of optstring is '+' or the environment variable POSIXLY_CORRECT is set,
-// then option processing stops as soon as a nonoption argument is encountered
-
 void	ArgsParser::parseArgs() {
 	int	opt;
 	int	longIndex = 0;
 
-	init();  // init getopt_long args
+	initGetopt();  // generate getopt_long parameters
 
+	// manage optionals args
 	while ((opt = getopt_long(_ac, _av, _opts.c_str(), _longOpts.data(), &longIndex)) != -1) {
 		// show usage and stop
 		if (opt == '?' || opt == 'u' || opt == ':') {
@@ -280,16 +275,26 @@ void	ArgsParser::parseArgs() {
 		}
 		// manage long optional arg
 		else if (opt == 0) {
-			std::cout << "\n_____ opt --" << _longOpts[longIndex].name << std::endl;
-			if (optarg) {  // if the option have argument
-				std::cout << "arg: \"" << optarg << "\"" << std::endl;
+			// with argument
+			if (optarg) {
+				_argsInfos[_lOptArgsId[_longOpts[longIndex].name]]->setVal(optarg);
+			}
+			// without argument
+			else {
+				// the only case where there is no argument is a bool with setStoreTrue,
+				_argsInfos[_lOptArgsId[_longOpts[longIndex].name]]->setVal("true");
 			}
 		}
 		// manage short optional arg
 		else {
-			std::cout << "\n_____ opt -" << static_cast<char>(opt) << std::endl;
+			// with argument
 			if (optarg) {  // if the option have argument
-				std::cout << "arg: \"" << optarg << "\"" << std::endl;
+				_argsInfos[_sOptArgsId[static_cast<char>(opt)]]->setVal(optarg);
+			}
+			// without argument
+			else {
+				// the only case where there is no argument is a bool with setStoreTrue,
+				_argsInfos[_sOptArgsId[static_cast<char>(opt)]]->setVal("true");
 			}
 		}
 	}
@@ -303,4 +308,3 @@ ArgsParser::ArgsParserException::ArgsParserException()
 
 ArgsParser::ArgsParserException::ArgsParserException(const char* what_arg)
 : std::runtime_error(std::string(std::string("[ArgsParserError] ") + what_arg).c_str()) {}
-

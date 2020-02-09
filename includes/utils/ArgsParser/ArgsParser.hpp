@@ -42,7 +42,7 @@ class ArgsParser {
 		std::unordered_map<char, uint32_t>			_sOptArgsId;
 		std::unordered_map<std::string, uint32_t>	_lOptArgsId;
 
-		void	init();
+		void	initGetopt();
 		ArgsParser();
 };
 
