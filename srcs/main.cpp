@@ -68,7 +68,15 @@ int main(int ac, char * const *av) {
 	// argsParser.addArgument("testUint64", ArgType::UINT64);
 	// argsParser.addArgument("testFloat", ArgType::FLOAT);
 
-	argsParser.parseArgs();
+	try {
+		argsParser.parseArgs();
+	}
+	catch(ArgsParser::ArgsParserUsage const &e) {
+		return EXIT_SUCCESS;
+	}
+	catch(ArgsParser::ArgsParserException const &e) {
+		return EXIT_FAILURE;
+	}
 
 	// run the game ------------------------------------------------------------
 	// // load the defaut gui

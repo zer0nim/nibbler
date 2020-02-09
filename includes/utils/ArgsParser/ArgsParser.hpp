@@ -29,6 +29,10 @@ class ArgsParser {
 				ArgsParserException();
 				explicit ArgsParserException(const char* what_arg);
 		};
+		class ArgsParserUsage : public std::runtime_error {
+			public:
+				ArgsParserUsage();
+		};
 
 	private:
 		int							_ac;

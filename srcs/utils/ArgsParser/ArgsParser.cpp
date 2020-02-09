@@ -188,8 +188,8 @@ AInfoArg	&ArgsParser::addArgument(std::string name, ArgType::Enum type) {
 
 	// refuse empty name
 	if (name.empty()) {
-		logErr("addArgument don't accept empty name !");
-		throw ArgsParserException();
+		logErr("addArgument don't accept empty name");
+		throw ArgsParserException("addArgument don't accept empty name");
 	}
 
 	// create new argument
@@ -271,6 +271,12 @@ void	ArgsParser::parseArgs() {
 		// show usage and stop
 		if (opt == '?' || opt == 'u' || opt == ':') {
 			usage();
+			if (opt == 'u') {
+				throw ArgsParserUsage();
+			}
+			else {
+				throw ArgsParserException("invalid option");
+			}
 			break;
 		}
 		// manage long optional arg
@@ -298,6 +304,42 @@ void	ArgsParser::parseArgs() {
 			}
 		}
 	}
+
+	// manage positional args
+	if (optind < _ac) {
+		auto it = _argsInfos.begin();
+		bool unused = false;
+
+		// loop through remaining _av args
+		while (optind < _ac) {
+			unused = false;
+
+			// search the next positional arg
+			for (; it != _argsInfos.end(); ++it) {
+				if ((*it)->getRequired()) {
+					(*it)->setVal(_av[optind]);
+					unused = true;
+					++it;
+					break;
+				}
+			}
+
+			// too many arguments
+			if (!unused) {
+				logWarn("argument: \"" << _av[optind] << "\" unused, too many arguments");
+			}
+
+			++optind;
+		}
+		// skip remaining optional argument
+		while (it != _argsInfos.end() && !(*it)->getRequired()) { ++it; }
+
+		// user forgot to set some positional arguments
+		if (it != _argsInfos.end()) {
+			usage();
+			throw ArgsParserException("user forgot to set some positional arguments");
+		}
+	}
 }
 
 void	ArgsParser::setProgDescr(std::string const &progDescr) { _progDescr = progDescr; }
@@ -308,3 +350,6 @@ ArgsParser::ArgsParserException::ArgsParserException()
 
 ArgsParser::ArgsParserException::ArgsParserException(const char* what_arg)
 : std::runtime_error(std::string(std::string("[ArgsParserError] ") + what_arg).c_str()) {}
+
+ArgsParser::ArgsParserUsage::ArgsParserUsage()
+: std::runtime_error("[ArgsParserUsage]") {}
