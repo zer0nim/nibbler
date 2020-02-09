@@ -344,12 +344,26 @@ bool	BoolArg::getDefaultV() const { return _defaultV; }
 bool	BoolArg::getStoreTrue() const { return _storeTrue; }
 std::pair<bool, bool>	BoolArg::getVal() const { return _value; }
 
+// trim whitespace from begin/en of a string
+std::string	trimS(std::string const &str) {
+	std::string	whitespace = " \t\v\r\n";
+
+	std::size_t start = str.find_first_not_of(whitespace);
+	// if no characters are found
+	if (start == std::string::npos) {
+	    return std::string();
+	}
+	std::size_t end = str.find_last_not_of(whitespace);
+
+	return str.substr(start, end - start + 1);
+}
+
 // convert the input string to bool
 void	BoolArg::setVal(std::string input) {
-	std::string lowInput = input;
 	std::array<std::string, 3> trueStr = {"true", "t", "1"};
 	std::array<std::string, 3> falseStr = {"false", "f", "0"};
 
+	std::string lowInput = trimS(input);
 	// transform the string to lowercase
 	std::transform(lowInput.begin(), lowInput.end(), lowInput.begin(), ::tolower);
 
@@ -667,7 +681,12 @@ std::pair<uint32_t, bool>	UInt32Arg::getVal() const { return _value; }
 void		UInt32Arg::setVal(std::string input) {
 	uint32_t	val = 0;
 	try {
-		val = std::stoul(input);
+		// cast input to int64_t because std::stoull don't detect out of range
+		int64_t	i64Val = std::stoll(input);
+		if (i64Val < 0 || i64Val > std::numeric_limits<uint32_t>::max()) {
+			throw std::out_of_range("out of range input");
+		}
+		val = static_cast<uint32_t>(i64Val);
 
 		if (val < _min) {
 			logErr("parseArgs(): argument \"" << _name << "\": out of range, val:" << val << " < min:" << _min);
@@ -773,7 +792,12 @@ std::pair<uint64_t, bool>	UInt64Arg::getVal() const { return _value; }
 void		UInt64Arg::setVal(std::string input) {
 	uint64_t	val = 0;
 	try {
-		val = std::stoull(input);
+		// first cast input to double to detect out of range
+		double	dVal = std::stod(input);
+		if (dVal < 0 || dVal > std::numeric_limits<uint64_t>::max()) {
+			throw std::out_of_range("out of range input");
+		}
+		val = std::stoull(input);  // reconvert again for precision
 
 		if (val < _min) {
 			logErr("parseArgs(): argument \"" << _name << "\": out of range, val:" << val << " < min:" << _min);

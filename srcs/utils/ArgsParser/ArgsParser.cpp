@@ -232,7 +232,9 @@ void	ArgsParser::parseArgs() {
 	usage();
 
 	for (auto &&argInfos : _argsInfos) {
-		std::cout << "\n======================================================" << std::endl;
+		std::cout << "\n\n======================================================" << std::endl;
+		std::cout << " Test arg type [ " << ArgType::enumNames[argInfos->getType()] << " ]" << std::endl;
+		std::cout << "======================================================" << std::endl;
 
 		switch (argInfos->getType()) {
 			case ArgType::BOOL:
@@ -246,16 +248,38 @@ void	ArgsParser::parseArgs() {
 						std::cout << "empty" << std::endl;
 					}
 
-					std::vector<std::string> testStrs = {
-						"true", "t", "1", "True", "tTrue",
-						"11", "false", "f", "0", "00", "fALse", "FFalse",
-						" 0", "0 "
+					std::vector<std::string> okStrs = {
+						"true", "True", "tRuE", " 	trUe  	",
+						"t", "T", " 	t 	", "1", " 1   	",
+						"false", "fALse", "  	 fAlse",
+						"f", "  F 	", "0", "  0 	"
 					};
-					for (std::string const &testStr : testStrs) {
+					std::vector<std::string> badStrs = {
+						"truee", "11", "1 1", "tr ue", "falsee", "00", "0 0", "fa lse"
+					};
+
+					std::cout << "______ should be ok" << std::endl;
+					std::cout << "________________________" << std::endl;
+					for (std::string const &okStr : okStrs) {
 						std::cout << "___" << std::endl;
-						argInfos->setVal(testStr);
+						argInfos->setVal(okStr);
 						val = reinterpret_cast<BoolArg *>(argInfos)->getVal();
-						std::cout << "\"" << testStr << "\" => ";
+						std::cout << "\"" << okStr << "\" => ";
+						if (val.second) {
+							std::cout << std::boolalpha << val.first << std::endl;
+						}
+						else {
+							std::cout << "empty" << std::endl;
+						}
+					}
+
+					std::cout << "\n___________ should fail" << std::endl;
+					std::cout << "________________________" << std::endl;
+					for (std::string const &badStr : badStrs) {
+						std::cout << "___" << std::endl;
+						argInfos->setVal(badStr);
+						val = reinterpret_cast<BoolArg *>(argInfos)->getVal();
+						std::cout << "\"" << badStr << "\" => ";
 						if (val.second) {
 							std::cout << std::boolalpha << val.first << std::endl;
 						}
@@ -382,6 +406,21 @@ void	ArgsParser::parseArgs() {
 					{
 						std::cout << "______ should overflow" << std::endl;
 						std::string input = "2147483648";
+						argInfos->setVal(input);
+						val = reinterpret_cast<Int32Arg *>(argInfos)->getVal();
+						std::cout << "\"" << input << "\" => ";
+						if (val.second) {
+							std::cout << std::boolalpha << val.first << std::endl;
+						}
+						else {
+							std::cout << "empty" << std::endl;
+						}
+					}
+					{
+						std::cout << "______ should overflow" << std::endl;
+						std::string input = "999999999999999999999999999999999999999999999999"
+							"999999999999999999999999999999999999999999999999"
+							"999999999999999999999999999999999999999999999999";
 						argInfos->setVal(input);
 						val = reinterpret_cast<Int32Arg *>(argInfos)->getVal();
 						std::cout << "\"" << input << "\" => ";
@@ -578,6 +617,21 @@ void	ArgsParser::parseArgs() {
 							std::cout << "empty" << std::endl;
 						}
 					}
+					{
+						std::cout << "______ should overflow" << std::endl;
+						std::string input = "999999999999999999999999999999999999999999999999"
+							"999999999999999999999999999999999999999999999999"
+							"999999999999999999999999999999999999999999999999";
+						argInfos->setVal(input);
+						val = reinterpret_cast<Int64Arg *>(argInfos)->getVal();
+						std::cout << "\"" << input << "\" => ";
+						if (val.second) {
+							std::cout << std::boolalpha << val.first << std::endl;
+						}
+						else {
+							std::cout << "empty" << std::endl;
+						}
+					}
 					// test min max
 					{
 						std::cout << "______ should work" << std::endl;
@@ -754,6 +808,21 @@ void	ArgsParser::parseArgs() {
 					{
 						std::cout << "______ should overflow" << std::endl;
 						std::string input = "4294967296";
+						argInfos->setVal(input);
+						val = reinterpret_cast<UInt32Arg *>(argInfos)->getVal();
+						std::cout << "\"" << input << "\" => ";
+						if (val.second) {
+							std::cout << std::boolalpha << val.first << std::endl;
+						}
+						else {
+							std::cout << "empty" << std::endl;
+						}
+					}
+					{
+						std::cout << "______ should overflow" << std::endl;
+						std::string input = "999999999999999999999999999999999999999999999999"
+							"999999999999999999999999999999999999999999999999"
+							"999999999999999999999999999999999999999999999999";
 						argInfos->setVal(input);
 						val = reinterpret_cast<UInt32Arg *>(argInfos)->getVal();
 						std::cout << "\"" << input << "\" => ";
@@ -950,6 +1019,21 @@ void	ArgsParser::parseArgs() {
 							std::cout << "empty" << std::endl;
 						}
 					}
+					{
+						std::cout << "______ should overflow" << std::endl;
+						std::string input = "999999999999999999999999999999999999999999999999"
+							"999999999999999999999999999999999999999999999999"
+							"999999999999999999999999999999999999999999999999";
+						argInfos->setVal(input);
+						val = reinterpret_cast<UInt64Arg *>(argInfos)->getVal();
+						std::cout << "\"" << input << "\" => ";
+						if (val.second) {
+							std::cout << std::boolalpha << val.first << std::endl;
+						}
+						else {
+							std::cout << "empty" << std::endl;
+						}
+					}
 					// test min max
 					{
 						std::cout << "______ should work" << std::endl;
@@ -1125,7 +1209,22 @@ void	ArgsParser::parseArgs() {
 					}
 					{
 						std::cout << "______ should overflow" << std::endl;
-						std::string input = "340282346638528859811704183484516925440.000001";
+						std::string input = "940282346638528859811704183484516925440.000000";
+						argInfos->setVal(input);
+						val = reinterpret_cast<FloatArg *>(argInfos)->getVal();
+						std::cout << "\"" << input << "\" => ";
+						if (val.second) {
+							std::cout << std::boolalpha << val.first << std::endl;
+						}
+						else {
+							std::cout << "empty" << std::endl;
+						}
+					}
+					{
+						std::cout << "______ should overflow" << std::endl;
+						std::string input = "999999999999999999999999999999999999999999999999"
+							"999999999999999999999999999999999999999999999999"
+							"999999999999999999999999999999999999999999999999";
 						argInfos->setVal(input);
 						val = reinterpret_cast<FloatArg *>(argInfos)->getVal();
 						std::cout << "\"" << input << "\" => ";
@@ -1232,8 +1331,8 @@ void	ArgsParser::parseArgs() {
 						}
 					}
 					{
-						std::cout << "______ should be ok" << std::endl;
-						std::string input = "aa";
+						std::cout << "______ should be ok len == 2" << std::endl;
+						std::string input = "bb";
 						argInfos->setMinLength(2);
 						argInfos->setVal(input);
 						val = reinterpret_cast<StringArg *>(argInfos)->getVal();
@@ -1247,7 +1346,7 @@ void	ArgsParser::parseArgs() {
 					}
 					{
 						std::cout << "______ should fail because len < 3" << std::endl;
-						std::string input = "aa";
+						std::string input = "cc";
 						argInfos->setMinLength(3);
 						argInfos->setVal(input);
 						val = reinterpret_cast<StringArg *>(argInfos)->getVal();
@@ -1261,7 +1360,7 @@ void	ArgsParser::parseArgs() {
 					}
 					{
 						std::cout << "______ should be ok" << std::endl;
-						std::string input = "aaaa";
+						std::string input = "dddd";
 						argInfos->setMaxLength(4);
 						argInfos->setVal(input);
 						val = reinterpret_cast<StringArg *>(argInfos)->getVal();
@@ -1275,7 +1374,7 @@ void	ArgsParser::parseArgs() {
 					}
 					 {
 						std::cout << "______ should fail because len > 4" << std::endl;
-						std::string input = "aaaaa";
+						std::string input = "eeeee";
 						argInfos->setMaxLength(4);
 						argInfos->setVal(input);
 						val = reinterpret_cast<StringArg *>(argInfos)->getVal();
