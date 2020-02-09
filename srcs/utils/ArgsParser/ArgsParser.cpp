@@ -109,9 +109,10 @@ void	ArgsParser::usage() const {
 }
 
 // test optionals name validity
-bool	ArgsParser::checkOptsAvailability(std::string const &longName, char shortName) {
-	std::string const	errInfo = "setOptional('" + std::string(1, shortName) + \
-		"', \"" + longName + "\"): ";
+bool	ArgsParser::checkOptsAvailability(std::string name, std::string const &longName, \
+	char shortName) {
+	std::string const	errInfo = "argument \"" + name + "\": setOptional('" + \
+		std::string(1, shortName) + "', \"" + longName + "\"): ";
 
 	// refuse empty longName && empty shortName
 	if (longName.empty() && shortName == A_NO_NAME) {
@@ -159,15 +160,23 @@ bool	ArgsParser::checkOptsAvailability(std::string const &longName, char shortNa
 		return EXIT_FAILURE;
 	}
 
-	// check shortName/longName duplicates
-	uint32_t	nbDuplicates = std::count_if(std::begin(_argsInfos), std::end(_argsInfos),
-		[longName, shortName] (AInfoArg * const argInfos) {
-			return (argInfos->getShortName() != A_NO_NAME && shortName != A_NO_NAME && \
-				argInfos->getShortName() == shortName) || (!argInfos->getLongName().empty() && argInfos->getLongName() == longName);
-		});
-	if (nbDuplicates > 0) {
-		logErr(errInfo << "duplicate optional arg name: " << "-" << shortName << ", --" << longName);
-		return EXIT_FAILURE;
+	// short name
+	if (shortName != A_NO_NAME) {
+		// on duplication
+		if (_sOptArgsId.find(shortName) != _sOptArgsId.end()) {
+			logErr(errInfo << "short name duplication: " << "-" << shortName);
+			return EXIT_FAILURE;
+		}
+		_sOptArgsId[shortName] = _argsId[name];
+	}
+	// long name
+	if (!longName.empty()) {
+		// on duplication
+		if (_lOptArgsId.find(longName) != _lOptArgsId.end()) {
+			logErr(errInfo << "long name duplication: " << "--" << longName);
+			return EXIT_FAILURE;
+		}
+		_lOptArgsId[longName] = _argsId[name];
 	}
 
 	return EXIT_SUCCESS;
@@ -211,7 +220,7 @@ AInfoArg	&ArgsParser::addArgument(std::string name, ArgType::Enum type) {
 	// try to insert the element, fail on name duplicate
 	auto elem = _argsId.insert(std::pair<std::string, uint32_t>(name, _argsInfos.size()));
 
-	// check name duplication
+	// on name duplication
 	if (!elem.second) {
 		logErr("argument name \"" << name << "\" is already taken");
 		delete newElem;
@@ -264,26 +273,23 @@ void	ArgsParser::parseArgs() {
 	init();  // init getopt_long args
 
 	while ((opt = getopt_long(_ac, _av, _opts.c_str(), _longOpts.data(), &longIndex)) != -1) {
-		logDebug("opt: " << static_cast<char>(opt));
-
-		// long option
-		if (opt == 0) {
-				std::cout << "long opt: " << _longOpts[longIndex].name << std::endl;
-				if (optarg) {
-					std::cout << "with arg \"" << optarg << "\"" << std::endl;
-				}
-		}
 		// show usage and stop
-		else if (opt == '?' || opt == 'u' || opt == ':') {
-			std::cout << "// usage();" << std::endl;
-			// usage();
+		if (opt == '?' || opt == 'u' || opt == ':') {
+			usage();
 			break;
 		}
-		// short option
+		// manage long optional arg
+		else if (opt == 0) {
+			std::cout << "\n_____ opt --" << _longOpts[longIndex].name << std::endl;
+			if (optarg) {  // if the option have argument
+				std::cout << "arg: \"" << optarg << "\"" << std::endl;
+			}
+		}
+		// manage short optional arg
 		else {
-			std::cout << "short: '" << opt << "'" << std::endl;
-			if (true) {  // ? condition ?
-				std::cout << "optarg: " << optarg << std::endl;
+			std::cout << "\n_____ opt -" << static_cast<char>(opt) << std::endl;
+			if (optarg) {  // if the option have argument
+				std::cout << "arg: \"" << optarg << "\"" << std::endl;
 			}
 		}
 	}

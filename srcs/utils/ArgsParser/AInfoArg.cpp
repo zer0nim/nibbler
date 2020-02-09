@@ -55,7 +55,7 @@ bool	AInfoArg::needArgument() const {
 // set optionnals arguments name
 AInfoArg	&AInfoArg::setOptional(std::string const &longName, char shortName) {
 	// verify option name availability
-	if (_argsParser->checkOptsAvailability(longName, shortName) == EXIT_FAILURE) {
+	if (_argsParser->checkOptsAvailability(_name, longName, shortName) == EXIT_FAILURE) {
 		return *this;
 	}
 

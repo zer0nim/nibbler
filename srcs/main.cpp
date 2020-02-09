@@ -18,14 +18,6 @@ int main(int ac, char * const *av) {
 	argsParser.setProgDescr("The purpose of this project is to create our version of the game Snake,\n"\
 	"with at least 3 different GUIs. These GUIs being shared libraries.");
 
-	// argsParser.addArgument("testBool", ArgType::STRING);
-	// argsParser.addArgument("testString", ArgType::BOOL);
-	// argsParser.addArgument("testInt32", ArgType::INT32);
-	// argsParser.addArgument("testInt64", ArgType::INT64);
-	// argsParser.addArgument("testUint32", ArgType::UINT32);
-	// argsParser.addArgument("testUint64", ArgType::UINT64);
-	// argsParser.addArgument("testFloat", ArgType::FLOAT);
-
 	// width
 	argsParser.addArgument("width", ArgType::UINT32)
 		.setHelp("set the windows width")
@@ -59,6 +51,22 @@ int main(int ac, char * const *av) {
 		.setMinF(0.0f)
 		.setMaxF(100.0f)
 		.setDefaultF(10.5f);
+
+	// TODO(zer0nim): for testing, remove later --------------------------------
+	argsParser.addArgument("verbose", ArgType::BOOL)
+		.setOptional('v', "verbose")
+		.setStoreTrue();
+
+	argsParser.addArgument("name", ArgType::STRING)
+		.setOptional("name");
+
+	// argsParser.addArgument("testBool", ArgType::STRING);
+	// argsParser.addArgument("testString", ArgType::BOOL);
+	// argsParser.addArgument("testInt32", ArgType::INT32);
+	// argsParser.addArgument("testInt64", ArgType::INT64);
+	// argsParser.addArgument("testUint32", ArgType::UINT32);
+	// argsParser.addArgument("testUint64", ArgType::UINT64);
+	// argsParser.addArgument("testFloat", ArgType::FLOAT);
 
 	argsParser.parseArgs();
 

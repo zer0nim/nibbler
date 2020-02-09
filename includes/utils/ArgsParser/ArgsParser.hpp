@@ -17,7 +17,8 @@ class ArgsParser {
 		ArgsParser &operator=(ArgsParser const &rhs);
 
 		void	usage() const;
-		bool	checkOptsAvailability(std::string const &longName, char shortName);
+		bool	checkOptsAvailability(std::string name, std::string const &longName, \
+			char shortName);
 		// create new arg of the specified type, add it to _argsInfos, then return a ref
 		AInfoArg	&addArgument(std::string name, ArgType::Enum type = ArgType::STRING);
 		void	parseArgs();
@@ -38,6 +39,8 @@ class ArgsParser {
 
 		std::vector<AInfoArg *>	_argsInfos;
 		std::unordered_map<std::string, uint32_t>	_argsId;
+		std::unordered_map<char, uint32_t>			_sOptArgsId;
+		std::unordered_map<std::string, uint32_t>	_lOptArgsId;
 
 		void	init();
 		ArgsParser();
