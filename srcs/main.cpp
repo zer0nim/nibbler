@@ -21,29 +21,29 @@ int main(int ac, char * const *av) {
 	// width
 	argsParser.addArgument("width", ArgType::UINT32)
 		.setHelp("set the windows width")
-		.setMinUI32(200)
-		.setMaxUI32(7680)
-		.setDefaultUI32(1200);
+		.setMinU(200)
+		.setMaxU(7680)
+		.setDefaultU(1200);
 
 	// height
 	argsParser.addArgument("height", ArgType::UINT32)
 		.setHelp("set the windows height")
-		.setMinUI32(200)
-		.setMaxUI32(4320)
-		.setDefaultUI32(800);
+		.setMinU(200)
+		.setMaxU(4320)
+		.setDefaultU(800);
 
 	// --gui -g
 	argsParser.addArgument("gui", ArgType::UINT32)
 		.setOptional("gui", 'g')
 		.setHelp("change the starting gui id")
-		.setMaxUI32(2)
-		.setDefaultUI32(0);
+		.setMaxU(2)
+		.setDefaultU(0);
 
 	// --boardSize -b
 	argsParser.addArgument("boardSize", ArgType::UINT32)
 		.setOptional("boardSize", 'b')
 		.setHelp("set the board size")
-		.setDefaultUI32(16);
+		.setDefaultU(16);
 	// --speed -s
 	argsParser.addArgument("speed", ArgType::FLOAT)
 		.setOptional("speed", 's')

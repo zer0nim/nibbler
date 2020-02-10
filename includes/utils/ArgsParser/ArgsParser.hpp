@@ -8,22 +8,24 @@
 #include <unordered_map>
 
 #include "AInfoArg.hpp"
+#include "TNumberArg.hpp"
 
 class ArgsParser {
 	public:
 		ArgsParser(int ac, char * const *av);
-		virtual ~ArgsParser();
+		virtual		~ArgsParser();
 		ArgsParser(ArgsParser const &src);
-		ArgsParser &operator=(ArgsParser const &rhs);
+		ArgsParser	&operator=(ArgsParser const &rhs);
 
-		void	usage() const;
-		bool	checkOptsAvailability(std::string name, std::string const &longName, \
+		void		usage() const;
+		bool		checkOptsAvailability(std::string name, std::string const &longName, \
 			char shortName);
 		// create new arg of the specified type, add it to _argsInfos, then return a ref
 		AInfoArg	&addArgument(std::string name, ArgType::Enum type = ArgType::STRING);
-		void	parseArgs();
-		void	setProgDescr(std::string const &progDescr);
+		void		parseArgs();
+		void		setProgDescr(std::string const &progDescr);
 
+		// -- exceptions -------------------------------------------------------
 		class ArgsParserException : public std::runtime_error {
 			public:
 				ArgsParserException();
@@ -41,7 +43,7 @@ class ArgsParser {
 		std::string					_opts;
 		std::vector<struct option>	_longOpts;
 
-		std::vector<AInfoArg *>	_argsInfos;
+		std::vector<AInfoArg *>						_argsInfos;
 		std::unordered_map<std::string, uint32_t>	_argsId;
 		std::unordered_map<char, uint32_t>			_sOptArgsId;
 		std::unordered_map<std::string, uint32_t>	_lOptArgsId;

@@ -198,19 +198,19 @@ AInfoArg	&ArgsParser::addArgument(std::string name, ArgType::Enum type) {
 			newElem = new BoolArg(this, name);
 			break;
 		case ArgType::INT32:
-			newElem = new Int32Arg(this, name);
+			newElem = new NumberArg<int32_t>(this, name);
 			break;
 		case ArgType::INT64:
-			newElem = new Int64Arg(this, name);
+			newElem = new NumberArg<int64_t>(this, name);
 			break;
 		case ArgType::UINT32:
-			newElem = new UInt32Arg(this, name);
+			newElem = new NumberArg<uint32_t>(this, name);
 			break;
 		case ArgType::UINT64:
-			newElem = new UInt64Arg(this, name);
+			newElem = new NumberArg<uint64_t>(this, name);
 			break;
 		case ArgType::FLOAT:
-			newElem = new FloatArg(this, name);
+			newElem = new NumberArg<float>(this, name);
 			break;
 		default:
 			newElem = new StringArg(this, name);
@@ -344,7 +344,7 @@ void	ArgsParser::parseArgs() {
 
 void	ArgsParser::setProgDescr(std::string const &progDescr) { _progDescr = progDescr; }
 
-// -- Exceptions errors --------------------------------------------------------
+// -- exceptions ---------------------------------------------------------------
 ArgsParser::ArgsParserException::ArgsParserException()
 : std::runtime_error("[ArgsParserError]") {}
 

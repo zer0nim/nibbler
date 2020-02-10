@@ -113,6 +113,7 @@ HEAD =	nibbler.hpp \
 \
 		utils/ArgsParser/ArgsParser.hpp \
 		utils/ArgsParser/AInfoArg.hpp \
+		utils/ArgsParser/TNumberArg.hpp \
 
 
 ################################################################################
