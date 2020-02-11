@@ -60,8 +60,8 @@ int main(int ac, char * const *av) {
 	argsParser.addArgument("name", ArgType::STRING)
 		.setOptional("name");
 
-	// argsParser.addArgument("testBool", ArgType::STRING);
-	// argsParser.addArgument("testString", ArgType::BOOL);
+	// argsParser.addArgument("testString", ArgType::STRING);
+	// argsParser.addArgument("testBool", ArgType::BOOL);
 	// argsParser.addArgument("testInt32", ArgType::INT32);
 	// argsParser.addArgument("testInt64", ArgType::INT64);
 	// argsParser.addArgument("testUint32", ArgType::UINT32);

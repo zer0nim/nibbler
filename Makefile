@@ -69,7 +69,7 @@ ARGS =
 # compiler (g++ or clang++)
 CC = g++
 # flags for compilation
-CFLAGS = -Ofast -std=c++11 -Wall -Wextra
+CFLAGS = -Ofast -std=c++14 -Wall -Wextra
 # flags only for debug mode (make DEBUG=1)
 DEBUG_FLAGS = -g3 -DDEBUG=true
 # classic flags

@@ -263,6 +263,15 @@ void	ArgsParser::parseArgs() {
 	int	opt;
 	int	longIndex = 0;
 
+	uint32_t	nbPositional = std::count_if(std::begin(_argsInfos), std::end(_argsInfos),
+		[] (AInfoArg * const argInfos) {
+			return argInfos->getRequired(); });
+	// nothing has been filled but some positional arguments are needed
+	if (nbPositional > 0 && _ac == 1) {
+		usage();
+		throw ArgsParserException("you need to specify arguments !");
+	}
+
 	initGetopt();  // generate getopt_long parameters
 
 	// manage optionals args

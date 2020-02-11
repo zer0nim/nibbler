@@ -74,17 +74,17 @@ AInfoArg	&AInfoArg::setDefaultB(bool defaultV) {
 	unknownFunction("setDefault");
 	return *this;
 }
-AInfoArg	&AInfoArg::setDefaultF(double defaultV) {
+AInfoArg	&AInfoArg::setDefaultF(long double defaultV) {
 	(void)defaultV;
 	unknownFunction("setDefault");
 	return *this;
 }
-AInfoArg	&AInfoArg::setMinF(double min) {
+AInfoArg	&AInfoArg::setMinF(long double min) {
 	(void)min;
 	unknownFunction("setMin");
 	return *this;
 }
-AInfoArg	&AInfoArg::setMaxF(double max) {
+AInfoArg	&AInfoArg::setMaxF(long double max) {
 	(void)max;
 	unknownFunction("setMax");
 	return *this;

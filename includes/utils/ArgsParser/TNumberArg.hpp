@@ -2,7 +2,9 @@
 #define TNUMBERARG_HPP_
 
 #include "AInfoArg.hpp"
+#include "ArgsParser.hpp"
 
+// -- NumberArg template -------------------------------------------------------
 template<typename T>
 class NumberArg : public AInfoArg {
 	public:
@@ -61,19 +63,19 @@ class NumberArg : public AInfoArg {
 		// -- overide virtual parent members -----------------------------------
 
 		// ---- only enabled for floating point --------------------------------
-		AInfoArg	&setDefaultF(double defaultV) {
+		AInfoArg	&setDefaultF(long double defaultV) {
 			if (std::is_floating_point<T>::value) {
 				return _setDefault(defaultV);
 			}
 			return AInfoArg::setDefaultF(defaultV);
 		};
-		AInfoArg	&setMinF(double min) {
+		AInfoArg	&setMinF(long double min) {
 			if (std::is_floating_point<T>::value) {
 				return _setMin(min);
 			}
 			return AInfoArg::setMinF(min);
 		};
-		AInfoArg	&setMaxF(double max) {
+		AInfoArg	&setMaxF(long double max) {
 			if (std::is_floating_point<T>::value) {
 				return _setMax(max);
 			}
@@ -125,49 +127,38 @@ class NumberArg : public AInfoArg {
 		std::pair<T, bool>	getDefaultV() const { return _defaultV; }
 		std::pair<T, bool>	getVal() const { return _value; }
 
-
-		// convert the input string to T
-		virtual void		setVal(std::string input) {
-			T	val = 0;
-			try {
-				val = std::stoi(input);
-
-				if (val < _min) {
-					logErr("parseArgs(): argument \"" << _name << "\": out of range, val:"
-						<< val << " < min:" << _min);
-				}
-				else if (val > _max) {
-					logErr("parseArgs(): argument \"" << _name << "\": out of range, val:"
-						<< val << " > max:" << _max);
-				}
-				else {
-					_value = {val, true};
-				}
+		template<typename U>
+		void	saveVal(U val) {
+			if (val < _min) {
+				throw AInfoArgError(std::string("parseArgs(): argument \"" + _name +
+					"\": out of range, val:" + std::to_string(val) + " < min:" +
+					std::to_string(_min)).c_str());
 			}
-			catch (const std::out_of_range &e) {
-				logErr("parseArgs(): argument \"" << _name << "\": out of range input \""
-					<< input << "\"");
+			else if (val > _max) {
+				throw AInfoArgError(std::string("parseArgs(): argument \"" + _name +
+					"\": out of range, val:" + std::to_string(val) + " > max:" +
+					std::to_string(_max)).c_str());
 			}
-			catch (const std::invalid_argument &e) {
-				logErr("parseArgs(): argument \"" << _name << "\": failed to convert input \""
-					<< input << "\"");
+			else {
+				_value = {static_cast<T>(val), true};
 			}
 		}
+
+		// convert the input string to T
+		virtual void		setVal(std::string input);
 
 	private:
 		NumberArg<T>();
 
-		// templates to avoid code duplication
+		// -- templates to avoid code duplication ------------------------------
 		AInfoArg	&_setDefault(T defaultV) {
 			if (defaultV < _min) {
-				logErr("argument \"" << _name << "\": setDefault(): default:" <<
-					defaultV << " < min:" << _min);
-				throw AInfoArgError("setDefault() error");
+				throw AInfoArgError(std::string("argument \"" + _name + "\": setDefault(): default:" +
+					std::to_string(defaultV) + " < min:" + std::to_string(_min)).c_str());
 			}
 			else if (defaultV > _max) {
-				logErr("argument \"" << _name << "\": setDefault(): default:" <<
-					defaultV << " > max:" << _max);
-				throw AInfoArgError("setDefault() error");
+				throw AInfoArgError(std::string("argument \"" + _name + "\": setDefault(): default:" +
+					std::to_string(defaultV) + " > max:" + std::to_string(_max)).c_str());
 			}
 			else {
 				this->_defaultV = {defaultV, true};
@@ -178,9 +169,8 @@ class NumberArg : public AInfoArg {
 
 		AInfoArg	&_setMin(T min) {
 			if (_defaultV.second && _defaultV.first < min) {
-				logErr("argument \"" << _name << "\": setMin(): min:" << min <<
-					" > default:" << _defaultV.first);
-				throw AInfoArgError("setMin() error");
+				throw AInfoArgError(std::string("argument \"" + _name + "\": setMin(): min:" +
+					std::to_string(min) + " > default:" + std::to_string(_defaultV.first)).c_str());
 			}
 			else {
 				this->_min = min;
@@ -190,9 +180,8 @@ class NumberArg : public AInfoArg {
 
 		AInfoArg	&_setMax(T max) {
 			if (_defaultV.second && _defaultV.first > max) {
-				logErr("argument \"" << _name << "\": setMax(): max:" << max <<
-					" < default:" << _defaultV.first);
-				throw AInfoArgError("setMax() error");
+				throw AInfoArgError(std::string("argument \"" + _name + "\": setMax(): max:" +
+					std::to_string(max) + " < default:" + std::to_string(_defaultV.first)).c_str());
 			}
 			else {
 				this->_max = max;
@@ -206,5 +195,57 @@ class NumberArg : public AInfoArg {
 		std::pair<T, bool>	_defaultV;
 		std::pair<T, bool>	_value;
 };
+
+
+// -- convertVal template function definition and declaration ------------------
+// uses specialization to manage conversion
+
+// floating point specification
+template <typename T>
+typename std::enable_if<std::is_floating_point<T>::value, void>::type
+convertVal(NumberArg<T> *ref, std::string input) {
+	long double val = std::stold(input);
+	ref->template saveVal<long double>(val);
+}
+
+// signed integral specification
+template <typename T>
+typename std::enable_if<std::is_integral<T>::value && std::is_signed<T>::value, void>::type
+convertVal(NumberArg<T> *ref, std::string input) {
+	int64_t	val = std::stoll(input);
+	ref->template saveVal<int64_t>(val);
+}
+
+// unsigned integral specification
+template <typename T>
+typename std::enable_if<std::is_unsigned<T>::value, void>::type
+convertVal(NumberArg<T> *ref, std::string input) {
+	// first cast input to double to detect out of range
+	double	dVal = std::stod(input);
+	if (dVal < 0 || dVal > std::numeric_limits<uint64_t>::max()) {
+		throw std::out_of_range("out of range input");
+	}
+	// reconvert again for precision
+	uint64_t val = std::stoull(input);
+	ref->template saveVal<uint64_t>(val);
+}
+
+
+// -- setVal definition --------------------------------------------------------
+// we need to define setVal after convertVal declaration to avoid circular dependencies
+template<typename T>
+void	NumberArg<T>::setVal(std::string input) {
+	try {
+		convertVal<T>(this, input);
+	}
+	catch (const std::out_of_range &e) {
+		throw AInfoArgError(std::string("parseArgs(): argument \"" + _name +
+			"\": out of range input \"" + input + "\"").c_str());
+	}
+	catch (const std::invalid_argument &e) {
+		throw AInfoArgError(std::string("parseArgs(): argument \"" + _name +
+			"\": failed to convert input \"" + input + "\"").c_str());
+	}
+}
 
 #endif  // TNUMBERARG_HPP_

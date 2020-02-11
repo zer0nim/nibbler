@@ -56,9 +56,9 @@ class AInfoArg {
 		virtual AInfoArg	&setDefaultS(std::string defaultV);
 		virtual AInfoArg	&setDefaultB(bool defaultV);
 		// floating point
-		virtual AInfoArg	&setDefaultF(double defaultV);
-		virtual AInfoArg	&setMinF(double min);
-		virtual AInfoArg	&setMaxF(double max);
+		virtual AInfoArg	&setDefaultF(long double defaultV);
+		virtual AInfoArg	&setMinF(long double min);
+		virtual AInfoArg	&setMaxF(long double max);
 		// signed integral
 		virtual AInfoArg	&setDefaultI(int64_t defaultV);
 		virtual AInfoArg	&setMinI(int64_t min);
