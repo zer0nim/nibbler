@@ -109,8 +109,8 @@ void	ArgsParser::usage(bool longUsage) const {
 }
 
 // test optionals name validity
-bool	ArgsParser::checkOptsAvailability(std::string name, std::string const &longName, \
-	char shortName) {
+bool	ArgsParser::checkOptsAvailability(std::string const &name, std::string const
+	&longName, char shortName) {
 	std::string const	errInfo = "argument \"" + name + "\": setOptional('" + \
 		std::string(1, shortName) + "', \"" + longName + "\"): ";
 
@@ -183,7 +183,7 @@ bool	ArgsParser::checkOptsAvailability(std::string name, std::string const &long
 }
 
 // create new arg of the specified type, add it to _argsInfos, then return a ref
-AInfoArg	&ArgsParser::addArgument(std::string name, ArgType::Enum type) {
+AInfoArg	&ArgsParser::addArgument(std::string const name, ArgType::Enum type) {
 	AInfoArg	*newElem = nullptr;
 
 	// refuse empty name
@@ -192,29 +192,7 @@ AInfoArg	&ArgsParser::addArgument(std::string name, ArgType::Enum type) {
 	}
 
 	// create new argument
-	switch (type) {
-		case ArgType::BOOL:
-			newElem = new BoolArg(this, name);
-			break;
-		case ArgType::INT32:
-			newElem = new NumberArg<int32_t>(this, name);
-			break;
-		case ArgType::INT64:
-			newElem = new NumberArg<int64_t>(this, name);
-			break;
-		case ArgType::UINT32:
-			newElem = new NumberArg<uint32_t>(this, name);
-			break;
-		case ArgType::UINT64:
-			newElem = new NumberArg<uint64_t>(this, name);
-			break;
-		case ArgType::FLOAT:
-			newElem = new NumberArg<float>(this, name);
-			break;
-		default:
-			newElem = new StringArg(this, name);
-		break;
-	}
+	newElem = _builders[type](this, name);
 
 	// try to insert the element, fail on name duplicate
 	auto elem = _argsId.insert(std::pair<std::string, uint32_t>(name, _argsInfos.size()));
@@ -361,3 +339,35 @@ ArgsParser::ArgsParserException::ArgsParserException(const char* what_arg)
 
 ArgsParser::ArgsParserUsage::ArgsParserUsage()
 : std::runtime_error("[ArgsParserUsage]") {}
+
+// -- statics initialisation ---------------------------------------------------
+
+// used to construct AInfoArg* according to ArgType::Enum
+std::array<BuilderFuncPtr, 13> const ArgsParser::_builders = {
+	[](ArgsParser *argsParser, std::string const name) -> AInfoArg * {
+		return new StringArg(argsParser, name); },  // 				STRING
+	[](ArgsParser *argsParser, std::string const name) -> AInfoArg * {
+		return new BoolArg(argsParser, name); },  // 				BOOL
+	[](ArgsParser *argsParser, std::string const name) -> AInfoArg * {
+		return new NumberArg<int8_t>(argsParser, name); },  // 		INT8
+	[](ArgsParser *argsParser, std::string const name) -> AInfoArg * {
+		return new NumberArg<int16_t>(argsParser, name); },  // 	INT16
+	[](ArgsParser *argsParser, std::string const name) -> AInfoArg * {
+		return new NumberArg<int32_t>(argsParser, name); },  // 	INT32
+	[](ArgsParser *argsParser, std::string const name) -> AInfoArg * {
+		return new NumberArg<int64_t>(argsParser, name); },  // 	INT64
+	[](ArgsParser *argsParser, std::string const name) -> AInfoArg * {
+		return new NumberArg<uint8_t>(argsParser, name); },  // 	UINT8
+	[](ArgsParser *argsParser, std::string const name) -> AInfoArg * {
+		return new NumberArg<uint16_t>(argsParser, name); },  // 	UINT16
+	[](ArgsParser *argsParser, std::string const name) -> AInfoArg * {
+		return new NumberArg<uint32_t>(argsParser, name); },  // 	UINT32
+	[](ArgsParser *argsParser, std::string const name) -> AInfoArg * {
+		return new NumberArg<uint64_t>(argsParser, name); },  // 	UINT64
+	[](ArgsParser *argsParser, std::string const name) -> AInfoArg * {
+		return new NumberArg<float_t>(argsParser, name); },  // 	FLOAT
+	[](ArgsParser *argsParser, std::string const name) -> AInfoArg * {
+		return new NumberArg<double>(argsParser, name); },  // 		DOUBLE
+	[](ArgsParser *argsParser, std::string const name) -> AInfoArg * {
+		return new NumberArg<long double>(argsParser, name); },  // L_DOUBLE
+};

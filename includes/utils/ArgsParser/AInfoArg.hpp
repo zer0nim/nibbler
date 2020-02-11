@@ -23,21 +23,33 @@ namespace ArgType {
 	enum Enum {
 		STRING,
 		BOOL,
+		INT8,
+		INT16,
 		INT32,
 		INT64,
+		UINT8,
+		UINT16,
 		UINT32,
 		UINT64,
-		FLOAT
+		FLOAT,
+		DOUBLE,
+		L_DOUBLE
 	};
 
-	const std::array<std::string, 7>	enumNames = {
+	const std::array<std::string, 13>	enumNames = {
 		"string",
 		"bool",
+		"int8",
+		"int16",
 		"int32",
 		"int64",
+		"uint8",
+		"uint16",
 		"uint32",
 		"uint64",
-		"float"
+		"float",
+		"double",
+		"l_double"
 	};
 }  // namespace ArgType
 

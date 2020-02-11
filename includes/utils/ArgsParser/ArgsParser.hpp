@@ -4,11 +4,14 @@
 #include <getopt.h>
 #include <string>
 #include <vector>
+#include <array>
 #include <map>
 #include <unordered_map>
 
 #include "AInfoArg.hpp"
 #include "TNumberArg.hpp"
+
+typedef AInfoArg *(*BuilderFuncPtr)(ArgsParser *, std::string const);
 
 class ArgsParser {
 	public:
@@ -18,10 +21,10 @@ class ArgsParser {
 		ArgsParser	&operator=(ArgsParser const &rhs);
 
 		void		usage(bool longUsage = false) const;
-		bool		checkOptsAvailability(std::string name, std::string const &longName, \
-			char shortName);
+		bool		checkOptsAvailability(std::string const &name, std::string
+			const &longName, char shortName);
 		// create new arg of the specified type, add it to _argsInfos, then return a ref
-		AInfoArg	&addArgument(std::string name, ArgType::Enum type = ArgType::STRING);
+		AInfoArg	&addArgument(std::string const name, ArgType::Enum const type = ArgType::STRING);
 		void		parseArgs();
 		void		setProgDescr(std::string const &progDescr);
 
@@ -47,6 +50,8 @@ class ArgsParser {
 		std::unordered_map<std::string, uint32_t>	_argsId;
 		std::unordered_map<char, uint32_t>			_sOptArgsId;
 		std::unordered_map<std::string, uint32_t>	_lOptArgsId;
+
+		static std::array<BuilderFuncPtr, 13> const	_builders;
 
 		void	initGetopt();
 		ArgsParser();
