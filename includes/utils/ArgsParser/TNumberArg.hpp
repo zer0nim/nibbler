@@ -75,46 +75,46 @@ class NumberArg : public AInfoArg {
 		};
 		AInfoArg	&setMaxF(double max) {
 			if (std::is_floating_point<T>::value) {
-				return _setMin(max);
+				return _setMax(max);
 			}
 			return AInfoArg::setMaxF(max);
 		};
 		// ---- only enabled for signed integral -------------------------------
 		AInfoArg	&setDefaultI(int64_t defaultV) {
-			if (std::is_floating_point<T>::value) {
+			if (std::is_integral<T>::value && std::is_signed<T>::value) {
 				return _setDefault(defaultV);
 			}
 			return AInfoArg::setDefaultI(defaultV);
 		};
 		AInfoArg	&setMinI(int64_t min) {
-			if (std::is_floating_point<T>::value) {
+			if (std::is_integral<T>::value && std::is_signed<T>::value) {
 				return _setMin(min);
 			}
 			return AInfoArg::setMinI(min);
 		};
 		AInfoArg	&setMaxI(int64_t max) {
-			if (std::is_floating_point<T>::value) {
-				return _setMin(max);
+			if (std::is_integral<T>::value && std::is_signed<T>::value) {
+				return _setMax(max);
 			}
 			return AInfoArg::setMaxI(max);
 		};
 
 		// ---- only enabled for unsigned integral -----------------------------
 		AInfoArg	&setDefaultU(uint64_t defaultV) {
-			if (std::is_floating_point<T>::value) {
+			if (std::is_unsigned<T>::value) {
 				return _setDefault(defaultV);
 			}
 			return AInfoArg::setDefaultU(defaultV);
 		};
 		AInfoArg	&setMinU(uint64_t min) {
-			if (std::is_floating_point<T>::value) {
+			if (std::is_unsigned<T>::value) {
 				return _setMin(min);
 			}
 			return AInfoArg::setMinU(min);
 		};
 		AInfoArg	&setMaxU(uint64_t max) {
-			if (std::is_floating_point<T>::value) {
-				return _setMin(max);
+			if (std::is_unsigned<T>::value) {
+				return _setMax(max);
 			}
 			return AInfoArg::setMaxU(max);
 		};

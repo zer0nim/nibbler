@@ -35,7 +35,7 @@ ArgsParser &ArgsParser::operator=(ArgsParser const &rhs) {
 	return *this;
 }
 
-void	ArgsParser::usage() const {
+void	ArgsParser::usage(bool longUsage) const {
 	std::cout << "usage: " << _av[0];
 	// print arguments list
 	for (auto &&argInfos : _argsInfos) {
@@ -59,52 +59,52 @@ void	ArgsParser::usage() const {
 			std::cout << "]";
 		}
 	}
+	std::cout << std::endl;
 
-	uint32_t	nbPositional = std::count_if(std::begin(_argsInfos), std::end(_argsInfos),
-		[] (AInfoArg * const argInfos) {
-			return argInfos->getRequired(); });
+	if (longUsage) {
+		uint32_t	nbPositional = std::count_if(std::begin(_argsInfos), std::end(_argsInfos),
+			[] (AInfoArg * const argInfos) {
+				return argInfos->getRequired(); });
 
-	// print positional args help
-	if (nbPositional > 0) {
-		std::cout << COLOR_ULINE "\n\npositional arguments" COLOR_ULINE_R;
-		for (auto &&argInfos : _argsInfos) {
-			if (argInfos->getRequired()) {
-				std::cout << "\n  " COLOR_ULINE << argInfos->getName() << COLOR_EOC ":  " << \
-				argInfos->getHelp() << std::endl;
-				std::cout << "  " << *argInfos << std::endl;
+		// print positional args help
+		if (nbPositional > 0) {
+			std::cout << COLOR_ULINE "\npositional arguments" COLOR_ULINE_R;
+			for (auto &&argInfos : _argsInfos) {
+				if (argInfos->getRequired()) {
+					std::cout << "\n  " COLOR_ULINE << argInfos->getName() << COLOR_EOC ":  " << \
+					argInfos->getHelp() << std::endl;
+					std::cout << "  " << *argInfos << std::endl;
+				}
 			}
 		}
-	}
 
-	// print optional args help
-	if (_argsInfos.size() - nbPositional > 0) {
-		std::cout << (nbPositional > 0 ? "\n" : "\n\n");
-		std::cout << COLOR_ULINE "optional arguments" COLOR_ULINE_R;
-		for (auto &&argInfos : _argsInfos) {
-			if (!argInfos->getRequired()) {
-				std::cout << "\n  " COLOR_ULINE << argInfos->getName() << COLOR_EOC ":  ";
+		// print optional args help
+		if (_argsInfos.size() - nbPositional > 0) {
+			std::cout << COLOR_ULINE "\noptional arguments" COLOR_ULINE_R;
+			for (auto &&argInfos : _argsInfos) {
+				if (!argInfos->getRequired()) {
+					std::cout << "\n  " COLOR_ULINE << argInfos->getName() << COLOR_EOC ":  ";
 
-				// if the short name is available
-				if (argInfos->getShortName() != A_NO_NAME) {
-					std::cout << COLOR_BOLD "-" << argInfos->getShortName() << COLOR_EOC;
-					if (!argInfos->getLongName().empty()) {
-						std::cout << ", ";
+					// if the short name is available
+					if (argInfos->getShortName() != A_NO_NAME) {
+						std::cout << COLOR_BOLD "-" << argInfos->getShortName() << COLOR_EOC;
+						if (!argInfos->getLongName().empty()) {
+							std::cout << ", ";
+						}
 					}
+					if (!argInfos->getLongName().empty()) {
+						std::cout << COLOR_BOLD "--" << argInfos->getLongName() << COLOR_EOC;
+					}
+					std::cout << "  " << argInfos->getHelp() << "\n  " << *argInfos << std::endl;
 				}
-				if (!argInfos->getLongName().empty()) {
-					std::cout << COLOR_BOLD "--" << argInfos->getLongName() << COLOR_EOC;
-				}
-				std::cout << "  " << argInfos->getHelp() << "\n  " << *argInfos << std::endl;
 			}
 		}
-	}
 
-	// print program description
-	if (!_progDescr.empty()) {
-		std::cout << (nbPositional > 0 || _argsInfos.size() - nbPositional > 0 \
-		? "\n" : "\n\n");
-		std::cout << COLOR_ULINE "description" COLOR_ULINE_R << std::endl;
-		std::cout << _progDescr << std::endl;
+		// print program description
+		if (!_progDescr.empty()) {
+			std::cout << COLOR_ULINE "\ndescription" COLOR_ULINE_R << std::endl;
+			std::cout << _progDescr << std::endl;
+		}
 	}
 }
 
@@ -188,7 +188,6 @@ AInfoArg	&ArgsParser::addArgument(std::string name, ArgType::Enum type) {
 
 	// refuse empty name
 	if (name.empty()) {
-		logErr("addArgument don't accept empty name");
 		throw ArgsParserException("addArgument don't accept empty name");
 	}
 
@@ -270,7 +269,7 @@ void	ArgsParser::parseArgs() {
 	while ((opt = getopt_long(_ac, _av, _opts.c_str(), _longOpts.data(), &longIndex)) != -1) {
 		// show usage and stop
 		if (opt == '?' || opt == 'u' || opt == ':') {
-			usage();
+			usage(opt == 'u');
 			if (opt == 'u') {
 				throw ArgsParserUsage();
 			}

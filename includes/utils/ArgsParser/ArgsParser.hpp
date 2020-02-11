@@ -17,7 +17,7 @@ class ArgsParser {
 		ArgsParser(ArgsParser const &src);
 		ArgsParser	&operator=(ArgsParser const &rhs);
 
-		void		usage() const;
+		void		usage(bool longUsage = false) const;
 		bool		checkOptsAvailability(std::string name, std::string const &longName, \
 			char shortName);
 		// create new arg of the specified type, add it to _argsInfos, then return a ref
