@@ -52,13 +52,13 @@ void NibblerSFML::updateInput() {
 					input.quit = true;
 
 				else if (_event.key.code == sf::Keyboard::Up)
-					input.direction = ANibblerGui::Input::MOVE_UP;
-				else if (_event.key.code == sf::Keyboard::Down)
-					input.direction = ANibblerGui::Input::MOVE_DOWN;
-				else if (_event.key.code == sf::Keyboard::Left)
-					input.direction = ANibblerGui::Input::MOVE_LEFT;
+					input.direction = Direction::MOVE_UP;
 				else if (_event.key.code == sf::Keyboard::Right)
-					input.direction = ANibblerGui::Input::MOVE_RIGHT;
+					input.direction = Direction::MOVE_RIGHT;
+				else if (_event.key.code == sf::Keyboard::Down)
+					input.direction = Direction::MOVE_DOWN;
+				else if (_event.key.code == sf::Keyboard::Left)
+					input.direction = Direction::MOVE_LEFT;
 
 
 				else if (_event.key.code == sf::Keyboard::Num1)

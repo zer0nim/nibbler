@@ -96,6 +96,7 @@ DEBUG_DIR	= $(DEP_DIR)
 # SRCS_DIR/SRC
 SRC =	main.cpp \
 		nibbler.cpp \
+		GameManager.cpp \
 		DynGuiManager.cpp \
 \
 		utils/Logging.cpp \
@@ -106,6 +107,7 @@ SRC =	main.cpp \
 
 # INC_DIR/HEAD
 HEAD =	nibbler.hpp \
+		GameManager.hpp \
 		DynGuiManager.hpp \
 \
 		utils/Logging.hpp \

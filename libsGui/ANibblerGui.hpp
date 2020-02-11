@@ -10,6 +10,15 @@
 #define WIDTH	800
 #define HEIGHT	600
 
+namespace Direction {
+	enum eDirection {
+		MOVE_UP,
+		MOVE_RIGHT,
+		MOVE_DOWN,
+		MOVE_LEFT,
+	};
+}
+
 class ANibblerGui {
 	public:
 		ANibblerGui();
@@ -23,13 +32,8 @@ class ANibblerGui {
 
 		struct Input {
 			bool		quit;
-			enum eDirection {
-				MOVE_UP,
-				MOVE_DOWN,
-				MOVE_LEFT,
-				MOVE_RIGHT,
-			};
-			eDirection	direction;
+
+			Direction::eDirection	direction;
 			uint8_t		loadGuiID;
 
 			Input();

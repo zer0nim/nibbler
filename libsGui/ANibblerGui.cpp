@@ -21,7 +21,7 @@ ANibblerGui &ANibblerGui::operator=(ANibblerGui const &rhs) {
 
 
 ANibblerGui::Input::Input()
-: quit(false), direction(MOVE_UP), loadGuiID(NO_GUI_LOADED) {
+: quit(false), direction(Direction::MOVE_UP), loadGuiID(NO_GUI_LOADED) {
 }
 
 ANibblerGui::Input::Input(ANibblerGui::Input const &src) {

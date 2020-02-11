@@ -3,93 +3,27 @@
 
 #include "nibbler.hpp"
 #include "Logging.hpp"
-#include "DynGuiManager.hpp"
+#include "GameManager.hpp"
 #include "ArgsParser.hpp"
 
 int main(int ac, char * const *av) {
-	// uint8_t			guiId = 0;
-	DynGuiManager	dynGuiManager;
+	GameManager		game = GameManager(25, 25, 3);
+	(void)ac;
+	(void)av;
 
 	initLogs();  // init logs functions
 
-	// process args ------------------------------------------------------------
-	ArgsParser	argsParser(ac, av);
-
-	argsParser.setProgDescr("The purpose of this project is to create our version of the game Snake,\n"\
-	"with at least 3 different GUIs. These GUIs being shared libraries.");
-
-	// width
-	argsParser.addArgument("width", ArgType::UINT32)
-		.setHelp("set the windows width")
-		.setMinUI32(200)
-		.setMaxUI32(7680)
-		.setDefaultUI32(1200);
-
-	// height
-	argsParser.addArgument("height", ArgType::UINT32)
-		.setHelp("set the windows height")
-		.setMinUI32(200)
-		.setMaxUI32(4320)
-		.setDefaultUI32(800);
-
-	// --gui -g
-	argsParser.addArgument("gui", ArgType::UINT32)
-		.setOptional("gui", 'g')
-		.setHelp("change the starting gui id")
-		.setMaxUI32(2)
-		.setDefaultUI32(0);
-
-	// --boardSize -b
-	argsParser.addArgument("boardSize", ArgType::UINT32)
-		.setOptional("boardSize", 'b')
-		.setHelp("set the board size")
-		.setDefaultUI32(16);
-	// --speed -s
-	argsParser.addArgument("speed", ArgType::FLOAT)
-		.setOptional("speed", 's')
-		.setHelp("change the game speed")
-		.setMinF(0.0f)
-		.setMaxF(100.0f)
-		.setDefaultF(10.5f);
-
-	// TODO(zer0nim): for testing, remove later --------------------------------
-	argsParser.addArgument("verbose", ArgType::BOOL)
-		.setOptional('v', "verbose")
-		.setStoreTrue();
-
-	argsParser.addArgument("name", ArgType::STRING)
-		.setOptional("name");
-
-	// argsParser.addArgument("testBool", ArgType::STRING);
-	// argsParser.addArgument("testString", ArgType::BOOL);
-	// argsParser.addArgument("testInt32", ArgType::INT32);
-	// argsParser.addArgument("testInt64", ArgType::INT64);
-	// argsParser.addArgument("testUint32", ArgType::UINT32);
-	// argsParser.addArgument("testUint64", ArgType::UINT64);
-	// argsParser.addArgument("testFloat", ArgType::FLOAT);
-
+	// run the game ------------------------------------------------------------
+	// load the defaut gui
+	if (!game.init())
+		return EXIT_FAILURE;
 	try {
-		argsParser.parseArgs();
+		game.run();
 	}
-	catch(ArgsParser::ArgsParserUsage const &e) {
-		return EXIT_SUCCESS;
-	}
-	catch(ArgsParser::ArgsParserException const &e) {
+	catch(const std::exception& e) {
+		logErr(e.what());
 		return EXIT_FAILURE;
 	}
-
-	// run the game ------------------------------------------------------------
-	// // load the defaut gui
-	// try {
-	// 	dynGuiManager.loadGui(guiId);
-	// 	dynGuiManager.nibblerGui->init();
-
-	// 	gameLoop(dynGuiManager);
-	// }
-	// catch(const std::exception& e) {
-	// 	logErr(e.what());
-	// 	return EXIT_FAILURE;
-	// }
 
 	return EXIT_SUCCESS;
 }
