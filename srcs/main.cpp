@@ -1,5 +1,6 @@
 #include <dlfcn.h>
 #include <iostream>
+#include <iomanip>
 
 #include "nibbler.hpp"
 #include "Logging.hpp"
@@ -83,6 +84,35 @@ int main(int ac, char * const *av) {
 	catch(ArgsParser::ArgsParserException const &e) {
 		return EXIT_FAILURE;
 	}
+
+	// test to retrive the value
+	std::cout << std::boolalpha << std::fixed << std::setprecision(2);
+	std::string	testString = argsParser.get<std::string>("testString");
+	std::cout << "testString: " << testString << std::endl;
+	bool testBool = argsParser.get<bool>("testBool");
+	std::cout << "testBool: " << testBool << std::endl;
+	int8_t testInt8 = argsParser.get<int8_t>("testInt8");
+	std::cout << "testInt8: " << +testInt8 << std::endl;
+	int16_t testInt16 = argsParser.get<int16_t>("testInt16");
+	std::cout << "testInt16: " << testInt16 << std::endl;
+	int32_t testInt32 = argsParser.get<int32_t>("testInt32");
+	std::cout << "testInt32: " << testInt32 << std::endl;
+	int64_t testInt64 = argsParser.get<int64_t>("testInt64");
+	std::cout << "testInt64: " << testInt64 << std::endl;
+	uint8_t testUint8 = argsParser.get<uint8_t>("testUint8");
+	std::cout << "testUint8: " << +testUint8 << std::endl;
+	uint16_t testUint16 = argsParser.get<uint16_t>("testUint16");
+	std::cout << "testUint16: " << testUint16 << std::endl;
+	uint32_t testUint32 = argsParser.get<uint32_t>("testUint32");
+	std::cout << "testUint32: " << testUint32 << std::endl;
+	uint64_t testUint64 = argsParser.get<uint64_t>("testUint64");
+	std::cout << "testUint64: " << testUint64 << std::endl;
+	float_t testFloat = argsParser.get<float_t>("testFloat");
+	std::cout << "testFloat: " << testFloat << std::endl;
+	double testDouble = argsParser.get<double>("testDouble");
+	std::cout << "testDouble: " << testDouble << std::endl;
+	long double testLDouble = argsParser.get<long double>("testLDouble");
+	std::cout << "testLDouble: " << testLDouble << std::endl;
 
 	// run the game ------------------------------------------------------------
 	// // load the defaut gui

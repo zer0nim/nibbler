@@ -28,6 +28,67 @@ class ArgsParser {
 		void		parseArgs();
 		void		setProgDescr(std::string const &progDescr);
 
+		// -- get template to return value -------------------------------------
+		// willingly unimplemented the default template
+		template <typename T> T get(std::string const name) const {
+			(void)name;
+			// `unimplemented_function` identifier should be undefined
+			T::unimplemented_function;
+		}
+
+		template <> std::string	get<>(std::string const name) const {
+			(void)name;
+			return "test";
+		}
+		template <> bool		get<>(std::string const name) const {
+			(void)name;
+			return true;
+		}
+		template <> int8_t		get<>(std::string const name) const {
+			(void)name;
+			return 1;
+		}
+		template <> int16_t		get<>(std::string const name) const {
+			(void)name;
+			return 2;
+		}
+		template <> int32_t		get<>(std::string const name) const {
+			(void)name;
+			return 3;
+		}
+		template <> int64_t		get<>(std::string const name) const {
+			(void)name;
+			return 4;
+		}
+		template <> uint8_t		get<>(std::string const name) const {
+			(void)name;
+			return 5;
+		}
+		template <> uint16_t	get<>(std::string const name) const {
+			(void)name;
+			return 6;
+		}
+		template <> uint32_t	get<>(std::string const name) const {
+			(void)name;
+			return 7;
+		}
+		template <> uint64_t	get<>(std::string const name) const {
+			(void)name;
+			return 8;
+		}
+		template <> float_t		get<>(std::string const name) const {
+			(void)name;
+			return 9.9;
+		}
+		template <> double		get<>(std::string const name) const {
+			(void)name;
+			return 10.10;
+		}
+		template <> long double	get<>(std::string const name) const {
+			(void)name;
+			return 11.11;
+		}
+
 		// -- exceptions -------------------------------------------------------
 		class ArgsParserException : public std::runtime_error {
 			public:
