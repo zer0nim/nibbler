@@ -39,8 +39,8 @@ bool NibblerSFML::init() {
 }
 
 void NibblerSFML::updateInput() {
+	input.direction = Direction::NO_MOVE;
 	while (_win.pollEvent(_event)) {
-		input.direction = Direction::NO_MOVE;
 		switch (_event.type) {
 			// window closed
 			case sf::Event::Closed:

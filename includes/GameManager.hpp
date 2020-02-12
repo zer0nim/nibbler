@@ -49,7 +49,7 @@ private:
 	bool					_move(Direction::eDirection dir);
 	std::chrono::milliseconds _getMs();
 	Direction::eDirection	_acceptedDirection(Direction::eDirection dir);
-	bool					_isEmpty(glm::ivec2 pos) const;
+	bool					_isEmpty(glm::ivec2 pos, bool head = false) const;
 	void					_generateFood();
 	bool					_checkContact();
 

@@ -57,7 +57,22 @@ std::string	GameManager::toString() const {
 
 	result += "Gameboard [" + std::to_string(_gameboard.x) + ", "
 			+ std::to_string(_gameboard.y) + "]\n"
-			"snake length: " + std::to_string(_body->size()) + "\n";
+			"snake length: " + std::to_string(_body->size()) + "\n"
+			"game [";
+	switch (_play) {
+	case State::S_PLAY:
+		result += "PLAY";
+		break;
+	case State::S_PAUSE:
+		result += "PAUSE";
+		break;
+	case State::S_GAMEOVER:
+		result += "GAME OVER";
+		break;
+	default:
+		break;
+	}
+	result += "]\n";
 
 	result += getBoard();
 
@@ -231,10 +246,10 @@ Direction::eDirection	GameManager::_acceptedDirection(Direction::eDirection dir)
 	}
 }
 
-bool	GameManager::_isEmpty(glm::ivec2 pos) const {
+bool	GameManager::_isEmpty(glm::ivec2 pos, bool head) const {
 	if (pos == _food)
 		return false;
-	if (std::find(_body->begin(), _body->end(), pos) != _body->end())
+	if (std::find(head ? ++_body->begin() : _body->begin(), _body->end(), pos) != _body->end())
 		return false;
 	return true;
 }
@@ -242,7 +257,7 @@ bool	GameManager::_isEmpty(glm::ivec2 pos) const {
 bool GameManager::_checkContact() {
 	glm::ivec2 head = getHead();
 
-	if (_isEmpty(head))
+	if (_isEmpty(head, true))
 		return true;
 
 	if (head == _food) {
