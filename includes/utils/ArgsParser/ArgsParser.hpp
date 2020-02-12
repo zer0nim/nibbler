@@ -11,7 +11,7 @@
 #include "AInfoArg.hpp"
 #include "TNumberArg.hpp"
 
-typedef AInfoArg *(*BuilderFuncPtr)(ArgsParser *, std::string const);
+typedef AInfoArg *(*BuilderFuncPtr)(ArgsParser *, std::string const &, std::string const &, char);
 
 class ArgsParser {
 	public:
@@ -21,10 +21,16 @@ class ArgsParser {
 		ArgsParser	&operator=(ArgsParser const &rhs);
 
 		void		usage(bool longUsage = false) const;
-		bool		checkOptsAvailability(std::string const &name, std::string
-			const &longName, char shortName);
+		void		checkOptsAvailability(std::string const &name, std::string const &longName,
+			char shortName);
 		// create new arg of the specified type, add it to _argsInfos, then return a ref
 		AInfoArg	&addArgument(std::string const name, ArgType::Enum const type = ArgType::STRING);
+		// optionals arguments version
+		AInfoArg	&addArgument(std::string const name, ArgType::Enum const type,
+			std::string const longName, char shortName = A_NO_NAME);
+		// idem but easier to set only shortName
+		AInfoArg	&addArgument(std::string const name, ArgType::Enum const type,
+			char shortName, std::string const longName = std::string());
 		void		parseArgs();
 		void		setProgDescr(std::string const &progDescr);
 

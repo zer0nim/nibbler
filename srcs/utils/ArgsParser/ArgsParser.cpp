@@ -109,21 +109,15 @@ void	ArgsParser::usage(bool longUsage) const {
 }
 
 // test optionals name validity
-bool	ArgsParser::checkOptsAvailability(std::string const &name, std::string const
-	&longName, char shortName) {
-	std::string const	errInfo = "argument \"" + name + "\": setOptional('" + \
-		std::string(1, shortName) + "', \"" + longName + "\"): ";
-
-	// refuse empty longName && empty shortName
-	if (longName.empty() && shortName == A_NO_NAME) {
-		logErr(errInfo << "you need to specify at least a shortName or a longName");
-		return EXIT_FAILURE;
-	}
+void	ArgsParser::checkOptsAvailability(std::string const &name, std::string const &longName,
+	char shortName) {
+	std::string const	errInfo = "arg \"" + name + "\": addArgument(..., \"" + \
+		longName + "\", '" + std::string(1, shortName) + "'): ";
 
 	// shortName invalid char
 	if (!isalnum(shortName) && shortName != A_NO_NAME) {
-		logErr(errInfo << "shortName only accept alphanumeric chars");
-		return EXIT_FAILURE;
+		throw ArgsParserException(std::string(errInfo +
+			"shortName only accept alphanumeric chars").c_str());
 	}
 
 	// accept only alphanumeric and '-' '_' chars
@@ -132,40 +126,40 @@ bool	ArgsParser::checkOptsAvailability(std::string const &name, std::string cons
 	// longName invalid char
 	if (!longName.empty() && find_if(longName.begin(), longName.end(), isInvalidChar)
 		!= longName.end()) {
-		logErr(errInfo << "longName only accept alphanumeric, '-' and '_' chars");
-		return EXIT_FAILURE;
+		throw ArgsParserException(std::string(errInfo +
+			"longName only accept alphanumeric, '-' and '_' chars").c_str());
 	}
 
 	// refuse char '-' at the begining of a long/short name
 	if (shortName == '-' || longName[0] == '-') {
-		logErr(errInfo << "you can't put char '-' at the begining of a long/short name");
-		return EXIT_FAILURE;
+		throw ArgsParserException(std::string(errInfo +
+			"you can't put char '-' at the begining of a long/short name").c_str());
 	}
 
 	// The -W option is reserved by POSIX.2 for implementation extensions
 	if (shortName == 'W') {
-		logErr(errInfo << "the -W option is reserved by POSIX.2 for implementation extensions");
-		return EXIT_FAILURE;
+		throw ArgsParserException(std::string(errInfo +
+			"the -W option is reserved by POSIX.2 for implementation extensions").c_str());
 	}
 
 	// The -u option is reserved for usage
 	if (shortName == 'u') {
-		logErr(errInfo << "The -u short option is reserved for usage");
-		return EXIT_FAILURE;
+		throw ArgsParserException(std::string(errInfo +
+			"The -u short option is reserved for usage").c_str());
 	}
 
 	// The -u option is reserved for usage
 	if (longName == "usage") {
-		logErr(errInfo << "The --usage long option is reserved for usage");
-		return EXIT_FAILURE;
+		throw ArgsParserException(std::string(errInfo +
+			"The --usage long option is reserved for usage").c_str());
 	}
 
 	// short name
 	if (shortName != A_NO_NAME) {
 		// on duplication
 		if (_sOptArgsId.find(shortName) != _sOptArgsId.end()) {
-			logErr(errInfo << "short name duplication: " << "-" << shortName);
-			return EXIT_FAILURE;
+			throw ArgsParserException(std::string(errInfo +
+				"short name duplication: -" + shortName).c_str());
 		}
 		_sOptArgsId[shortName] = _argsId[name];
 	}
@@ -173,39 +167,41 @@ bool	ArgsParser::checkOptsAvailability(std::string const &name, std::string cons
 	if (!longName.empty()) {
 		// on duplication
 		if (_lOptArgsId.find(longName) != _lOptArgsId.end()) {
-			logErr(errInfo << "long name duplication: " << "--" << longName);
-			return EXIT_FAILURE;
+			throw ArgsParserException(std::string(errInfo +
+				"long name duplication: --" + longName).c_str());
 		}
 		_lOptArgsId[longName] = _argsId[name];
 	}
-
-	return EXIT_SUCCESS;
 }
 
 // create new arg of the specified type, add it to _argsInfos, then return a ref
-AInfoArg	&ArgsParser::addArgument(std::string const name, ArgType::Enum type) {
-	AInfoArg	*newElem = nullptr;
-
+AInfoArg	&ArgsParser::addArgument(std::string const name, ArgType::Enum const type,
+	std::string const longName, char shortName) {
 	// refuse empty name
 	if (name.empty()) {
 		throw ArgsParserException("addArgument don't accept empty name");
 	}
-
-	// create new argument
-	newElem = _builders[type](this, name);
 
 	// try to insert the element, fail on name duplicate
 	auto elem = _argsId.insert(std::pair<std::string, uint32_t>(name, _argsInfos.size()));
 
 	// on name duplication
 	if (!elem.second) {
-		logErr("argument name \"" << name << "\" is already taken");
-		delete newElem;
+		throw ArgsParserException(std::string("argument name \"" + name +
+			"\" is already taken").c_str());
 		return (*_argsInfos[elem.first->second]);  // return the existing element
 	}
 
-	_argsInfos.push_back(newElem);
+	// create and add new argument
+	_argsInfos.push_back(_builders[type](this, name, longName, shortName));
 	return (*_argsInfos.back());  // return the new element
+}
+AInfoArg	&ArgsParser::addArgument(std::string const name, ArgType::Enum const type) {
+	return addArgument(name, type, std::string());
+}
+AInfoArg	&ArgsParser::addArgument(std::string const name, ArgType::Enum const type,
+	char shortName, std::string const longName) {
+	return addArgument(name, type, longName, shortName);
 }
 
 // generate getopt_long parameters
@@ -364,30 +360,43 @@ ArgsParser::ArgsParserUsage::ArgsParserUsage()
 
 // used to construct AInfoArg* according to ArgType::Enum
 std::array<BuilderFuncPtr, 13> const ArgsParser::_builders = {
-	[](ArgsParser *argsParser, std::string const name) -> AInfoArg * {
-		return new StringArg(argsParser, name); },  // 									STRING
-	[](ArgsParser *argsParser, std::string const name) -> AInfoArg * {
-		return new BoolArg(argsParser, name); },  // 									BOOL
-	[](ArgsParser *argsParser, std::string const name) -> AInfoArg * {
-		return new NumberArg<int8_t>(argsParser, name, ArgType::INT8); },  // 			INT8
-	[](ArgsParser *argsParser, std::string const name) -> AInfoArg * {
-		return new NumberArg<int16_t>(argsParser, name, ArgType::INT16); },  // 		INT16
-	[](ArgsParser *argsParser, std::string const name) -> AInfoArg * {
-		return new NumberArg<int32_t>(argsParser, name, ArgType::INT32); },  // 		INT32
-	[](ArgsParser *argsParser, std::string const name) -> AInfoArg * {
-		return new NumberArg<int64_t>(argsParser, name, ArgType::INT64); },  // 		INT64
-	[](ArgsParser *argsParser, std::string const name) -> AInfoArg * {
-		return new NumberArg<uint8_t>(argsParser, name, ArgType::UINT8); },  // 		UINT8
-	[](ArgsParser *argsParser, std::string const name) -> AInfoArg * {
-		return new NumberArg<uint16_t>(argsParser, name, ArgType::UINT16); },  // 		UINT16
-	[](ArgsParser *argsParser, std::string const name) -> AInfoArg * {
-		return new NumberArg<uint32_t>(argsParser, name, ArgType::UINT32); },  // 		UINT32
-	[](ArgsParser *argsParser, std::string const name) -> AInfoArg * {
-		return new NumberArg<uint64_t>(argsParser, name, ArgType::UINT64); },  // 		UINT64
-	[](ArgsParser *argsParser, std::string const name) -> AInfoArg * {
-		return new NumberArg<float_t>(argsParser, name, ArgType::FLOAT); },  // 		FLOAT
-	[](ArgsParser *argsParser, std::string const name) -> AInfoArg * {
-		return new NumberArg<double>(argsParser, name, ArgType::DOUBLE); },  // 		DOUBLE
-	[](ArgsParser *argsParser, std::string const name) -> AInfoArg * {
-		return new NumberArg<long double>(argsParser, name, ArgType::L_DOUBLE); },  // L_DOUBLE
+	[](ArgsParser *argsParser, std::string const &name, std::string const &longName, char shortName)
+		-> AInfoArg * {  // STRING
+			return new StringArg(argsParser, name, longName, shortName); },
+	[](ArgsParser *argsParser, std::string const &name, std::string const &longName, char shortName)
+		-> AInfoArg * {  // BOOL
+			 return new BoolArg(argsParser, name, longName, shortName); },
+	[](ArgsParser *argsParser, std::string const &name, std::string const &longName, char shortName)
+		-> AInfoArg * {  // INT8
+			 return new NumberArg<int8_t>(argsParser, name, ArgType::INT8, longName, shortName); },
+	[](ArgsParser *argsParser, std::string const &name, std::string const &longName, char shortName)
+		-> AInfoArg * {  // INT16
+			 return new NumberArg<int16_t>(argsParser, name, ArgType::INT16, longName, shortName); },
+	[](ArgsParser *argsParser, std::string const &name, std::string const &longName, char shortName)
+		-> AInfoArg * {  // INT32
+			 return new NumberArg<int32_t>(argsParser, name, ArgType::INT32, longName, shortName); },
+	[](ArgsParser *argsParser, std::string const &name, std::string const &longName, char shortName)
+		-> AInfoArg * {  // INT64
+			 return new NumberArg<int64_t>(argsParser, name, ArgType::INT64, longName, shortName); },
+	[](ArgsParser *argsParser, std::string const &name, std::string const &longName, char shortName)
+		-> AInfoArg * {  // UINT8
+			 return new NumberArg<uint8_t>(argsParser, name, ArgType::UINT8, longName, shortName); },
+	[](ArgsParser *argsParser, std::string const &name, std::string const &longName, char shortName)
+		-> AInfoArg * {  // UINT16
+			 return new NumberArg<uint16_t>(argsParser, name, ArgType::UINT16, longName, shortName); },
+	[](ArgsParser *argsParser, std::string const &name, std::string const &longName, char shortName)
+		-> AInfoArg * {  // UINT32
+			 return new NumberArg<uint32_t>(argsParser, name, ArgType::UINT32, longName, shortName); },
+	[](ArgsParser *argsParser, std::string const &name, std::string const &longName, char shortName)
+		-> AInfoArg * {  // UINT64
+			 return new NumberArg<uint64_t>(argsParser, name, ArgType::UINT64, longName, shortName); },
+	[](ArgsParser *argsParser, std::string const &name, std::string const &longName, char shortName)
+		-> AInfoArg * {  // FLOAT
+			 return new NumberArg<float_t>(argsParser, name, ArgType::FLOAT, longName, shortName); },
+	[](ArgsParser *argsParser, std::string const &name, std::string const &longName, char shortName)
+		-> AInfoArg * {  // DOUBLE
+			 return new NumberArg<double>(argsParser, name, ArgType::DOUBLE, longName, shortName); },
+	[](ArgsParser *argsParser, std::string const &name, std::string const &longName, char shortName)
+		-> AInfoArg * {  // L_DOUBLE
+			 return new NumberArg<long double>(argsParser, name, ArgType::L_DOUBLE, longName, shortName); },
 };

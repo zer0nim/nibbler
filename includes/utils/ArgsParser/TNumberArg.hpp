@@ -10,12 +10,17 @@
 template<typename T>
 class NumberArg : public AInfoArg {
 	public:
-		NumberArg<T>(ArgsParser *argsParser, std::string name, ArgType::Enum const type)
-		: AInfoArg(argsParser, name, type),
+		NumberArg<T>(ArgsParser *argsParser, std::string const &name, ArgType::Enum const type,
+			std::string const &longName, char shortName)
+		: AInfoArg(argsParser, name, type, longName, shortName),
 		_min(std::numeric_limits<T>::lowest()),
 		_max(std::numeric_limits<T>::max()),
 		_defaultV(static_cast<T>(0)),
 		_value({static_cast<T>(0), false}) {
+			// if positionnal argument
+			if (!_required) {
+				_value.second = true;  // enable default value
+			}
 		}
 
 		virtual ~NumberArg<T>() {
@@ -146,10 +151,6 @@ class NumberArg : public AInfoArg {
 		// convert the input string to T
 		virtual void	setVal(std::string input);
 
-	protected:
-		// enable default value for optionnals args
-		virtual void	_enableDefaultV() { _value.second = true; }
-
 	private:
 		NumberArg<T>();
 
@@ -170,7 +171,11 @@ class NumberArg : public AInfoArg {
 
 		// -- templates to avoid code duplication ------------------------------
 		AInfoArg	&_setDefault(T defaultV) {
-			if (defaultV < _min) {
+			if (_required) {
+				throw AInfoArgError(std::string("arg \"" + _name + "\": setDefault(): "
+				"you can't set default value of positional arguments").c_str());
+			}
+			else if (defaultV < _min) {
 				throw AInfoArgError(std::string("arg \"" + _name + "\": setDefault(): default:" +
 					std::to_string(defaultV) + " < min:" + std::to_string(_min)).c_str());
 			}

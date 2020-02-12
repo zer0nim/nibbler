@@ -73,8 +73,7 @@ int main(int ac, char * const *av) {
 	argsParser.addArgument("testUint64", ArgType::UINT64);
 	argsParser.addArgument("testFloat", ArgType::FLOAT);
 	argsParser.addArgument("testDouble", ArgType::DOUBLE);
-	argsParser.addArgument("testLDouble", ArgType::L_DOUBLE)
-		.setOptional('t');
+	argsParser.addArgument("testLDouble", ArgType::L_DOUBLE);
 
 	try {
 		argsParser.parseArgs();

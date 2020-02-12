@@ -8,12 +8,22 @@
 
 // -----------------------------------------------------------------------------
 // -- AInfoArg -----------------------------------------------------------------
-AInfoArg::AInfoArg(ArgsParser	*argsParser, std::string name, ArgType::Enum type)
+AInfoArg::AInfoArg(ArgsParser *argsParser, std::string const &name, ArgType::Enum type,
+	std::string const &longName, char shortName)
 : _type(type),
   _name(name),
   _shortName(A_NO_NAME),
   _required(true),
   _argsParser(argsParser) {
+	// if the arg is optionnal
+	if (!longName.empty() || shortName != A_NO_NAME) {
+		// verify option name availability
+		_argsParser->checkOptsAvailability(_name, longName, shortName);
+
+		_required = false;
+		this->_shortName = shortName;
+		this->_longName = longName;
+	}
 }
 
 AInfoArg::~AInfoArg() {}
@@ -33,26 +43,6 @@ AInfoArg &AInfoArg::operator=(AInfoArg const &rhs) {
 	}
 	return *this;
 }
-
-// set optionnals arguments name
-AInfoArg	&AInfoArg::setOptional(std::string const &longName, char shortName) {
-	// verify option name availability
-	if (_argsParser->checkOptsAvailability(_name, longName, shortName) == EXIT_FAILURE) {
-		return *this;
-	}
-
-	_enableDefaultV();  // enable default value for optionnals args
-	_required = false;  // disable required for optionnals args
-
-	this->_shortName = shortName;
-	this->_longName = longName;
-	return *this;
-}
-// idem but allow to set shortName without longName
-AInfoArg	&AInfoArg::setOptional(char shortName = A_NO_NAME, std::string const &longName) {
-	return setOptional(longName, shortName);
-}
-
 
 AInfoArg	&AInfoArg::setHelp(std::string help) {
 	this->_help = help;
@@ -156,10 +146,15 @@ AInfoArg::AInfoArgError::AInfoArgError(const char* what_arg)
 
 // -----------------------------------------------------------------------------
 // -- StringArg ----------------------------------------------------------------
-StringArg::StringArg(ArgsParser *argsParser, std::string name)
-: AInfoArg(argsParser, name, ArgType::STRING),
+StringArg::StringArg(ArgsParser *argsParser, std::string const &name, std::string const &longName,
+	char shortName)
+: AInfoArg(argsParser, name, ArgType::STRING, longName, shortName),
   _min(0),
   _max(std::numeric_limits<uint32_t>::max()) {
+	// if positionnal argument
+	if (!_required) {
+		_value.second = true;  // enable default value
+	}
 }
 
 StringArg::~StringArg() {
@@ -185,7 +180,8 @@ void StringArg::print(std::ostream &out) const {
 
 	// print defaut string value
 	if (!_required) {
-		out << " " COLOR_L_VAL "default" COLOR_WHITE "=" COLOR_R_VAL "\"" << _defaultV << "\"" COLOR_WHITE;
+		out << " " COLOR_L_VAL "default" COLOR_WHITE "=" COLOR_R_VAL "\"" <<
+			_defaultV << "\"" COLOR_WHITE;
 	}
 
 	// print string min/max
@@ -200,11 +196,19 @@ void StringArg::print(std::ostream &out) const {
 }
 
 AInfoArg	&StringArg::setDefaultS(std::string defaultV) {
-	if (defaultV.size() < _min) {
-		logErr("argument \"" << _name << "\": setDefaultS(): default val length(" << defaultV.size() << ") < min:" << _min);
+	if (_required) {
+		throw AInfoArgError(std::string("arg \"" + _name + "\": setDefaultS(): "
+		"you can't set default value of positional arguments").c_str());
+	}
+	else if (defaultV.size() < _min) {
+		throw AInfoArgError(std::string("argument \"" + _name +
+			"\": setDefaultS(): default val length(" + std::to_string(defaultV.size())
+			+ ") < min:" + std::to_string(_min)).c_str());
 	}
 	else if (defaultV.size() > _max) {
-		logErr("argument \"" << _name << "\": setDefaultS(): default val length(" << defaultV.size() << ") > max:" << _max);
+		throw AInfoArgError(std::string("argument \"" + _name +
+			"\": setDefaultS(): default val length(" + std::to_string(defaultV.size())
+			+ ") > max:" + std::to_string(_max)).c_str());
 	}
 	else {
 		this->_defaultV = defaultV;
@@ -214,8 +218,9 @@ AInfoArg	&StringArg::setDefaultS(std::string defaultV) {
 }
 AInfoArg	&StringArg::setMinU(uint64_t min) {
 	if (!_required && min > _defaultV.size()) {
-		logErr("argument \"" << _name << "\": setMin(): min length(" << min << \
-			") > default val length(" << _defaultV.size() << ")");
+		throw AInfoArgError(std::string("argument \"" + _name +
+			"\": setMin(): min length(" + std::to_string(min) +
+			") > default val length(" + std::to_string(_defaultV.size()) + ")").c_str());
 	} else {
 		this->_min = min;
 	}
@@ -223,8 +228,9 @@ AInfoArg	&StringArg::setMinU(uint64_t min) {
 }
 AInfoArg	&StringArg::setMaxU(uint64_t max) {
 	if (!_required && max < _defaultV.size()) {
-		logErr("argument \"" << _name << "\": setMax(): max length(" << max << \
-			") < default val length(" << _defaultV.size() << ")");
+		throw AInfoArgError(std::string("argument \"" + _name +
+			"\": setMax(): max length(" + std::to_string(max) + ") < default val length("
+			+ std::to_string(_defaultV.size()) + ")").c_str());
 	}
 	else {
 		this->_max = max;
@@ -239,30 +245,36 @@ std::pair<std::string, bool>	StringArg::getVal() const { return _value; }
 // test the input string and save it
 void			StringArg::setVal(std::string input) {
 	if (input.empty()) {
-		logErr("parseArgs(): argument \"" << _name << "\": input can't be empty");
+		throw AInfoArgError(std::string("parseArgs(): argument \"" + _name +
+			"\": input can't be empty").c_str());
 	}
 	else if (input.size() < _min) {
-		logErr("parseArgs(): argument \"" << _name << "\": input length(" << input.size() << \
-			") < min length(" << _min << ")");
+		throw AInfoArgError(std::string("parseArgs(): argument \"" + _name +
+			"\": input length(" + std::to_string(input.size()) + ") < min length("
+			+ std::to_string(_min) + ")").c_str());
 	}
 	else if (input.size() > _max) {
-		logErr("parseArgs(): argument \"" << _name << "\": input length(" << input.size() << \
-			") > max length(" << _max << ")");
+		throw AInfoArgError(std::string("parseArgs(): argument \"" + _name +
+			"\": input length(" + std::to_string(input.size()) + ") > max length("
+			+ std::to_string(_max) + ")").c_str());
 	}
 	else {
 		_value = {input, true};
 	}
 }
 
-void	StringArg::_enableDefaultV() { _value.second = true; }
-
 // -----------------------------------------------------------------------------
 // -- BoolArg ------------------------------------------------------------------
-BoolArg::BoolArg(ArgsParser *argsParser, std::string name)
-: AInfoArg(argsParser, name, ArgType::BOOL),
+BoolArg::BoolArg(ArgsParser *argsParser, std::string const &name, std::string const &longName,
+	char shortName)
+: AInfoArg(argsParser, name, ArgType::BOOL, longName, shortName),
   _defaultV(false),
   _storeTrue(false),
   _value({false, true}) {
+	// if positionnal argument
+	if (!_required) {
+		_value.second = true;  // enable default value
+	}
 }
 
 BoolArg::~BoolArg() {
@@ -296,6 +308,10 @@ void BoolArg::print(std::ostream &out) const {
 }
 
 AInfoArg	&BoolArg::setDefaultB(bool defaultV) {
+	if (_required) {
+		throw AInfoArgError(std::string("arg \"" + _name + "\": setDefaultB(): "
+		"you can't set default value of positional arguments").c_str());
+	}
 	this->_defaultV = defaultV;
 	_value = {defaultV, true};  // update _value accordingly
 	return *this;
@@ -315,7 +331,7 @@ std::string	trimS(std::string const &str) {
 	std::size_t start = str.find_first_not_of(whitespace);
 	// if no characters are found
 	if (start == std::string::npos) {
-	    return std::string();
+		return std::string();
 	}
 	std::size_t end = str.find_last_not_of(whitespace);
 
@@ -342,8 +358,7 @@ void	BoolArg::setVal(std::string input) {
 		_value = {false, true};
 	}
 	else {
-		logErr("failed to cast input \"" << input << "\" to bool");
+		throw AInfoArgError(std::string("failed to cast input \"" + input +
+			"\" to bool").c_str());
 	}
 }
-
-void	BoolArg::_enableDefaultV() { _value.second = true; }

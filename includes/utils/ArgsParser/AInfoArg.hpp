@@ -60,8 +60,6 @@ class AInfoArg {
 		virtual				~AInfoArg();
 
 		// -- common settings func ---------------------------------------------
-		AInfoArg			&setOptional(std::string const &longName, char shortName = A_NO_NAME);
-		AInfoArg			&setOptional(char shortName, std::string const &longName = "");
 		AInfoArg			&setHelp(std::string help);
 
 		// -- args settings func -----------------------------------------------
@@ -103,11 +101,11 @@ class AInfoArg {
 		};
 
 	protected:
-		explicit	AInfoArg(ArgsParser *argsParser, std::string name, ArgType::Enum type);
+		AInfoArg(ArgsParser *argsParser, std::string const &name, ArgType::Enum type,
+			std::string const &longName, char shortName);
+
 		AInfoArg(AInfoArg const &src);
 		AInfoArg	&operator=(AInfoArg const &rhs);
-		// enable default value for optionnals args
-		virtual void	_enableDefaultV() = 0;
 
 		ArgType::Enum	_type;
 		std::string		_name;
@@ -128,7 +126,9 @@ std::ostream & operator << (std::ostream &out, const AInfoArg &aInfo);
 // -- StringArg ----------------------------------------------------------------
 class StringArg : public AInfoArg {
 	public:
-		StringArg(ArgsParser *argsParser, std::string name);
+		StringArg(ArgsParser *argsParser, std::string const &name, std::string const &longName,
+			char shortName);
+
 		virtual ~StringArg();
 		StringArg(StringArg const &src);
 		StringArg &operator=(StringArg const &rhs);
@@ -145,10 +145,6 @@ class StringArg : public AInfoArg {
 
 		virtual	void	setVal(std::string input);
 
-	protected:
-		// enable default value for optionnals args
-		virtual void	_enableDefaultV();
-
 	private:
 		StringArg();
 
@@ -161,7 +157,8 @@ class StringArg : public AInfoArg {
 // -- BoolArg ------------------------------------------------------------------
 class BoolArg : public AInfoArg {
 	public:
-		BoolArg(ArgsParser *argsParser, std::string name);
+		BoolArg(ArgsParser *argsParser, std::string const &name, std::string const &longName,
+			char shortName);
 		virtual ~BoolArg();
 		BoolArg(BoolArg const &src);
 		BoolArg &operator=(BoolArg const &rhs);
@@ -175,10 +172,6 @@ class BoolArg : public AInfoArg {
 		std::pair<bool, bool>	getVal() const;
 
 		virtual	void	setVal(std::string input);
-
-	protected:
-		// enable default value for optionnals args
-		virtual void	_enableDefaultV();
 
 	private:
 		BoolArg();
