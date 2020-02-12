@@ -12,6 +12,7 @@
 
 namespace Direction {
 	enum eDirection {
+		NO_MOVE,
 		MOVE_UP,
 		MOVE_RIGHT,
 		MOVE_DOWN,

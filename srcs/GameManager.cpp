@@ -7,20 +7,22 @@
 
 GameManager::GameManager() {
 	_moveSpeed = 3.0f;
-	_play = true;
+	_play = State::S_PAUSE;
 	_gameboard = glm::ivec2(25, 25);
 	_body = new std::deque<glm::ivec2>();
 	_direction = Direction::MOVE_RIGHT;
 	_food = {-1, -1};
+	_eating = 0;
 }
 
 GameManager::GameManager(int height, int width, float moveSpeed)
 : _moveSpeed(moveSpeed) {
 	_body = new std::deque<glm::ivec2>();
 	_gameboard = glm::ivec2(height, width);
-	_play = true;
+	_play = State::S_PAUSE;
 	_direction = Direction::MOVE_RIGHT;
 	_food = {-1, -1};
+	_eating = 0;
 }
 
 GameManager::~GameManager() {
@@ -127,10 +129,16 @@ void	GameManager::run() {
 		time_start = _getMs();
 		nibblerGui->updateInput();
 
+		if (_play == State::S_PAUSE && nibblerGui->input.direction != Direction::NO_MOVE)
+			_play = State::S_PLAY;
+
 		logDebug("Game : " << *this);
 		logDebug("moving direction " << nibblerGui->input.direction);
 
-		_move(nibblerGui->input.direction);
+		if (_play == State::S_PLAY) {
+			_move(nibblerGui->input.direction);
+			_checkContact();
+		}
 
 		// verify id viability
 		if (nibblerGui->input.loadGuiID < NB_GUI && \
@@ -181,13 +189,21 @@ bool	GameManager::_move(Direction::eDirection dir) {
 		case Direction::MOVE_LEFT:
 			head += V_LEFT;
 			break;
+		default:
+			return false;
 	}
 	std::cout << "[head :" << glm::to_string(head);
 	head.x = (head.x + _gameboard.x) % _gameboard.x;
 	head.y = (head.y + _gameboard.y) % _gameboard.y;
 	std::cout << ", normalized: " << glm::to_string(head) << "]" << std::endl;
 	_body->push_front(head);
-	_body->pop_back();
+	if (_eating <= 0) {
+		_body->pop_back();
+		if (_eating < 0)
+			_eating = 0;
+	} else {
+		_eating -= 1;
+	}
 	return true;
 }
 
@@ -221,6 +237,22 @@ bool	GameManager::_isEmpty(glm::ivec2 pos) const {
 	if (std::find(_body->begin(), _body->end(), pos) != _body->end())
 		return false;
 	return true;
+}
+
+bool GameManager::_checkContact() {
+	glm::ivec2 head = getHead();
+
+	if (_isEmpty(head))
+		return true;
+
+	if (head == _food) {
+		_eating += 1;
+		_generateFood();
+		return true;
+	} else {
+		_play = State::S_GAMEOVER;
+		return false;
+	}
 }
 
 void	GameManager::_generateFood() {

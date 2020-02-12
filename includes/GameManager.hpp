@@ -26,15 +26,24 @@
 #include "DynGuiManager.hpp"
 #include "ANibblerGui.hpp"
 
+namespace State {
+	enum eState {
+		S_PLAY,
+		S_PAUSE,
+		S_GAMEOVER,
+	};
+}
+
 class GameManager {
 private:
 	// Members
 	glm::ivec2				_gameboard;
 	glm::ivec2				_food;
-	bool					_play;
+	State::eState			_play;
 	std::deque<glm::ivec2>*	_body;
 	float					_moveSpeed;
 	Direction::eDirection	_direction;
+	int						_eating;
 
 	// Methods
 	bool					_move(Direction::eDirection dir);
@@ -42,6 +51,7 @@ private:
 	Direction::eDirection	_acceptedDirection(Direction::eDirection dir);
 	bool					_isEmpty(glm::ivec2 pos) const;
 	void					_generateFood();
+	bool					_checkContact();
 
 public:
 	// Members

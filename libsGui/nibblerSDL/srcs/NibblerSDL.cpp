@@ -64,6 +64,7 @@ bool NibblerSDL::init() {
 
 void NibblerSDL::updateInput() {
 	while (SDL_PollEvent(_event)) {
+		input.direction = Direction::NO_MOVE;
 		if (_event->window.event == SDL_WINDOWEVENT_CLOSE)
 			input.quit = true;
 		else if (_event->key.type == SDL_KEYDOWN && _event->key.keysym.sym == SDLK_ESCAPE)
