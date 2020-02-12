@@ -1,6 +1,8 @@
 #ifndef TNUMBERARG_HPP_
 #define TNUMBERARG_HPP_
 
+#include <sstream>
+
 #include "AInfoArg.hpp"
 #include "ArgsParser.hpp"
 
@@ -12,7 +14,7 @@ class NumberArg : public AInfoArg {
 		: AInfoArg(argsParser, name, type),
 		_min(std::numeric_limits<T>::lowest()),
 		_max(std::numeric_limits<T>::max()),
-		_defaultV({static_cast<T>(0), false}),
+		_defaultV(static_cast<T>(0)),
 		_value({static_cast<T>(0), false}) {
 		}
 
@@ -38,9 +40,9 @@ class NumberArg : public AInfoArg {
 			AInfoArg::print(out);
 
 			// print defaut int value
-			if (_defaultV.second) {
+			if (!_required) {
 				out << " " COLOR_L_VAL "default" COLOR_WHITE "=" COLOR_R_VAL <<
-					_defaultV.first << COLOR_WHITE;
+					_defaultV << COLOR_WHITE;
 			}
 
 			// print string min/max
@@ -65,18 +67,21 @@ class NumberArg : public AInfoArg {
 		// ---- only enabled for floating point --------------------------------
 		AInfoArg	&setDefaultF(long double defaultV) {
 			if (std::is_floating_point<T>::value) {
+				_assertRange<long double>("setDefaultF", defaultV);
 				return _setDefault(defaultV);
 			}
 			return AInfoArg::setDefaultF(defaultV);
 		};
 		AInfoArg	&setMinF(long double min) {
 			if (std::is_floating_point<T>::value) {
+				_assertRange<long double>("setMinF", min);
 				return _setMin(min);
 			}
 			return AInfoArg::setMinF(min);
 		};
 		AInfoArg	&setMaxF(long double max) {
 			if (std::is_floating_point<T>::value) {
+				_assertRange<long double>("setMaxF", max);
 				return _setMax(max);
 			}
 			return AInfoArg::setMaxF(max);
@@ -84,18 +89,21 @@ class NumberArg : public AInfoArg {
 		// ---- only enabled for signed integral -------------------------------
 		AInfoArg	&setDefaultI(int64_t defaultV) {
 			if (std::is_integral<T>::value && std::is_signed<T>::value) {
+				_assertRange<int64_t>("setDefaultI", defaultV);
 				return _setDefault(defaultV);
 			}
 			return AInfoArg::setDefaultI(defaultV);
 		};
 		AInfoArg	&setMinI(int64_t min) {
 			if (std::is_integral<T>::value && std::is_signed<T>::value) {
+				_assertRange<int64_t>("setMinI", min);
 				return _setMin(min);
 			}
 			return AInfoArg::setMinI(min);
 		};
 		AInfoArg	&setMaxI(int64_t max) {
 			if (std::is_integral<T>::value && std::is_signed<T>::value) {
+				_assertRange<int64_t>("setMaxI", max);
 				return _setMax(max);
 			}
 			return AInfoArg::setMaxI(max);
@@ -104,18 +112,21 @@ class NumberArg : public AInfoArg {
 		// ---- only enabled for unsigned integral -----------------------------
 		AInfoArg	&setDefaultU(uint64_t defaultV) {
 			if (std::is_unsigned<T>::value) {
+				_assertRange<uint64_t>("setDefaultU", defaultV);
 				return _setDefault(defaultV);
 			}
 			return AInfoArg::setDefaultU(defaultV);
 		};
 		AInfoArg	&setMinU(uint64_t min) {
 			if (std::is_unsigned<T>::value) {
+				_assertRange<uint64_t>("setMinU", min);
 				return _setMin(min);
 			}
 			return AInfoArg::setMinU(min);
 		};
 		AInfoArg	&setMaxU(uint64_t max) {
 			if (std::is_unsigned<T>::value) {
+				_assertRange<uint64_t>("setMaxU", max);
 				return _setMax(max);
 			}
 			return AInfoArg::setMaxU(max);
@@ -124,24 +135,12 @@ class NumberArg : public AInfoArg {
 		// -- getters ----------------------------------------------------------
 		T					getMin() const { return _min; }
 		T					getMax() const { return _max; };
-		std::pair<T, bool>	getDefaultV() const { return _defaultV; }
 		std::pair<T, bool>	getVal() const { return _value; }
 
 		template<typename U>
 		void	saveVal(U val) {
-			if (val < _min) {
-				throw AInfoArgError(std::string("parseArgs(): argument \"" + _name +
-					"\": out of range, val:" + std::to_string(val) + " < min:" +
-					std::to_string(_min)).c_str());
-			}
-			else if (val > _max) {
-				throw AInfoArgError(std::string("parseArgs(): argument \"" + _name +
-					"\": out of range, val:" + std::to_string(val) + " > max:" +
-					std::to_string(_max)).c_str());
-			}
-			else {
-				_value = {static_cast<T>(val), true};
-			}
+			_assertRange<U>("parseArgs", val);
+			_value = {static_cast<T>(val), true};
 		}
 
 		// convert the input string to T
@@ -154,27 +153,42 @@ class NumberArg : public AInfoArg {
 	private:
 		NumberArg<T>();
 
+		// helper to test range value
+		template<typename V>
+		void	_assertRange(std::string const fName, V val, bool outOfRange = false) {
+			if (val < static_cast<V>(_min) || val > static_cast<V>(_max) ||
+				outOfRange) {
+				std::stringstream strS;
+				strS << "arg \"" << _name << "\": " << fName << "(): ";
+				if (!outOfRange) {
+					strS << val << " ";
+				}
+				strS << " out of range: [" << +_min << ":" << +_max << "]";
+				throw AInfoArgError(strS.str().c_str());
+			}
+		}
+
 		// -- templates to avoid code duplication ------------------------------
 		AInfoArg	&_setDefault(T defaultV) {
 			if (defaultV < _min) {
-				throw AInfoArgError(std::string("argument \"" + _name + "\": setDefault(): default:" +
+				throw AInfoArgError(std::string("arg \"" + _name + "\": setDefault(): default:" +
 					std::to_string(defaultV) + " < min:" + std::to_string(_min)).c_str());
 			}
 			else if (defaultV > _max) {
-				throw AInfoArgError(std::string("argument \"" + _name + "\": setDefault(): default:" +
+				throw AInfoArgError(std::string("arg \"" + _name + "\": setDefault(): default:" +
 					std::to_string(defaultV) + " > max:" + std::to_string(_max)).c_str());
 			}
 			else {
-				this->_defaultV = {defaultV, true};
+				this->_defaultV = defaultV;
 				_value = {defaultV, true};  // update _value accordingly
 			}
 			return *this;
 		};
 
 		AInfoArg	&_setMin(T min) {
-			if (_defaultV.second && _defaultV.first < min) {
-				throw AInfoArgError(std::string("argument \"" + _name + "\": setMin(): min:" +
-					std::to_string(min) + " > default:" + std::to_string(_defaultV.first)).c_str());
+			if (!_required && _defaultV < min) {
+				throw AInfoArgError(std::string("arg \"" + _name + "\": setMin(): min:" +
+					std::to_string(min) + " > default:" + std::to_string(_defaultV)).c_str());
 			}
 			else {
 				this->_min = min;
@@ -183,9 +197,9 @@ class NumberArg : public AInfoArg {
 		};
 
 		AInfoArg	&_setMax(T max) {
-			if (_defaultV.second && _defaultV.first > max) {
-				throw AInfoArgError(std::string("argument \"" + _name + "\": setMax(): max:" +
-					std::to_string(max) + " < default:" + std::to_string(_defaultV.first)).c_str());
+			if (!_required && _defaultV > max) {
+				throw AInfoArgError(std::string("arg \"" + _name + "\": setMax(): max:" +
+					std::to_string(max) + " < default:" + std::to_string(_defaultV)).c_str());
 			}
 			else {
 				this->_max = max;
@@ -196,7 +210,7 @@ class NumberArg : public AInfoArg {
 
 		T					_min;
 		T					_max;
-		std::pair<T, bool>	_defaultV;
+		T					_defaultV;
 		std::pair<T, bool>	_value;
 };
 
@@ -227,7 +241,7 @@ convertVal(NumberArg<T> *ref, std::string input) {
 	// first cast input to double to detect out of range
 	double	dVal = std::stod(input);
 	if (dVal < 0 || dVal > std::numeric_limits<uint64_t>::max()) {
-		throw std::out_of_range("out of range input");
+		throw AInfoArg::AInfoArgError("out of range input");
 	}
 	// reconvert again for precision
 	uint64_t val = std::stoull(input);
@@ -243,12 +257,11 @@ void	NumberArg<T>::setVal(std::string input) {
 		convertVal<T>(this, input);
 	}
 	catch (const std::out_of_range &e) {
-		throw AInfoArgError(std::string("parseArgs(): argument \"" + _name +
-			"\": out of range input \"" + input + "\"").c_str());
+		_assertRange<T>("parseArgs", 0, true);
 	}
 	catch (const std::invalid_argument &e) {
-		throw AInfoArgError(std::string("parseArgs(): argument \"" + _name +
-			"\": failed to convert input \"" + input + "\"").c_str());
+		throw AInfoArgError(std::string("arg \"" + _name +
+			"\": parseArgs(): failed to convert input \"" + input + "\"").c_str());
 	}
 }
 

@@ -61,63 +61,62 @@ AInfoArg	&AInfoArg::setHelp(std::string help) {
 
 // -- unknown function ---------------------------------------------------------
 void		AInfoArg::unknownFunction(std::string const &funcName) {
-	logErr("argument of type " << ArgType::enumNames[_type] <<
-		" can't use \"" << funcName << '"');
-	throw AInfoArgError("unknown function");
+	throw AInfoArgError(std::string("argument of type " + ArgType::enumNames[_type]
+		+ " can't use \"" + funcName + '"').c_str());
 }
 AInfoArg	&AInfoArg::setDefaultS(std::string defaultV) {
 	(void)defaultV;
-	unknownFunction("setDefault");
+	unknownFunction("setDefaultS");
 	return *this;
 }
 AInfoArg	&AInfoArg::setDefaultB(bool defaultV) {
 	(void)defaultV;
-	unknownFunction("setDefault");
+	unknownFunction("setDefaultB");
 	return *this;
 }
 AInfoArg	&AInfoArg::setDefaultF(long double defaultV) {
 	(void)defaultV;
-	unknownFunction("setDefault");
+	unknownFunction("setDefaultF");
 	return *this;
 }
 AInfoArg	&AInfoArg::setMinF(long double min) {
 	(void)min;
-	unknownFunction("setMin");
+	unknownFunction("setMinF");
 	return *this;
 }
 AInfoArg	&AInfoArg::setMaxF(long double max) {
 	(void)max;
-	unknownFunction("setMax");
+	unknownFunction("setMaxF");
 	return *this;
 }
 AInfoArg	&AInfoArg::setDefaultI(int64_t defaultV) {
 	(void)defaultV;
-	unknownFunction("setDefault");
+	unknownFunction("setDefaultI");
 	return *this;
 }
 AInfoArg	&AInfoArg::setMinI(int64_t min) {
 	(void)min;
-	unknownFunction("setMin");
+	unknownFunction("setMinI");
 	return *this;
 }
 AInfoArg	&AInfoArg::setMaxI(int64_t max) {
 	(void)max;
-	unknownFunction("setMax");
+	unknownFunction("setMaxI");
 	return *this;
 }
 AInfoArg	&AInfoArg::setDefaultU(uint64_t defaultV) {
 	(void)defaultV;
-	unknownFunction("setDefault");
+	unknownFunction("setDefaultU");
 	return *this;
 }
 AInfoArg	&AInfoArg::setMinU(uint64_t min) {
 	(void)min;
-	unknownFunction("setMin");
+	unknownFunction("setMinU");
 	return *this;
 }
 AInfoArg	&AInfoArg::setMaxU(uint64_t max) {
 	(void)max;
-	unknownFunction("setMax");
+	unknownFunction("setMaxU");
 	return *this;
 }
 AInfoArg	&AInfoArg::setStoreTrue(bool storeTrue) {
@@ -150,18 +149,17 @@ bool				AInfoArg::getRequired() const { return _required; }
 
 // -- exceptions ---------------------------------------------------------------
 AInfoArg::AInfoArgError::AInfoArgError()
-: std::runtime_error("[AInfoArgError]") {}
+: std::runtime_error("") {}
 
 AInfoArg::AInfoArgError::AInfoArgError(const char* what_arg)
-: std::runtime_error(std::string(std::string("[AInfoArgError] ") + what_arg).c_str()) {}
+: std::runtime_error(what_arg) {}
 
 // -----------------------------------------------------------------------------
 // -- StringArg ----------------------------------------------------------------
 StringArg::StringArg(ArgsParser *argsParser, std::string name)
 : AInfoArg(argsParser, name, ArgType::STRING),
   _min(0),
-  _max(std::numeric_limits<uint32_t>::max()),
-  _defaultV({"", false}) {
+  _max(std::numeric_limits<uint32_t>::max()) {
 }
 
 StringArg::~StringArg() {
@@ -186,8 +184,8 @@ void StringArg::print(std::ostream &out) const {
 	AInfoArg::print(out);
 
 	// print defaut string value
-	if (_defaultV.second) {
-		out << " " COLOR_L_VAL "default" COLOR_WHITE "=" COLOR_R_VAL "\"" << _defaultV.first << "\"" COLOR_WHITE;
+	if (!_required) {
+		out << " " COLOR_L_VAL "default" COLOR_WHITE "=" COLOR_R_VAL "\"" << _defaultV << "\"" COLOR_WHITE;
 	}
 
 	// print string min/max
@@ -202,34 +200,31 @@ void StringArg::print(std::ostream &out) const {
 }
 
 AInfoArg	&StringArg::setDefaultS(std::string defaultV) {
-	if (defaultV.empty()) {
-		logErr("argument \"" << _name << "\": setDefaultS(): default val can't be empty");
-	}
-	else if (defaultV.size() < _min) {
+	if (defaultV.size() < _min) {
 		logErr("argument \"" << _name << "\": setDefaultS(): default val length(" << defaultV.size() << ") < min:" << _min);
 	}
 	else if (defaultV.size() > _max) {
 		logErr("argument \"" << _name << "\": setDefaultS(): default val length(" << defaultV.size() << ") > max:" << _max);
 	}
 	else {
-		this->_defaultV = {defaultV, true};
+		this->_defaultV = defaultV;
 		_value = {defaultV, true};  // update _value accordingly
 	}
 	return *this;
 }
 AInfoArg	&StringArg::setMinU(uint64_t min) {
-	if (_defaultV.second && min > _defaultV.first.size()) {
+	if (!_required && min > _defaultV.size()) {
 		logErr("argument \"" << _name << "\": setMin(): min length(" << min << \
-			") > default val length(" << _defaultV.first.size() << ")");
+			") > default val length(" << _defaultV.size() << ")");
 	} else {
 		this->_min = min;
 	}
 	return *this;
 }
 AInfoArg	&StringArg::setMaxU(uint64_t max) {
-	if (_defaultV.second && max < _defaultV.first.size()) {
+	if (!_required && max < _defaultV.size()) {
 		logErr("argument \"" << _name << "\": setMax(): max length(" << max << \
-			") < default val length(" << _defaultV.first.size() << ")");
+			") < default val length(" << _defaultV.size() << ")");
 	}
 	else {
 		this->_max = max;
@@ -239,7 +234,6 @@ AInfoArg	&StringArg::setMaxU(uint64_t max) {
 
 uint32_t		StringArg::getMin() const { return _min; }
 uint32_t		StringArg::getMax() const { return _max; }
-std::pair<std::string, bool>	StringArg::getDefaultV() const { return _defaultV; }
 std::pair<std::string, bool>	StringArg::getVal() const { return _value; }
 
 // test the input string and save it
@@ -311,7 +305,6 @@ AInfoArg	&BoolArg::setStoreTrue(bool storeTrue) {
 	return *this;
 }
 
-bool	BoolArg::getDefaultV() const { return _defaultV; }
 bool	BoolArg::getStoreTrue() const { return _storeTrue; }
 std::pair<bool, bool>	BoolArg::getVal() const { return _value; }
 

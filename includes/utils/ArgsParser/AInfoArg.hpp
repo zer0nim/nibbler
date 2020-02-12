@@ -141,7 +141,6 @@ class StringArg : public AInfoArg {
 
 		uint32_t		getMin() const;  // min string lenght
 		uint32_t		getMax() const;  // max string lenght
-		std::pair<std::string, bool>	getDefaultV() const;
 		std::pair<std::string, bool>	getVal() const;
 
 		virtual	void	setVal(std::string input);
@@ -153,9 +152,9 @@ class StringArg : public AInfoArg {
 	private:
 		StringArg();
 
-		uint32_t		_min;  // min string lenght
-		uint32_t		_max;  // max string lenght
-		std::pair<std::string, bool>	_defaultV;
+		uint32_t	_min;  // min string lenght
+		uint32_t	_max;  // max string lenght
+		std::string	_defaultV;
 		std::pair<std::string, bool>	_value;
 };
 
@@ -172,7 +171,6 @@ class BoolArg : public AInfoArg {
 		virtual AInfoArg	&setDefaultB(bool defaultV);
 		virtual AInfoArg	&setStoreTrue(bool storeTrue = true);
 
-		bool	getDefaultV() const;
 		bool	getStoreTrue() const;  // allow to skip val for bool
 		std::pair<bool, bool>	getVal() const;
 
