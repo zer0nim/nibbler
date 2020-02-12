@@ -8,8 +8,8 @@
 template<typename T>
 class NumberArg : public AInfoArg {
 	public:
-		NumberArg<T>(ArgsParser *argsParser, std::string name)
-		: AInfoArg(argsParser, name, ArgType::INT32),
+		NumberArg<T>(ArgsParser *argsParser, std::string name, ArgType::Enum const type)
+		: AInfoArg(argsParser, name, type),
 		_min(std::numeric_limits<T>::lowest()),
 		_max(std::numeric_limits<T>::max()),
 		_defaultV({static_cast<T>(0), false}),

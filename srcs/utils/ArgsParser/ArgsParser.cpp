@@ -209,7 +209,7 @@ AInfoArg	&ArgsParser::addArgument(std::string const name, ArgType::Enum type) {
 }
 
 // generate getopt_long parameters
-void	ArgsParser::initGetopt() {
+void	ArgsParser::_initGetopt() {
 	_opts = 'u';
 	_longOpts = {{ "usage", no_argument, NULL, 'u' }};
 
@@ -250,7 +250,7 @@ void	ArgsParser::parseArgs() {
 		throw ArgsParserException("you need to specify arguments !");
 	}
 
-	initGetopt();  // generate getopt_long parameters
+	_initGetopt();  // generate getopt_long parameters
 
 	// manage optionals args
 	while ((opt = getopt_long(_ac, _av, _opts.c_str(), _longOpts.data(), &longIndex)) != -1) {
@@ -330,6 +330,26 @@ void	ArgsParser::parseArgs() {
 
 void	ArgsParser::setProgDescr(std::string const &progDescr) { _progDescr = progDescr; }
 
+// helper function to retrieve an argument by name
+AInfoArg	*ArgsParser::_get(std::string const name, ArgType::Enum const type) const {
+	auto it = _argsId.find(name);
+
+	// argument `name` not found
+	if (it == _argsId.end()) {
+		throw ArgsParserException(std::string("argument \"" + name + "\" not found").c_str());
+	}
+
+	// invalid type
+	if (_argsInfos[it->second]->getType() != type) {
+		throw ArgsParserException(std::string("Argument \"" + name +
+			"\": types do not match.\nYou ask for an " + ArgType::enumNames[type] +
+			", but the arg is of type " + ArgType::enumNames[
+			_argsInfos[it->second]->getType()]).c_str());
+	}
+
+	return _argsInfos[it->second];
+}
+
 // -- exceptions ---------------------------------------------------------------
 ArgsParser::ArgsParserException::ArgsParserException()
 : std::runtime_error("[ArgsParserError]") {}
@@ -345,29 +365,29 @@ ArgsParser::ArgsParserUsage::ArgsParserUsage()
 // used to construct AInfoArg* according to ArgType::Enum
 std::array<BuilderFuncPtr, 13> const ArgsParser::_builders = {
 	[](ArgsParser *argsParser, std::string const name) -> AInfoArg * {
-		return new StringArg(argsParser, name); },  // 				STRING
+		return new StringArg(argsParser, name); },  // 									STRING
 	[](ArgsParser *argsParser, std::string const name) -> AInfoArg * {
-		return new BoolArg(argsParser, name); },  // 				BOOL
+		return new BoolArg(argsParser, name); },  // 									BOOL
 	[](ArgsParser *argsParser, std::string const name) -> AInfoArg * {
-		return new NumberArg<int8_t>(argsParser, name); },  // 		INT8
+		return new NumberArg<int8_t>(argsParser, name, ArgType::INT8); },  // 			INT8
 	[](ArgsParser *argsParser, std::string const name) -> AInfoArg * {
-		return new NumberArg<int16_t>(argsParser, name); },  // 	INT16
+		return new NumberArg<int16_t>(argsParser, name, ArgType::INT16); },  // 		INT16
 	[](ArgsParser *argsParser, std::string const name) -> AInfoArg * {
-		return new NumberArg<int32_t>(argsParser, name); },  // 	INT32
+		return new NumberArg<int32_t>(argsParser, name, ArgType::INT32); },  // 		INT32
 	[](ArgsParser *argsParser, std::string const name) -> AInfoArg * {
-		return new NumberArg<int64_t>(argsParser, name); },  // 	INT64
+		return new NumberArg<int64_t>(argsParser, name, ArgType::INT64); },  // 		INT64
 	[](ArgsParser *argsParser, std::string const name) -> AInfoArg * {
-		return new NumberArg<uint8_t>(argsParser, name); },  // 	UINT8
+		return new NumberArg<uint8_t>(argsParser, name, ArgType::UINT8); },  // 		UINT8
 	[](ArgsParser *argsParser, std::string const name) -> AInfoArg * {
-		return new NumberArg<uint16_t>(argsParser, name); },  // 	UINT16
+		return new NumberArg<uint16_t>(argsParser, name, ArgType::UINT16); },  // 		UINT16
 	[](ArgsParser *argsParser, std::string const name) -> AInfoArg * {
-		return new NumberArg<uint32_t>(argsParser, name); },  // 	UINT32
+		return new NumberArg<uint32_t>(argsParser, name, ArgType::UINT32); },  // 		UINT32
 	[](ArgsParser *argsParser, std::string const name) -> AInfoArg * {
-		return new NumberArg<uint64_t>(argsParser, name); },  // 	UINT64
+		return new NumberArg<uint64_t>(argsParser, name, ArgType::UINT64); },  // 		UINT64
 	[](ArgsParser *argsParser, std::string const name) -> AInfoArg * {
-		return new NumberArg<float_t>(argsParser, name); },  // 	FLOAT
+		return new NumberArg<float_t>(argsParser, name, ArgType::FLOAT); },  // 		FLOAT
 	[](ArgsParser *argsParser, std::string const name) -> AInfoArg * {
-		return new NumberArg<double>(argsParser, name); },  // 		DOUBLE
+		return new NumberArg<double>(argsParser, name, ArgType::DOUBLE); },  // 		DOUBLE
 	[](ArgsParser *argsParser, std::string const name) -> AInfoArg * {
-		return new NumberArg<long double>(argsParser, name); },  // L_DOUBLE
+		return new NumberArg<long double>(argsParser, name, ArgType::L_DOUBLE); },  // L_DOUBLE
 };
