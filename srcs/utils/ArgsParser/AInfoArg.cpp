@@ -41,6 +41,7 @@ AInfoArg	&AInfoArg::setOptional(std::string const &longName, char shortName) {
 		return *this;
 	}
 
+	_enableDefaultV();  // enable default value for optionnals args
 	_required = false;  // disable required for optionnals args
 
 	this->_shortName = shortName;
@@ -259,6 +260,7 @@ void			StringArg::setVal(std::string input) {
 	}
 }
 
+void	StringArg::_enableDefaultV() { _value.second = true; }
 
 // -----------------------------------------------------------------------------
 // -- BoolArg ------------------------------------------------------------------
@@ -350,3 +352,5 @@ void	BoolArg::setVal(std::string input) {
 		logErr("failed to cast input \"" << input << "\" to bool");
 	}
 }
+
+void	BoolArg::_enableDefaultV() { _value.second = true; }

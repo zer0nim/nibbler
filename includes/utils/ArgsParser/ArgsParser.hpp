@@ -42,7 +42,8 @@ class ArgsParser {
 				StringArg *>(_get(name, ArgType::STRING))->getVal();
 			// value not set
 			if (!val.second) {
-				throw ArgsParserException("argument value is empty");
+				throw ArgsParserException(std::string("argument \"" + name +
+					"\": value is empty").c_str());
 			}
 			return val.first;
 		}
@@ -52,7 +53,8 @@ class ArgsParser {
 				BoolArg *>(_get(name, ArgType::BOOL))->getVal();
 			// value not set
 			if (!val.second) {
-				throw ArgsParserException("argument value is empty");
+				throw ArgsParserException(std::string("argument \"" + name +
+					"\": value is empty").c_str());
 			}
 			return val.first;
 		}
@@ -62,7 +64,8 @@ class ArgsParser {
 				NumberArg<int8_t> *>(_get(name, ArgType::INT8))->getVal();
 			// value not set
 			if (!val.second) {
-				throw ArgsParserException("argument value is empty");
+				throw ArgsParserException(std::string("argument \"" + name +
+					"\": value is empty").c_str());
 			}
 			return val.first;
 		}
@@ -72,7 +75,8 @@ class ArgsParser {
 				NumberArg<int16_t> *>(_get(name, ArgType::INT16))->getVal();
 			// value not set
 			if (!val.second) {
-				throw ArgsParserException("argument value is empty");
+				throw ArgsParserException(std::string("argument \"" + name +
+					"\": value is empty").c_str());
 			}
 			return val.first;
 		}
@@ -82,7 +86,8 @@ class ArgsParser {
 				NumberArg<int32_t> *>(_get(name, ArgType::INT32))->getVal();
 			// value not set
 			if (!val.second) {
-				throw ArgsParserException("argument value is empty");
+				throw ArgsParserException(std::string("argument \"" + name +
+					"\": value is empty").c_str());
 			}
 			return val.first;
 		}
@@ -92,7 +97,8 @@ class ArgsParser {
 				NumberArg<int64_t> *>(_get(name, ArgType::INT64))->getVal();
 			// value not set
 			if (!val.second) {
-				throw ArgsParserException("argument value is empty");
+				throw ArgsParserException(std::string("argument \"" + name +
+					"\": value is empty").c_str());
 			}
 			return val.first;
 		}
@@ -102,7 +108,8 @@ class ArgsParser {
 				NumberArg<uint8_t> *>(_get(name, ArgType::UINT8))->getVal();
 			// value not set
 			if (!val.second) {
-				throw ArgsParserException("argument value is empty");
+				throw ArgsParserException(std::string("argument \"" + name +
+					"\": value is empty").c_str());
 			}
 			return val.first;
 		}
@@ -112,7 +119,8 @@ class ArgsParser {
 				NumberArg<uint16_t> *>(_get(name, ArgType::UINT16))->getVal();
 			// value not set
 			if (!val.second) {
-				throw ArgsParserException("argument value is empty");
+				throw ArgsParserException(std::string("argument \"" + name +
+					"\": value is empty").c_str());
 			}
 			return val.first;
 		}
@@ -122,7 +130,8 @@ class ArgsParser {
 				NumberArg<uint32_t> *>(_get(name, ArgType::UINT32))->getVal();
 			// value not set
 			if (!val.second) {
-				throw ArgsParserException("argument value is empty");
+				throw ArgsParserException(std::string("argument \"" + name +
+					"\": value is empty").c_str());
 			}
 			return val.first;
 		}
@@ -132,7 +141,8 @@ class ArgsParser {
 				NumberArg<uint64_t> *>(_get(name, ArgType::UINT64))->getVal();
 			// value not set
 			if (!val.second) {
-				throw ArgsParserException("argument value is empty");
+				throw ArgsParserException(std::string("argument \"" + name +
+					"\": value is empty").c_str());
 			}
 			return val.first;
 		}
@@ -142,7 +152,8 @@ class ArgsParser {
 				NumberArg<float_t> *>(_get(name, ArgType::FLOAT))->getVal();
 			// value not set
 			if (!val.second) {
-				throw ArgsParserException("argument value is empty");
+				throw ArgsParserException(std::string("argument \"" + name +
+					"\": value is empty").c_str());
 			}
 			return val.first;
 		}
@@ -152,7 +163,8 @@ class ArgsParser {
 				NumberArg<double> *>(_get(name, ArgType::DOUBLE))->getVal();
 			// value not set
 			if (!val.second) {
-				throw ArgsParserException("argument value is empty");
+				throw ArgsParserException(std::string("argument \"" + name +
+					"\": value is empty").c_str());
 			}
 			return val.first;
 		}
@@ -162,7 +174,8 @@ class ArgsParser {
 				NumberArg<long double> *>(_get(name, ArgType::L_DOUBLE))->getVal();
 			// value not set
 			if (!val.second) {
-				throw ArgsParserException("argument value is empty");
+				throw ArgsParserException(std::string("argument \"" + name +
+					"\": value is empty").c_str());
 			}
 			return val.first;
 		}

@@ -145,7 +145,11 @@ class NumberArg : public AInfoArg {
 		}
 
 		// convert the input string to T
-		virtual void		setVal(std::string input);
+		virtual void	setVal(std::string input);
+
+	protected:
+		// enable default value for optionnals args
+		virtual void	_enableDefaultV() { _value.second = true; }
 
 	private:
 		NumberArg<T>();

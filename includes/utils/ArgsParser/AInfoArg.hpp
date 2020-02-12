@@ -106,6 +106,8 @@ class AInfoArg {
 		explicit	AInfoArg(ArgsParser *argsParser, std::string name, ArgType::Enum type);
 		AInfoArg(AInfoArg const &src);
 		AInfoArg	&operator=(AInfoArg const &rhs);
+		// enable default value for optionnals args
+		virtual void	_enableDefaultV() = 0;
 
 		ArgType::Enum	_type;
 		std::string		_name;
@@ -144,6 +146,10 @@ class StringArg : public AInfoArg {
 
 		virtual	void	setVal(std::string input);
 
+	protected:
+		// enable default value for optionnals args
+		virtual void	_enableDefaultV();
+
 	private:
 		StringArg();
 
@@ -171,6 +177,10 @@ class BoolArg : public AInfoArg {
 		std::pair<bool, bool>	getVal() const;
 
 		virtual	void	setVal(std::string input);
+
+	protected:
+		// enable default value for optionnals args
+		virtual void	_enableDefaultV();
 
 	private:
 		BoolArg();
