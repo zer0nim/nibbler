@@ -3,6 +3,8 @@
 
 #define NO_GUI_LOADED 255
 
+#define VOID_POS {-1, -1}
+
 #include <unistd.h>
 #include <iostream>
 #include <deque>
@@ -15,7 +17,7 @@
 #define HEIGHT	600
 
 namespace Direction {
-	enum eDirection {
+	enum Enum {
 		NO_MOVE,
 		MOVE_UP,
 		MOVE_RIGHT,
@@ -33,16 +35,14 @@ namespace State {
 }
 
 struct GameInfo {
+	glm::ivec2				windowSize;
 	glm::ivec2				gameboard;
 	glm::ivec2				food;
 	State::eState			play;
 	std::deque<glm::ivec2>	snake;
+	float					snakeSpeed;
 
 	GameInfo();
-	GameInfo(int height, int width);
-	~GameInfo();
-	GameInfo(GameInfo const &src);
-	GameInfo &operator=(GameInfo const &rhs);
 };
 
 class ANibblerGui {
@@ -59,7 +59,7 @@ class ANibblerGui {
 		struct Input {
 			bool		quit;
 
-			Direction::eDirection	direction;
+			Direction::Enum	direction;
 			uint8_t		loadGuiID;
 
 			Input();

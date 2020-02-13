@@ -7,17 +7,8 @@
 
 // -- Constructors -------------------------------------------------------------
 
-GameManager::GameManager() {
-	_gameInfo = GameInfo();
-	_moveSpeed = 3.0f;
-	_direction = Direction::MOVE_RIGHT;
-	_eating = 0;
-}
-
-GameManager::GameManager(int height, int width, float moveSpeed) {
-	_gameInfo = GameInfo(height, width);
-	_moveSpeed = moveSpeed;
-	_moveSpeed = 3.0f;
+GameManager::GameManager(GameInfo &gameInfo)
+: _gameInfo(gameInfo) {
 	_direction = Direction::MOVE_RIGHT;
 	_eating = 0;
 }
@@ -25,7 +16,8 @@ GameManager::GameManager(int height, int width, float moveSpeed) {
 GameManager::~GameManager() {
 }
 
-GameManager::GameManager(GameManager const &src) {
+GameManager::GameManager(GameManager const &src):
+ _gameInfo(src._gameInfo) {
 	*this = src;
 }
 
@@ -33,7 +25,8 @@ GameManager::GameManager(GameManager const &src) {
 
 GameManager &GameManager::operator=(GameManager const &rhs) {
 	if ( this != &rhs ) {
-		_moveSpeed = rhs._moveSpeed;
+		_direction = rhs._direction;
+		_eating = rhs._eating;
 	}
 	return *this;
 }
@@ -173,7 +166,7 @@ void	GameManager::run() {
 	}
 }
 
-bool	GameManager::_move(Direction::eDirection dir) {
+bool	GameManager::_move(Direction::Enum dir) {
 	glm::ivec2 head = getHead();
 
 	dir = _acceptedDirection(dir);
@@ -210,7 +203,7 @@ bool	GameManager::_move(Direction::eDirection dir) {
 	return true;
 }
 
-Direction::eDirection	GameManager::_acceptedDirection(Direction::eDirection dir) {
+Direction::Enum	GameManager::_acceptedDirection(Direction::Enum dir) {
 	switch (dir) {
 	case Direction::MOVE_UP:
 		if (_direction == Direction::MOVE_DOWN)

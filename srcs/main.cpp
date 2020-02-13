@@ -8,18 +8,11 @@
 #include "ArgsParser.hpp"
 
 int	main(int ac, char * const *av) {
-	GameManager		game = GameManager(25, 25, 3);
+	GameInfo		gameInfo;
+	GameManager		game(gameInfo);
 	uint8_t			gui = 0;
 	DynGuiManager	dynGuiManager;
 	ArgsParser		ap(ac, av);
-
-	struct GameInfo {
-		uint32_t	width;
-		uint32_t	height;
-		uint32_t	boardSize;
-		uint32_t	speed;
-	};
-	GameInfo	gameInfo;
 
 	initLogs();  // init logs functions context, Err/Warn/Info...
 
@@ -46,12 +39,12 @@ int	main(int ac, char * const *av) {
 		.setMaxU(1)
 		.setDefaultU(0);
 	// -b --boardSize
-	ap.addArgument("boardSize", ArgType::UINT32, 'b', "boardSize")
-		.setHelp("set the board size")
+	ap.addArgument("gameboard", ArgType::UINT32, 'b', "gameboard")
+		.setHelp("set the gameboard size")
 		.setDefaultU(16);
 	// -s --speed
-	ap.addArgument("speed", ArgType::FLOAT, 's', "speed")
-		.setHelp("change the game speed")
+	ap.addArgument("snakeSpeed", ArgType::FLOAT, 's', "snakeSpeed")
+		.setHelp("change the snake speed")
 		.setMinF(0.0f)
 		.setMaxF(100.0f)
 		.setDefaultF(10.5f);
@@ -69,24 +62,28 @@ int	main(int ac, char * const *av) {
 	}
 
 	// ---- retrieve values ----------------------------------------------------
-	gameInfo.width = ap.get<uint32_t>("width");
-	gameInfo.height = ap.get<uint32_t>("height");
+	// gui
 	gui = ap.get<uint8_t>("gui");
-	gameInfo.boardSize = ap.get<uint32_t>("boardSize");
-	gameInfo.speed = ap.get<float>("speed");
+	// windowSize
+	gameInfo.windowSize = {ap.get<uint32_t>("width"), ap.get<uint32_t>("height")};
+	// gameboard
+	gameInfo.gameboard.x = ap.get<uint32_t>("gameboard");
+	gameInfo.gameboard.y = gameInfo.gameboard.x;
+	// snakeSpeed
+	gameInfo.snakeSpeed = ap.get<float>("snakeSpeed");
 
-	std::cout << "-- args ------------" << std::endl;
-	std::cout << "width:\t\t" << gameInfo.width << std::endl;
-	std::cout << "height:\t\t" << gameInfo.height << std::endl;
-	std::cout << "gui:\t\t" << +gui << std::endl;
-	std::cout << "boardSize:\t" << gameInfo.boardSize << std::endl;
-	std::cout << "speed:\t\t" << gameInfo.speed << std::endl;
-	std::cout << "--------------------" << std::endl;
+	logDebug("-- gameInfo ------------");
+	logDebug("windowSize: " << glm::to_string(gameInfo.windowSize));
+	logDebug("gameboard: " << glm::to_string(gameInfo.gameboard));
+	logDebug("play: " << gameInfo.play);
+	logDebug("snakeSpeed: " << gameInfo.snakeSpeed);
+	logDebug("-----------------------");
 
-	// run the game ------------------------------------------------------------
-	// load the defaut gui
-	if (!game.init(gui))
+	// init gameManager
+	if (!game.init(gui)) {
 		return EXIT_FAILURE;
+	}
+	// run the game ------------------------------------------------------------
 	try {
 		game.run();
 	}
