@@ -69,7 +69,7 @@ ARGS =
 # compiler (g++ or clang++)
 CC = g++
 # flags for compilation
-CFLAGS = -Ofast -std=c++11 -Wall -Wextra
+CFLAGS = -Ofast -std=c++14 -Wall -Wextra
 # flags only for debug mode (make DEBUG=1)
 DEBUG_FLAGS = -g3 -DDEBUG=true
 # classic flags
@@ -117,6 +117,7 @@ HEAD =	nibbler.hpp \
 \
 		utils/ArgsParser/ArgsParser.hpp \
 		utils/ArgsParser/AInfoArg.hpp \
+		utils/ArgsParser/TNumberArg.hpp \
 
 
 ################################################################################
@@ -409,7 +410,8 @@ re:
 exec-nolint:
 	@$(MAKE) $(MAKE_OPT)
 	@printf $(MAGENTA)$(BOLD)"EXEC $(PROJECT_NAME)\n--------------------\n"$(NORMAL)
-	@./$(NAME) $(ARGS)
+	@./$(NAME) $(ARGS) || \
+		(printf $(MAGENTA)$(BOLD)"--------------------\n"$(RED)"❌ ERROR: $$?\n"$(NORMAL))
 	@printf $(MAGENTA)$(BOLD)"--------------------\n"$(NORMAL)
 
 exec:

@@ -61,7 +61,7 @@ public:
 	glm::ivec2				getHead() const;
 
 	// Methods
-	bool					init();
+	bool					init(uint8_t guiId);
 	void					run();
 	void					restart();
 	bool					isEmpty(glm::ivec2 pos, bool head = false) const;

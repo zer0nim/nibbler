@@ -102,9 +102,7 @@ glm::ivec2	GameManager::getHead() const {
 
 // -- Methods ------------------------------------------------------------------
 
-bool	GameManager::init() {
-	uint8_t			guiId = 0;
-
+bool	GameManager::init(uint8_t guiId) {
 	_gameInfo.snake.push_back({1, 1});
 	_gameInfo.snake.push_back({1, 2});
 	_gameInfo.snake.push_back({1, 3});
