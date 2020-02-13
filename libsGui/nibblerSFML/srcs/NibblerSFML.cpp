@@ -39,7 +39,7 @@ NibblerSFML &NibblerSFML::operator=(NibblerSFML const &rhs) {
 bool NibblerSFML::init(GameInfo &gameInfo) {
 	logInfo("loading SFML");
 
-	_win.create(sf::VideoMode(WIDTH, HEIGHT), TITLE);
+	_win.create(sf::VideoMode(gameInfo.windowSize.x, gameInfo.windowSize.y), TITLE);
 
 	this->gameInfo = &gameInfo;
 
@@ -87,30 +87,11 @@ void NibblerSFML::updateInput() {
 bool NibblerSFML::draw() {
 	_win.clear();
 
-	// sf::RectangleShape rect(sf::Vector2f(10 + 100 * input.direction, 10 + 100 * (4 - input.direction)));
-	// rect.setPosition(100, 100);
-	// rect.setFillColor(sf::Color::Green);
-	// _win.draw(rect);
-
-	// sf::CircleShape shape(100.f);
-	// shape.setFillColor(sf::Color::Blue);
-	// shape.setPosition(100, 300);
-	// _win.draw(shape);
-
 	_printBoard();
 	_printSnake();
 	_printFood();
 
-	sf::Vertex rectangle[] = {
-		sf::Vertex(sf::Vector2f(300, 0), sf::Color(0xA559A2ff)),		// #A559A2ff
-		sf::Vertex(sf::Vector2f(350, 0), sf::Color(0x749FB6ff)),		// #749FB6ff
-		sf::Vertex(sf::Vector2f(350, 50), sf::Color(0xA97965ff)),		// #A97965ff
-		sf::Vertex(sf::Vector2f(300, 50), sf::Color(0xEBCD61ff))		// #EBCD61ff
-	};
-
-	_win.draw(rectangle, 4, sf::Quads);
-
-	// std::cout << "NibblerSFML::draw : " << _toString() << std::endl;
+	// logDebug("NibblerSFML::draw : " + _toString());
 
 	_win.display();
 	return true;

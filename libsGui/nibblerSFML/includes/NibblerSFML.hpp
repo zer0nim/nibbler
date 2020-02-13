@@ -26,7 +26,6 @@ class NibblerSFML : public ANibblerGui {
 		int		_w_margin;
 
 
-
 		sf::RenderWindow	_win;
 		sf::Event			_event;
 		std::string			_toString() const;

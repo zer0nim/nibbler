@@ -9,7 +9,7 @@
 
 GameManager::GameManager(GameInfo &gameInfo)
 : _gameInfo(gameInfo) {
-	_direction = Direction::MOVE_RIGHT;
+	_direction = Direction::MOVE_UP;
 	_eating = 0;
 }
 
