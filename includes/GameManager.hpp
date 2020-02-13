@@ -28,24 +28,25 @@
 
 class GameManager {
 private:
+	// Constructors (hidden)
+	GameManager();
+
 	// Members
 	DynGuiManager			_dynGuiManager;
-	GameInfo				_gameInfo;
-	float					_moveSpeed;
-	Direction::eDirection	_direction;
+	GameInfo				&_gameInfo;
+	Direction::Enum			_direction;
 	int						_eating;  // nb food eaten
 
 	// Methods
-	bool					_move(Direction::eDirection dir);
-	std::chrono::milliseconds _getMs();
-	Direction::eDirection	_acceptedDirection(Direction::eDirection dir);
-	void					_generateFood();
-	bool					_checkContact();
+	bool						_move(Direction::Enum dir);
+	std::chrono::milliseconds	_getMs();
+	Direction::Enum				_acceptedDirection(Direction::Enum dir);
+	void						_generateFood();
+	bool						_checkContact();
 
 public:
 	// Constructors
-	GameManager();
-	GameManager(int height, int width, float moveSpeed);
+	explicit GameManager(GameInfo &gameInfo);
 	~GameManager();
 	GameManager(GameManager const &src);
 
