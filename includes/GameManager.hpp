@@ -26,21 +26,10 @@
 #include "DynGuiManager.hpp"
 #include "ANibblerGui.hpp"
 
-namespace State {
-	enum eState {
-		S_PLAY,
-		S_PAUSE,
-		S_GAMEOVER,
-	};
-}
-
 class GameManager {
 private:
 	// Members
-	glm::ivec2				_gameboard;
-	glm::ivec2				_food;
-	State::eState			_play;
-	std::deque<glm::ivec2>*	_body;
+	GameInfo				_gameInfo;
 	float					_moveSpeed;
 	Direction::eDirection	_direction;
 	int						_eating;
@@ -49,7 +38,6 @@ private:
 	bool					_move(Direction::eDirection dir);
 	std::chrono::milliseconds _getMs();
 	Direction::eDirection	_acceptedDirection(Direction::eDirection dir);
-	bool					_isEmpty(glm::ivec2 pos, bool head = false) const;
 	void					_generateFood();
 	bool					_checkContact();
 
@@ -59,7 +47,7 @@ public:
 
 	// Constructors
 	GameManager();
-	explicit GameManager(int height, int width, float moveSpeed);
+	GameManager(int height, int width, float moveSpeed);
 	~GameManager();
 	GameManager(GameManager const &src);
 
@@ -70,13 +58,13 @@ public:
 	// Accessors
 	std::string				toString() const;
 	std::string				getBoard() const;
-	std::deque<glm::ivec2>*	getBody() const;
 	glm::ivec2				getHead() const;
 
 	// Methods
 	bool					init();
 	void					run();
 	void					restart();
+	bool					isEmpty(glm::ivec2 pos, bool head = false) const;
 
 	// Exceptions
 	class GameManagerException : public std::runtime_error {

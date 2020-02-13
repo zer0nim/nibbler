@@ -104,11 +104,13 @@ SRC =	main.cpp \
 \
 		utils/ArgsParser/ArgsParser.cpp \
 		utils/ArgsParser/AInfoArg.cpp \
+		../libsGui/ANibblerGui.cpp
 
 # INC_DIR/HEAD
 HEAD =	nibbler.hpp \
 		GameManager.hpp \
 		DynGuiManager.hpp \
+		../libsGUI/ANibblerGui.hpp \
 \
 		utils/Logging.hpp \
 		utils/Stats.hpp \
@@ -260,6 +262,7 @@ SRCS		= $(addprefix $(SRCS_DIR)/, $(SRC)) \
 OBJS		= $(addprefix $(OBJS_DIR)/, $(SRC:.cpp=.o)) \
 			  $(addprefix $(OBJS_DIR)/, $(LIBS_SRC_C:.c=.o)) \
 			  $(addprefix $(OBJS_DIR)/, $(LIBS_SRC_CPP:.cpp=.o))
+
 DEPFILES	= $(addprefix $(DEP_DIR)/, $(SRC:.cpp=.d)) \
 			  $(addprefix $(DEP_DIR)/, $(LIBS_SRC_C:.c=.d)) \
 			  $(addprefix $(DEP_DIR)/, $(LIBS_SRC_CPP:.cpp=.d))
@@ -378,6 +381,7 @@ clean:
 	$(eval NEED_MAKE := )
 	$(START)
 	@printf $(RED)"-x remove .o & .d files\n"$(NORMAL)
+	@rm -rf libsGui/ANibblerGui.o
 	@rm -rf $(OBJS_DIR)
 	@rm -rf $(DEP_DIR)
 	@rm -rf $(DEBUG_DIR)

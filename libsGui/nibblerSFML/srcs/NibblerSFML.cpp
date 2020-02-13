@@ -2,6 +2,7 @@
 #include "Logging.hpp"
 
 NibblerSFML::NibblerSFML() :
+  ANibblerGui(),
   _win() {
 	// init logging
 	#if DEBUG
@@ -30,12 +31,14 @@ NibblerSFML &NibblerSFML::operator=(NibblerSFML const &rhs) {
 	return *this;
 }
 
-bool NibblerSFML::init() {
+bool NibblerSFML::init(GameInfo &gameInfo) {
 	logInfo("loading SFML");
 
 	_win.create(sf::VideoMode(WIDTH, HEIGHT), TITLE);
 
-    return true;
+	this->gameInfo = &gameInfo;
+
+	return true;
 }
 
 void NibblerSFML::updateInput() {
@@ -81,7 +84,7 @@ bool NibblerSFML::draw() {
 
 	sf::RectangleShape rect(sf::Vector2f(10 + 100 * input.direction, 10 + 100 * (4 - input.direction)));
 	rect.setPosition(100, 100);
-    rect.setFillColor(sf::Color::Green);
+	rect.setFillColor(sf::Color::Green);
 	_win.draw(rect);
 
 

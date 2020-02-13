@@ -1,32 +1,28 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <time.h>
+
+#include "ANibblerGui.hpp"
 #include "GameManager.hpp"
 
 // -- Constructors -------------------------------------------------------------
 
 GameManager::GameManager() {
+	_gameInfo = GameInfo();
 	_moveSpeed = 3.0f;
-	_play = State::S_PAUSE;
-	_gameboard = glm::ivec2(25, 25);
-	_body = new std::deque<glm::ivec2>();
 	_direction = Direction::MOVE_RIGHT;
-	_food = {-1, -1};
 	_eating = 0;
 }
 
-GameManager::GameManager(int height, int width, float moveSpeed)
-: _moveSpeed(moveSpeed) {
-	_body = new std::deque<glm::ivec2>();
-	_gameboard = glm::ivec2(height, width);
-	_play = State::S_PAUSE;
+GameManager::GameManager(int height, int width, float moveSpeed) {
+	_gameInfo = GameInfo(height, width);
+	_moveSpeed = moveSpeed;
+	_moveSpeed = 3.0f;
 	_direction = Direction::MOVE_RIGHT;
-	_food = {-1, -1};
 	_eating = 0;
 }
 
 GameManager::~GameManager() {
-	delete _body;
 }
 
 GameManager::GameManager(GameManager const &src) {
@@ -37,10 +33,7 @@ GameManager::GameManager(GameManager const &src) {
 
 GameManager &GameManager::operator=(GameManager const &rhs) {
 	if ( this != &rhs ) {
-		_body = new std::deque<glm::ivec2>(*rhs._body);
 		_moveSpeed = rhs._moveSpeed;
-		_play = rhs._play;
-		_gameboard = rhs._gameboard;
 	}
 	return *this;
 }
@@ -55,11 +48,11 @@ std::ostream &	operator<<(std::ostream & os, const GameManager& my_class) {
 std::string	GameManager::toString() const {
 	std::string result = "";
 
-	result += "Gameboard [" + std::to_string(_gameboard.x) + ", "
-			+ std::to_string(_gameboard.y) + "]\n"
-			"snake length: " + std::to_string(_body->size()) + "\n"
+	result += "Gameboard [" + std::to_string(_gameInfo.gameboard.x) + ", "
+			+ std::to_string(_gameInfo.gameboard.y) + "]\n"
+			"snake length: " + std::to_string(_gameInfo.snake.size()) + "\n"
 			"game [";
-	switch (_play) {
+	switch (_gameInfo.play) {
 	case State::S_PLAY:
 		result += "PLAY";
 		break;
@@ -76,7 +69,7 @@ std::string	GameManager::toString() const {
 
 	result += getBoard();
 
-	for (glm::ivec2 const &i : *_body) {
+	for (glm::ivec2 const &i : _gameInfo.snake) {
 		result += ">>" + glm::to_string(i);
 	}
 
@@ -86,10 +79,10 @@ std::string	GameManager::toString() const {
 std::string	GameManager::getBoard() const {
 	std::string result;
 
-	for (int j = 0; j < _gameboard.y; j++) {
-		for (int i = 0; i < _gameboard.x; i++) {
-			if (!_isEmpty(glm::ivec2(i, j))) {
-				if (_food == glm::ivec2(i, j))
+	for (int j = 0; j < _gameInfo.gameboard.y; j++) {
+		for (int i = 0; i < _gameInfo.gameboard.x; i++) {
+			if (!isEmpty(glm::ivec2(i, j))) {
+				if (_gameInfo.food == glm::ivec2(i, j))
 					result += COLOR_GREEN "o" COLOR_EOC;
 				else if (getHead() == glm::ivec2(i, j))
 					result += COLOR_RED "x" COLOR_EOC;
@@ -103,12 +96,8 @@ std::string	GameManager::getBoard() const {
 	return result;
 }
 
-std::deque<glm::ivec2>	*GameManager::getBody() const {
-	return _body;
-}
-
 glm::ivec2	GameManager::getHead() const {
-	return _body->front();
+	return _gameInfo.snake.front();
 }
 
 // -- Methods ------------------------------------------------------------------
@@ -116,9 +105,9 @@ glm::ivec2	GameManager::getHead() const {
 bool	GameManager::init() {
 	uint8_t			guiId = 0;
 
-	_body->push_back({1, 1});
-	_body->push_back({1, 2});
-	_body->push_back({1, 3});
+	_gameInfo.snake.push_back({1, 1});
+	_gameInfo.snake.push_back({1, 2});
+	_gameInfo.snake.push_back({1, 3});
 
 	std::cout << "srand" << std::endl;
 	srand(time(NULL));
@@ -126,7 +115,7 @@ bool	GameManager::init() {
 	_generateFood();
 
 	dynGuiManager.loadGui(guiId);
-	return dynGuiManager.nibblerGui->init();
+	return dynGuiManager.nibblerGui->init(_gameInfo);
 }
 
 void	GameManager::run() {
@@ -144,13 +133,13 @@ void	GameManager::run() {
 		time_start = _getMs();
 		nibblerGui->updateInput();
 
-		if (_play == State::S_PAUSE && nibblerGui->input.direction != Direction::NO_MOVE)
-			_play = State::S_PLAY;
+		if (_gameInfo.play == State::S_PAUSE && nibblerGui->input.direction != Direction::NO_MOVE)
+			_gameInfo.play = State::S_PLAY;
 
 		logDebug("Game : " << *this);
 		logDebug("moving direction " << nibblerGui->input.direction);
 
-		if (_play == State::S_PLAY) {
+		if (_gameInfo.play == State::S_PLAY) {
 			_move(nibblerGui->input.direction);
 			_checkContact();
 		}
@@ -161,7 +150,7 @@ void	GameManager::run() {
 			// change Gui
 			dynGuiManager.loadGui(nibblerGui->input.loadGuiID);
 			nibblerGui = dynGuiManager.nibblerGui;
-			nibblerGui->init();
+			nibblerGui->init(_gameInfo);
 
 			nibblerGui->input.loadGuiID = NO_GUI_LOADED;
 		}
@@ -207,13 +196,13 @@ bool	GameManager::_move(Direction::eDirection dir) {
 		default:
 			return false;
 	}
-	std::cout << "[head :" << glm::to_string(head);
-	head.x = (head.x + _gameboard.x) % _gameboard.x;
-	head.y = (head.y + _gameboard.y) % _gameboard.y;
-	std::cout << ", normalized: " << glm::to_string(head) << "]" << std::endl;
-	_body->push_front(head);
+	// std::cout << "[head :" << glm::to_string(head);
+	head.x = (head.x + _gameInfo.gameboard.x) % _gameInfo.gameboard.x;
+	head.y = (head.y + _gameInfo.gameboard.y) % _gameInfo.gameboard.y;
+	// std::cout << ", normalized: " << glm::to_string(head) << "]" << std::endl;
+	_gameInfo.snake.push_front(head);
 	if (_eating <= 0) {
-		_body->pop_back();
+		_gameInfo.snake.pop_back();
 		if (_eating < 0)
 			_eating = 0;
 	} else {
@@ -246,10 +235,11 @@ Direction::eDirection	GameManager::_acceptedDirection(Direction::eDirection dir)
 	}
 }
 
-bool	GameManager::_isEmpty(glm::ivec2 pos, bool head) const {
-	if (pos == _food)
+bool	GameManager::isEmpty(glm::ivec2 pos, bool head) const {
+	if (pos == _gameInfo.food)
 		return false;
-	if (std::find(head ? ++_body->begin() : _body->begin(), _body->end(), pos) != _body->end())
+	if (std::find(head ? ++_gameInfo.snake.begin() : _gameInfo.snake.begin(), _gameInfo.snake.end(), pos)
+		!= _gameInfo.snake.end())
 		return false;
 	return true;
 }
@@ -257,15 +247,15 @@ bool	GameManager::_isEmpty(glm::ivec2 pos, bool head) const {
 bool GameManager::_checkContact() {
 	glm::ivec2 head = getHead();
 
-	if (_isEmpty(head, true))
+	if (isEmpty(head, true))
 		return true;
 
-	if (head == _food) {
+	if (head == _gameInfo.food) {
 		_eating += 1;
 		_generateFood();
 		return true;
 	} else {
-		_play = State::S_GAMEOVER;
+		_gameInfo.play = State::S_GAMEOVER;
 		return false;
 	}
 }
@@ -274,10 +264,10 @@ void	GameManager::_generateFood() {
 	glm::ivec2 food;
 
 	do {
-		food.x = rand() % _gameboard.x;
-		food.y = rand() % _gameboard.y;
-	} while (!_isEmpty(food));
-	_food = food;
+		food.x = rand() % _gameInfo.gameboard.x;
+		food.y = rand() % _gameInfo.gameboard.y;
+	} while (!isEmpty(food));
+	_gameInfo.food = food;
 }
 
 std::chrono::milliseconds GameManager::_getMs() {
