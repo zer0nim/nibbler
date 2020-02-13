@@ -33,7 +33,7 @@ private:
 	GameInfo				_gameInfo;
 	float					_moveSpeed;
 	Direction::eDirection	_direction;
-	int						_eating;
+	int						_eating;  // nb food eated
 
 	// Methods
 	bool					_move(Direction::eDirection dir);

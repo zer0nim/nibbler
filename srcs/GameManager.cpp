@@ -137,6 +137,7 @@ void	GameManager::run() {
 		logDebug("Game : " << *this);
 		logDebug("moving direction " << nibblerGui->input.direction);
 
+		// on play mode
 		if (_gameInfo.play == State::S_PLAY) {
 			_move(nibblerGui->input.direction);
 			_checkContact();
