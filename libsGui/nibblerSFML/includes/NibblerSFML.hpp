@@ -20,6 +20,18 @@ class NibblerSFML : public ANibblerGui {
 		virtual bool	draw();
 
 	private:
+		int		_h_block;
+		int		_w_block;
+		int		_h_margin;
+		int		_w_margin;
+
+
+
 		sf::RenderWindow	_win;
 		sf::Event			_event;
+		std::string			_toString() const;
+		std::string			_getBoard() const;
+		void				_printBoard();
+		void				_printSnake();
+		void				_printFood();
 };

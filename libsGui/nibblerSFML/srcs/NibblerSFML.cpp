@@ -13,6 +13,11 @@ NibblerSFML::NibblerSFML() :
 	#else
 		logging.setLoglevel(LOGINFO);
 	#endif
+
+	_h_block = 10;
+	_w_block = 10;
+	_h_margin = 5;
+	_w_margin = 5;
 }
 
 NibblerSFML::~NibblerSFML() {
@@ -82,15 +87,129 @@ void NibblerSFML::updateInput() {
 bool NibblerSFML::draw() {
 	_win.clear();
 
-	sf::RectangleShape rect(sf::Vector2f(10 + 100 * input.direction, 10 + 100 * (4 - input.direction)));
-	rect.setPosition(100, 100);
-	rect.setFillColor(sf::Color::Green);
-	_win.draw(rect);
+	// sf::RectangleShape rect(sf::Vector2f(10 + 100 * input.direction, 10 + 100 * (4 - input.direction)));
+	// rect.setPosition(100, 100);
+	// rect.setFillColor(sf::Color::Green);
+	// _win.draw(rect);
 
+	// sf::CircleShape shape(100.f);
+	// shape.setFillColor(sf::Color::Blue);
+	// shape.setPosition(100, 300);
+	// _win.draw(shape);
+
+	_printBoard();
+	_printSnake();
+	_printFood();
+
+	sf::Vertex rectangle[] = {
+		sf::Vertex(sf::Vector2f(300, 0), sf::Color(0xA559A2ff)),		// #A559A2ff
+		sf::Vertex(sf::Vector2f(350, 0), sf::Color(0x749FB6ff)),		// #749FB6ff
+		sf::Vertex(sf::Vector2f(350, 50), sf::Color(0xA97965ff)),		// #A97965ff
+		sf::Vertex(sf::Vector2f(300, 50), sf::Color(0xEBCD61ff))		// #EBCD61ff
+	};
+
+	_win.draw(rectangle, 4, sf::Quads);
+
+	// std::cout << "NibblerSFML::draw : " << _toString() << std::endl;
 
 	_win.display();
 	return true;
 }
+
+void	NibblerSFML::_printBoard() {
+	sf::Color color[2] = {
+		sf::Color(0x252526FF),		// #252526ff
+		sf::Color(0x1E1E1EFF),		// #1E1E1Eff
+	};
+
+	sf::RectangleShape rect(sf::Vector2f(_h_margin * 2 + gameInfo->gameboard.x * _h_block,
+	_w_margin * 2 + gameInfo->gameboard.y * _w_block));
+	rect.setPosition(0, 0);
+	rect.setFillColor(sf::Color(0x587C0CFF));
+	_win.draw(rect);
+
+	rect.setSize(sf::Vector2f(_w_block, _h_block));
+	for (int j = 0; j < gameInfo->gameboard.y; j++) {
+		for (int i = 0; i < gameInfo->gameboard.x; i++) {
+			rect.setPosition(_w_margin + _w_block * i, _h_margin + _h_block * j);
+			rect.setFillColor(color[(i+j) % 2]);
+			_win.draw(rect);
+		}
+	}
+}
+
+void	NibblerSFML::_printSnake() {
+	sf::RectangleShape rect(sf::Vector2f(_w_block, _h_block));
+
+	for (auto &&i : gameInfo->snake) {
+		rect.setFillColor(sf::Color(0xBD63B9));
+		rect.setPosition(_w_margin + _w_block * i.x, _h_margin + _h_block * i.y);
+		_win.draw(rect);
+	}
+}
+
+void	NibblerSFML::_printFood() {
+	sf::RectangleShape rect(sf::Vector2f(_w_block, _h_block));
+
+	rect.setFillColor(sf::Color(0xCEAF07FF));
+
+	rect.setPosition(_w_margin + _w_block * gameInfo->food.x, _h_margin + _h_block * gameInfo->food.y);
+	_win.draw(rect);
+}
+
+std::string	NibblerSFML::_toString() const {
+	std::string result = "";
+
+	result += "Gameboard [" + std::to_string(gameInfo->gameboard.x) + ", "
+			+ std::to_string(gameInfo->gameboard.y) + "]\n"
+			"snake length: " + std::to_string(gameInfo->snake.size()) + "\n"
+			"game [";
+	switch (gameInfo->play) {
+	case State::S_PLAY:
+		result += "PLAY";
+		break;
+	case State::S_PAUSE:
+		result += "PAUSE";
+		break;
+	case State::S_GAMEOVER:
+		result += "GAME OVER";
+		break;
+	default:
+		break;
+	}
+	result += "]\n";
+
+	result += _getBoard();
+
+	for (glm::ivec2 const &i : gameInfo->snake) {
+		result += ">>" + glm::to_string(i);
+	}
+
+	return result;
+}
+
+std::string	NibblerSFML::_getBoard() const {
+	std::string result;
+
+	for (int j = 0; j < gameInfo->gameboard.y; j++) {
+		for (int i = 0; i < gameInfo->gameboard.x; i++) {
+			if (std::find(gameInfo->snake.begin(), gameInfo->snake.end(), glm::ivec2(i, j)) != gameInfo->snake.end()) {
+				if (gameInfo->food == glm::ivec2(i, j))
+					result += COLOR_GREEN "o" COLOR_EOC;
+				else if (gameInfo->snake.front() == glm::ivec2(i, j))
+					result += COLOR_RED "x" COLOR_EOC;
+				else
+					result += "x";
+			} else if (gameInfo->food == glm::ivec2(i, j))
+					result += COLOR_GREEN "o" COLOR_EOC;
+			else
+				result += "_";
+		}
+		result += "\n";
+	}
+	return result;
+}
+
 
 extern "C" {
 	ANibblerGui *makeNibblerSFML() {
