@@ -112,8 +112,8 @@ bool	GameManager::init(uint8_t guiId) {
 
 	_generateFood();
 
-	dynGuiManager.loadGui(guiId);
-	return dynGuiManager.nibblerGui->init(_gameInfo);
+	_dynGuiManager.loadGui(guiId);
+	return _dynGuiManager.nibblerGui->init(_gameInfo);
 }
 
 void	GameManager::run() {
@@ -125,7 +125,7 @@ void	GameManager::run() {
 	#endif
 
 
-	nibblerGui = dynGuiManager.nibblerGui;
+	nibblerGui = _dynGuiManager.nibblerGui;
 
 	while (nibblerGui->input.quit == false) {
 		time_start = _getMs();
@@ -144,10 +144,10 @@ void	GameManager::run() {
 
 		// verify id viability
 		if (nibblerGui->input.loadGuiID < NB_GUI && \
-		nibblerGui->input.loadGuiID != dynGuiManager.getCurrentGuiID()) {
+		nibblerGui->input.loadGuiID != _dynGuiManager.getCurrentGuiID()) {
 			// change Gui
-			dynGuiManager.loadGui(nibblerGui->input.loadGuiID);
-			nibblerGui = dynGuiManager.nibblerGui;
+			_dynGuiManager.loadGui(nibblerGui->input.loadGuiID);
+			nibblerGui = _dynGuiManager.nibblerGui;
 			nibblerGui->init(_gameInfo);
 
 			nibblerGui->input.loadGuiID = NO_GUI_LOADED;

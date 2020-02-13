@@ -29,6 +29,7 @@
 class GameManager {
 private:
 	// Members
+	DynGuiManager			_dynGuiManager;
 	GameInfo				_gameInfo;
 	float					_moveSpeed;
 	Direction::eDirection	_direction;
@@ -42,9 +43,6 @@ private:
 	bool					_checkContact();
 
 public:
-	// Members
-	DynGuiManager	dynGuiManager;
-
 	// Constructors
 	GameManager();
 	GameManager(int height, int width, float moveSpeed);
