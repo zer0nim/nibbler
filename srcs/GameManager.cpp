@@ -100,7 +100,6 @@ bool	GameManager::init(uint8_t guiId) {
 	_gameInfo.snake.push_back({1, 2});
 	_gameInfo.snake.push_back({1, 3});
 
-	std::cout << "srand" << std::endl;
 	srand(time(NULL));
 
 	_generateFood();
@@ -127,8 +126,8 @@ void	GameManager::run() {
 		if (_gameInfo.play == State::S_PAUSE && nibblerGui->input.direction != Direction::NO_MOVE)
 			_gameInfo.play = State::S_PLAY;
 
-		logDebug("Game : " << *this);
-		logDebug("moving direction " << nibblerGui->input.direction);
+		// logDebug("Game : " << *this);
+		// logDebug("moving direction " << nibblerGui->input.direction);
 
 		// on play mode
 		if (_gameInfo.play == State::S_PLAY) {

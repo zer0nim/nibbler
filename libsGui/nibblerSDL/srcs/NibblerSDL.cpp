@@ -1,10 +1,23 @@
 #include "NibblerSDL.hpp"
 #include "Logging.hpp"
 
+// -- help functions -----------------------------------------------------------
+std::chrono::milliseconds getMs() {
+	return std::chrono::duration_cast<std::chrono::milliseconds>(
+		std::chrono::system_clock::now().time_since_epoch());
+}
+
+// -- NibblerSDL ---------------------------------------------------------------
 NibblerSDL::NibblerSDL() :
   ANibblerGui(),
   _win(nullptr),
-  _event(new SDL_Event()) {
+  _event(new SDL_Event()),
+  _context(0),
+  _lastLoopMs(0),
+  _cubeShader(nullptr),
+  _cam(nullptr),
+  _textRender(nullptr),
+  _skybox(nullptr) {
 	// init logging
 	#if DEBUG
 		logging.setLoglevel(LOGDEBUG);
@@ -19,6 +32,11 @@ NibblerSDL::NibblerSDL() :
 NibblerSDL::~NibblerSDL() {
 	logInfo("exit SDL");
 	delete _event;
+	delete _cubeShader;
+	delete _cam;
+	delete _textRender;
+	delete _skybox;
+	SDL_GL_DeleteContext(_context);
 	SDL_DestroyWindow(_win);
     SDL_Quit();
 }
@@ -29,40 +47,9 @@ NibblerSDL::NibblerSDL(NibblerSDL const &src) {
 
 NibblerSDL &NibblerSDL::operator=(NibblerSDL const &rhs) {
 	if (this != &rhs) {
-		_win = rhs._win;
-		_surface = rhs._surface;
-		_event = rhs._event;
+		logErr("The copy operator should not be called")
 	}
 	return *this;
-}
-
-bool NibblerSDL::init(GameInfo &gameInfo) {
-	logInfo("loading SDL");
-
-	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-		logErr("while loading SDL: " << SDL_GetError());
-		SDL_Quit();
-		return false;
-	}
-
-	_win = SDL_CreateWindow(TITLE, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-		WIDTH, HEIGHT, SDL_WINDOW_SHOWN);
-	if (_win == nullptr) {
-		logErr("while loading SDL: " << SDL_GetError());
-		SDL_Quit();
-		return false;
-	}
-
-	_surface = SDL_GetWindowSurface(_win);
-	if (_surface == nullptr) {
-		logErr("while loading SDL: " << SDL_GetError());
-		SDL_Quit();
-		return false;
-	}
-
-	this->gameInfo = &gameInfo;
-
-	return true;
 }
 
 void NibblerSDL::updateInput() {
@@ -91,80 +78,7 @@ void NibblerSDL::updateInput() {
 	}
 }
 
-bool NibblerSDL::draw() {
-	// clear screen
-	SDL_FillRect(_surface, NULL, 0x000000);
-
-	// draw rect on the screen
-	SDL_Rect rect = {
-		100,
-		100,
-		10 + 100 * input.direction,
-		10 + 100 * (4 - input.direction),
-	};
-	SDL_FillRect(_surface, &rect, SDL_MapRGB(_surface->format, 255, 0, 0));
-	SDL_UpdateWindowSurface(_win);
-
-
-	std::cout << "NibblerSDL::draw : " << _toString() << std::endl;
-
-	return true;
-}
-
-std::string	NibblerSDL::_toString() const {
-	std::string result = "";
-
-	result += "Gameboard [" + std::to_string(gameInfo->gameboard.x) + ", "
-			+ std::to_string(gameInfo->gameboard.y) + "]\n"
-			"snake length: " + std::to_string(gameInfo->snake.size()) + "\n"
-			"game [";
-	switch (gameInfo->play) {
-	case State::S_PLAY:
-		result += "PLAY";
-		break;
-	case State::S_PAUSE:
-		result += "PAUSE";
-		break;
-	case State::S_GAMEOVER:
-		result += "GAME OVER";
-		break;
-	default:
-		break;
-	}
-	result += "]\n";
-
-	result += _getBoard();
-
-	for (glm::ivec2 const &i : gameInfo->snake) {
-		result += ">>" + glm::to_string(i);
-	}
-
-	return result;
-}
-
-std::string	NibblerSDL::_getBoard() const {
-	std::string result;
-
-	for (int j = 0; j < gameInfo->gameboard.y; j++) {
-		for (int i = 0; i < gameInfo->gameboard.x; i++) {
-			if (std::find(gameInfo->snake.begin(), gameInfo->snake.end(), glm::ivec2(i, j)) != gameInfo->snake.end()) {
-				if (gameInfo->food == glm::ivec2(i, j))
-					result += COLOR_GREEN "o" COLOR_EOC;
-				else if (gameInfo->snake.front() == glm::ivec2(i, j))
-					result += COLOR_RED "x" COLOR_EOC;
-				else
-					result += "x";
-			} else if (gameInfo->food == glm::ivec2(i, j))
-					result += COLOR_GREEN "o" COLOR_EOC;
-			else
-				result += "_";
-		}
-		result += "\n";
-	}
-	return result;
-}
-
-
+// -- c extern -----------------------------------------------------------------
 extern "C" {
 	ANibblerGui *makeNibblerSDL() {
 		return new NibblerSDL();
