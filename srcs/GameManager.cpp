@@ -99,6 +99,11 @@ bool	GameManager::init(uint8_t guiId) {
 	_gameInfo.snake.push_back({1, 1});
 	_gameInfo.snake.push_back({1, 2});
 	_gameInfo.snake.push_back({1, 3});
+	_gameInfo.snake.push_back({1, 4});
+	_gameInfo.snake.push_back({1, 5});
+	_gameInfo.snake.push_back({1, 6});
+	_gameInfo.snake.push_back({1, 7});
+	_gameInfo.snake.push_back({1, 8});
 
 	std::cout << "srand" << std::endl;
 	srand(time(NULL));
@@ -124,6 +129,13 @@ void	GameManager::run() {
 		time_start = _getMs();
 		nibblerGui->updateInput();
 
+		if (nibblerGui->input.pause == true) {
+			if (_gameInfo.play == State::S_PAUSE)
+				_gameInfo.play = State::S_PLAY;
+			else if (_gameInfo.play == State::S_PLAY)
+				_gameInfo.play = State::S_PAUSE;
+		}
+
 		if (_gameInfo.play == State::S_PAUSE && nibblerGui->input.direction != Direction::NO_MOVE)
 			_gameInfo.play = State::S_PLAY;
 
@@ -145,6 +157,7 @@ void	GameManager::run() {
 			nibblerGui->init(_gameInfo);
 
 			nibblerGui->input.loadGuiID = NO_GUI_LOADED;
+			_gameInfo.play = State::S_PAUSE;
 		}
 
 		nibblerGui->draw();

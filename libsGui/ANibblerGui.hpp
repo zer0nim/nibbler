@@ -58,6 +58,7 @@ class ANibblerGui {
 
 		struct Input {
 			bool		quit;
+			bool		pause;
 
 			Direction::Enum	direction;
 			uint8_t		loadGuiID;
