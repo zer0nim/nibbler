@@ -30,9 +30,11 @@ enum class CamMovement {
 #define FRCL_IS_INSIDE(frustumRes) (frustumRes == FRCL_INSIDE)
 #define FRCL_IS_OUTSIDE(frustumRes) (frustumRes > FRCL_INSIDE)
 
-#define CAMERA_VEC3		glm::tvec3<double>
-#define CAMERA_MAT4		glm::dmat4
-#define CAMERA_FLOAT	double
+#define CAMERA_VEC3		glm::vec3
+#define CAMERA_MAT4		glm::mat4
+#define CAMERA_FLOAT	float
+
+#define WORD_UP			glm::vec3(0.0f, 1.0f, 0.0f)
 
 class Camera {
 	public:
@@ -48,6 +50,7 @@ class Camera {
 		virtual void processKeyboard(CamMovement direction, CAMERA_FLOAT dtTime, bool isRun = false);
 		virtual void processMouseMovement(CAMERA_FLOAT xOffset, CAMERA_FLOAT yOffset, bool constrainPitch = true);
 		virtual void processMouseScroll(CAMERA_FLOAT yOffset);
+		virtual void lookAt(glm::vec3 target);
 		virtual void resetPosition();
 
 		/*

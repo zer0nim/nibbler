@@ -121,7 +121,8 @@ bool	NibblerSDL::_initShaders() {
 	glBindVertexArray(0);
 
 	// -- camera ---------------------------------------------------------------
-	_cam = new Camera(glm::vec3(0, 5, 5));
+	_cam = new Camera({0.0f, 5.0f, 5.0f});
+	_cam->lookAt(glm::vec3());
 
 	float angle = _cam->zoom;
 	float ratio = static_cast<float>(gameInfo->windowSize.x) / gameInfo->windowSize.y;

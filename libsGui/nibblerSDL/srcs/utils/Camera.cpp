@@ -24,7 +24,7 @@ Camera::Camera(Camera const &src) {
 Camera::~Camera() {
 }
 
-Camera &Camera::operator=(Camera const &rhs) {
+Camera	&Camera::operator=(Camera const &rhs) {
 	if (this != &rhs) {
 		pos = rhs.pos;
 		front = rhs.front;
@@ -40,7 +40,7 @@ Camera &Camera::operator=(Camera const &rhs) {
 	return *this;
 }
 
-void Camera::run(CAMERA_FLOAT dtTime) {
+void	Camera::run(CAMERA_FLOAT dtTime) {
 	// process for each frame (gravity)
 	(void)dtTime;
 }
@@ -49,7 +49,7 @@ CAMERA_MAT4 Camera::getViewMatrix() const {
 	return glm::lookAt(pos, pos + front, up);
 }
 
-void Camera::processKeyboard(CamMovement direction, CAMERA_FLOAT dtTime, bool isRun) {
+void	Camera::processKeyboard(CamMovement direction, CAMERA_FLOAT dtTime, bool isRun) {
 	CAMERA_FLOAT	velocity;
 
 	velocity = movementSpeed * dtTime * ((isRun) ? runFactor : 1);
@@ -87,7 +87,7 @@ void Camera::processKeyboard(CamMovement direction, CAMERA_FLOAT dtTime, bool is
 	}
 }
 
-void Camera::processMouseMovement(CAMERA_FLOAT xOffset, CAMERA_FLOAT yOffset, bool constrainPitch) {
+void	Camera::processMouseMovement(CAMERA_FLOAT xOffset, CAMERA_FLOAT yOffset, bool constrainPitch) {
 	xOffset *= mouseSensitivity;
 	yOffset *= mouseSensitivity;
 
@@ -105,7 +105,7 @@ void Camera::processMouseMovement(CAMERA_FLOAT xOffset, CAMERA_FLOAT yOffset, bo
 	updateCameraVectors();
 }
 
-void Camera::processMouseScroll(CAMERA_FLOAT yOffset) {
+void	Camera::processMouseScroll(CAMERA_FLOAT yOffset) {
 	if (zoom >= 1.0f && zoom <= 45.0f)
 		zoom -= yOffset;
 	if (zoom <= 1.0f)
@@ -114,7 +114,14 @@ void Camera::processMouseScroll(CAMERA_FLOAT yOffset) {
 		zoom = 45.0f;
 }
 
-void Camera::updateCameraVectors() {
+void	Camera::lookAt(CAMERA_VEC3 target) {
+	CAMERA_VEC3	newFront(glm::normalize(target - pos));
+	yaw = glm::degrees(glm::atan(newFront.z, newFront.x));
+	pitch = glm::degrees(glm::asin(newFront.y));
+	updateCameraVectors();
+}
+
+void	Camera::updateCameraVectors() {
 	CAMERA_VEC3 nFront;
 
 	nFront.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
@@ -127,7 +134,7 @@ void Camera::updateCameraVectors() {
 	up = glm::normalize(glm::cross(right, front));
 }
 
-void Camera::resetPosition() {
+void	Camera::resetPosition() {
 	pos = _startPos;
 	yaw = _startYaw;
 	pitch = _startPitch;
@@ -138,7 +145,7 @@ void Camera::resetPosition() {
 /*
 init the frustum culling (take the same args as projection matrix)
 */
-void Camera::frustumCullingInit(CAMERA_FLOAT angleDeg, CAMERA_FLOAT ratio, CAMERA_FLOAT nearD, CAMERA_FLOAT farD) {
+void	Camera::frustumCullingInit(CAMERA_FLOAT angleDeg, CAMERA_FLOAT ratio, CAMERA_FLOAT nearD, CAMERA_FLOAT farD) {
 	_frustumCulling.tang = static_cast<CAMERA_FLOAT>(glm::tan(glm::radians(angleDeg * 0.5)));
 
 	_frustumCulling.ratio = ratio;
