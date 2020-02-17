@@ -8,29 +8,46 @@
 #define WIDTH 800
 #define HEIGHT 600
 
+#define MARGED_X(pos) _margin.x + _block.x * pos.x
+#define MARGED_Y(pos) _margin.y + _block.y * pos.y
+#define MARGED_POS(pos) MARGED_X(pos), MARGED_Y(pos)
+
 class NibblerSFML : public ANibblerGui {
 	public:
+		// Constructors
 		NibblerSFML();
 		virtual ~NibblerSFML();
 		NibblerSFML(NibblerSFML const &src);
+		// Operators
 		NibblerSFML &operator=(NibblerSFML const &rhs);
 
+		// Methods
 		virtual bool	init(GameInfo &gameInfo);
 		virtual void	updateInput();
 		virtual bool	draw();
 
+		// Exceptions
+		class NibblerSFMLException : public std::runtime_error {
+		public:
+			NibblerSFMLException();
+			explicit NibblerSFMLException(const char* what_arg);
+		};
+
 	private:
-		int		_h_block;
-		int		_w_block;
-		int		_h_margin;
-		int		_w_margin;
-
-
+		// Members
+		typedef void(*inputFuncPtr)(Input &);
+		static	std::map<sf::Keyboard::Key , inputFuncPtr>	_inputKeyPressed;
 		sf::RenderWindow	_win;
 		sf::Event			_event;
-		std::string			_toString() const;
-		std::string			_getBoard() const;
+		sf::Font			_font;
+		glm::ivec2			_block;
+		glm::ivec2			_margin;
+		glm::ivec2			_padding;
+
+		// Methods
 		void				_printBoard();
 		void				_printSnake();
 		void				_printFood();
+		void				_printLine(int line_nb, std::string line);
+		void				_printState(std::string str, sf::Color color);
 };

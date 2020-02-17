@@ -45,7 +45,7 @@ void	DynGuiManager::loadGui(uint8_t id) {
 		_quitGui();
 	}
 
-	// load librairy
+	// load library
 	_hndl = dlopen(_guiInfos[id].first.c_str(), RTLD_LAZY);
 	if (_hndl == NULL) {
 		throw DynGuiManagerException(dlerror());
@@ -59,6 +59,10 @@ void	DynGuiManager::loadGui(uint8_t id) {
 
 	// construct the gui
 	nibblerGui = reinterpret_cast<nibblerGuiCreator>(mkr)();
+
+	if (nibblerGui == nullptr) {
+		throw DynGuiManagerException("Error new gui");
+	}
 
 	_currentGuiID = id;
 }

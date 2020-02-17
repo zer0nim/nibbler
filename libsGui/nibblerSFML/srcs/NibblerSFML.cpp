@@ -1,6 +1,24 @@
 #include "NibblerSFML.hpp"
 #include "Logging.hpp"
 
+// -- Static members initialisation --------------------------------------------
+
+std::map<sf::Keyboard::Key , NibblerSFML::inputFuncPtr>	NibblerSFML::_inputKeyPressed = {
+	{sf::Keyboard::Escape, [](Input &input) { input.quit = true; } },
+	{sf::Keyboard::Space, [](Input &input) { input.pause = true; } },
+
+	{sf::Keyboard::Up, [](Input &input) { input.direction = Direction::MOVE_UP; } },
+	{sf::Keyboard::Right, [](Input &input) { input.direction = Direction::MOVE_RIGHT; } },
+	{sf::Keyboard::Down, [](Input &input) { input.direction = Direction::MOVE_DOWN; } },
+	{sf::Keyboard::Left, [](Input &input) { input.direction = Direction::MOVE_LEFT; } },
+
+	{sf::Keyboard::Num1, [](Input &input) { input.loadGuiID = 0; } },
+	{sf::Keyboard::Num2, [](Input &input) { input.loadGuiID = 1; } },
+	{sf::Keyboard::Num3, [](Input &input) { input.loadGuiID = 2; } },
+};
+
+// -- Constructors -------------------------------------------------------------
+
 NibblerSFML::NibblerSFML() :
   ANibblerGui(),
   _win() {
@@ -14,10 +32,12 @@ NibblerSFML::NibblerSFML() :
 		logging.setLoglevel(LOGINFO);
 	#endif
 
-	_h_block = 10;
-	_w_block = 10;
-	_h_margin = 5;
-	_w_margin = 5;
+	if (!_font.loadFromFile("assets/fonts/snakebold.ttf"))
+		throw NibblerSFMLException("Inexistent font : assets/fonts/snakebold.ttf");
+
+	_block = {10, 10};
+	_margin = {5, 5};
+	_padding = {0, 0};
 }
 
 NibblerSFML::~NibblerSFML() {
@@ -29,12 +49,16 @@ NibblerSFML::NibblerSFML(NibblerSFML const &src) {
 	*this = src;
 }
 
+// -- Operators ----------------------------------------------------------------
+
 NibblerSFML &NibblerSFML::operator=(NibblerSFML const &rhs) {
 	if (this != &rhs) {
 		logErr("unable to copy NibblerSFML");
 	}
 	return *this;
 }
+
+// -- Public Methods -----------------------------------------------------------
 
 bool NibblerSFML::init(GameInfo &gameInfo) {
 	logInfo("loading SFML");
@@ -61,29 +85,8 @@ void NibblerSFML::updateInput() {
 
 			// key pressed
 			case sf::Event::KeyPressed:
-				if (_event.key.code == sf::Keyboard::Escape)
-					input.quit = true;
-
-				else if (_event.key.code == sf::Keyboard::Space)
-					input.pause = true;
-
-				else if (_event.key.code == sf::Keyboard::Up)
-					input.direction = Direction::MOVE_UP;
-				else if (_event.key.code == sf::Keyboard::Right)
-					input.direction = Direction::MOVE_RIGHT;
-				else if (_event.key.code == sf::Keyboard::Down)
-					input.direction = Direction::MOVE_DOWN;
-				else if (_event.key.code == sf::Keyboard::Left)
-					input.direction = Direction::MOVE_LEFT;
-
-
-				else if (_event.key.code == sf::Keyboard::Num1)
-					input.loadGuiID = 0;
-				else if (_event.key.code == sf::Keyboard::Num2)
-					input.loadGuiID = 1;
-				else if (_event.key.code == sf::Keyboard::Num3)
-					input.loadGuiID = 2;
-				break;
+				if (_inputKeyPressed.find(_event.key.code) != _inputKeyPressed.end())
+					_inputKeyPressed[_event.key.code](input);
 
 			default:
 				break;
@@ -94,172 +97,134 @@ void NibblerSFML::updateInput() {
 bool NibblerSFML::draw() {
 	_win.clear();
 
+	sf::View board(sf::FloatRect(0.f, 0.f, _margin.x * 2 + gameInfo->gameboard.x * _block.x,
+	_margin.y * 2 + gameInfo->gameboard.y * _block.y));
 
-	sf::View board(sf::FloatRect(0.f, 0.f, _h_margin * 2 + gameInfo->gameboard.x * _h_block,
-	_w_margin * 2 + gameInfo->gameboard.y * _w_block));
-
-	float ratio_y = 1.f;
-	float ratio_x = static_cast<float>(_win.getSize().y) / static_cast<float>(_win.getSize().x);
-	if (ratio_x > 1.f) {
-		ratio_x = 1.f;
-		ratio_y = static_cast<float>(_win.getSize().x) / static_cast<float>(_win.getSize().y);
+	glm::vec2	ratio;
+	ratio.y = 1.f;
+	ratio.x = static_cast<float>(_win.getSize().y) / static_cast<float>(_win.getSize().x);
+	if (ratio.x > 1.f) {
+		ratio.x = 1.f;
+		ratio.y = static_cast<float>(_win.getSize().x) / static_cast<float>(_win.getSize().y);
 	}
-	// std::cout << "ratio: " << ratio << std::endl;
-	board.setViewport(sf::FloatRect(0, 0, ratio_x, ratio_y));
-	// board.rotate(180.f);
+	board.setViewport(sf::FloatRect(0, 0, ratio.x, ratio.y));
 	_win.setView(board);
 
-	// sf::View menu(sf::FloatRect(_h_margin * 2 + gameInfo->gameboard.x * _h_block, 0.f, 50,
-	// 200));
-	// menu.setViewport(sf::FloatRect(0.5f, 0.f, 0.5f, 1.f));
-	// _win.setView(menu);
-
 	_printBoard();
+
+	_printLine(0, "Nibbler");
+	_printLine(1, "score: " + std::to_string(gameInfo->snake.size()));
+
 	_printSnake();
 	_printFood();
 
-
-	sf::Font font;
-	font.loadFromFile("assets/fonts/snakebold.ttf");
-
 	if (gameInfo->play == State::S_PAUSE) {
-		sf::RectangleShape rect(sf::Vector2f(200, 100));
-		rect.setFillColor(sf::Color(0xE6903Aaa));
-		_win.draw(rect);
-		sf::Text text;
-		text.setFont(font);
-		text.setCharacterSize(30);
-		text.setString("PAUSE");
-		text.setFillColor(sf::Color::Black);
-		text.setPosition(50, 33);
-		_win.draw(text);
+		_printState("PAUSE", sf::Color(0xE6903Aaa));
 	}
 
 	if (gameInfo->play == State::S_GAMEOVER) {
-		sf::RectangleShape rect(sf::Vector2f(300, 100));
-		rect.setFillColor(sf::Color(0xE6903Aaa));
-		_win.draw(rect);
-		sf::Text text;
-		text.setFont(font);
-		text.setCharacterSize(30);
-		text.setString("GAME OVER");
-		text.setFillColor(sf::Color::Black);
-		text.setPosition(50, 33);
-		_win.draw(text);
+		_printState("GAME OVER", sf::Color(0xFC4F4899));
 	}
-
-	// logDebug("NibblerSFML::draw : " + _toString());
-
-	// sf::View view1(sf::FloatRect(200.f, 200.f, 300.f, 200.f));
-
-	// sf::View view(sf::FloatRect(0.f, 0.f, 1000.f, 600.f));
-
-	// on l'active
-
-	// // on dessine quelque chose dans cette vue
-	// _win.draw(some_sprite);
-
-	// vous voulez faire des tests de visibilité ? récupérez la vue courante
-	// sf::View currentView = _win.getView();
 
 	_win.display();
 	return true;
 }
 
+// -- Private Methods ----------------------------------------------------------
+
 void	NibblerSFML::_printBoard() {
-	sf::Color color[2] = {
+	float		size_board = gameInfo->gameboard.x * gameInfo->gameboard.y;
+	sf::Color	color[2] = {
 		sf::Color(0x252526FF),		// #252526ff
 		sf::Color(0x1E1E1EFF),		// #1E1E1Eff
 	};
 
-	sf::RectangleShape rect(sf::Vector2f(_h_margin * 2 + gameInfo->gameboard.x * _h_block,
-	_w_margin * 2 + gameInfo->gameboard.y * _w_block));
+	sf::RectangleShape rect(sf::Vector2f(_margin.x * 2 + gameInfo->gameboard.x * _block.x,
+	_margin.y * 2 + gameInfo->gameboard.y * _block.y));
 	rect.setPosition(0, 0);
 	rect.setFillColor(sf::Color(0x587C0CFF));
 	_win.draw(rect);
 
-	rect.setSize(sf::Vector2f(_w_block, _h_block));
-	for (int j = 0; j < gameInfo->gameboard.y; j++) {
-		for (int i = 0; i < gameInfo->gameboard.x; i++) {
-			rect.setPosition(_w_margin + _w_block * i, _h_margin + _h_block * j);
-			rect.setFillColor(color[(i+j) % 2]);
+	// Board sized optimisation
+	if (size_board >  22500) {
+		rect.setSize(sf::Vector2f(gameInfo->gameboard.x * _block.x, gameInfo->gameboard.y * _block.y));
+		rect.setPosition(_margin.x, _margin.y);
+		rect.setFillColor(color[1]);
+		_win.draw(rect);
+		return;
+	}
+
+	rect.setSize(sf::Vector2f(_block.x, _block.y));
+	glm::ivec2	pos = {0, 0};
+	for (pos.y = 0; pos.y < gameInfo->gameboard.y; pos.y++) {
+		for (pos.x = 0; pos.x < gameInfo->gameboard.x; pos.x++) {
+			rect.setPosition(MARGED_POS(pos));
+			rect.setFillColor(color[(pos.x+pos.y) % 2]);
 			_win.draw(rect);
 		}
 	}
 }
 
 void	NibblerSFML::_printSnake() {
-	sf::RectangleShape rect(sf::Vector2f(_w_block, _h_block));
+	sf::RectangleShape rect(sf::Vector2f(_block.x, _block.y));
 
 	for (auto &&i : gameInfo->snake) {
 		rect.setFillColor(sf::Color(0xBD63B9));
-		rect.setPosition(_w_margin + _w_block * i.x, _h_margin + _h_block * i.y);
+		rect.setPosition(MARGED_POS(i));
 		_win.draw(rect);
 	}
 }
 
 void	NibblerSFML::_printFood() {
-	sf::RectangleShape rect(sf::Vector2f(_w_block, _h_block));
+	sf::RectangleShape rect(sf::Vector2f(_block.x, _block.y));
 
 	rect.setFillColor(sf::Color(0xCEAF07FF));
 
-	rect.setPosition(_w_margin + _w_block * gameInfo->food.x, _h_margin + _h_block * gameInfo->food.y);
+	rect.setPosition(MARGED_POS(gameInfo->food));
 	_win.draw(rect);
 }
 
-std::string	NibblerSFML::_toString() const {
-	std::string result = "";
+void	NibblerSFML::_printLine(int line_nb, std::string line) {
+	float		width = MARGED_X(gameInfo->gameboard);
+	sf::Text	text;
 
-	result += "Gameboard [" + std::to_string(gameInfo->gameboard.x) + ", "
-			+ std::to_string(gameInfo->gameboard.y) + "]\n"
-			"snake length: " + std::to_string(gameInfo->snake.size()) + "\n"
-			"game [";
-	switch (gameInfo->play) {
-	case State::S_PLAY:
-		result += "PLAY";
-		break;
-	case State::S_PAUSE:
-		result += "PAUSE";
-		break;
-	case State::S_GAMEOVER:
-		result += "GAME OVER";
-		break;
-	default:
-		break;
-	}
-	result += "]\n";
-
-	result += _getBoard();
-
-	for (glm::ivec2 const &i : gameInfo->snake) {
-		result += ">>" + glm::to_string(i);
-	}
-
-	return result;
+	text.setFont(_font);
+	text.setCharacterSize(width / 25);
+	text.setString(line);
+	text.setFillColor(sf::Color(0x55BAE1AA));
+	sf::Vector2f text_size = sf::Vector2f(text.getLocalBounds().width, text.getLocalBounds().height);
+	text.setPosition(width - text_size.x - width / 40, line_nb * text_size.y * 1.4f + width / 40 + _margin.y);
+	_win.draw(text);
 }
 
-std::string	NibblerSFML::_getBoard() const {
-	std::string result;
+void	NibblerSFML::_printState(std::string str, sf::Color color) {
+	float		width = MARGED_X(gameInfo->gameboard);
+	float		height = MARGED_Y(gameInfo->gameboard);
+	sf::Text	text;
 
-	for (int j = 0; j < gameInfo->gameboard.y; j++) {
-		for (int i = 0; i < gameInfo->gameboard.x; i++) {
-			if (std::find(gameInfo->snake.begin(), gameInfo->snake.end(), glm::ivec2(i, j)) != gameInfo->snake.end()) {
-				if (gameInfo->food == glm::ivec2(i, j))
-					result += COLOR_GREEN "o" COLOR_EOC;
-				else if (gameInfo->snake.front() == glm::ivec2(i, j))
-					result += COLOR_RED "x" COLOR_EOC;
-				else
-					result += "x";
-			} else if (gameInfo->food == glm::ivec2(i, j))
-					result += COLOR_GREEN "o" COLOR_EOC;
-			else
-				result += "_";
-		}
-		result += "\n";
-	}
-	return result;
+	text.setFont(_font);
+	text.setCharacterSize(width / 10);
+	text.setString(str);
+	text.setFillColor(sf::Color::Black);
+	sf::Vector2f text_size = sf::Vector2f(text.getLocalBounds().width, text.getLocalBounds().height);
+	text.setPosition((width / 2) - (text_size.x / 2), (height / 2) - (text_size.y / 2) - text.getLocalBounds().top);
+	sf::Vector2f rect_size = sf::Vector2f(text_size.x * 1.5f, text_size.y * 1.5f);
+	sf::RectangleShape rect(rect_size);
+	rect.setFillColor(color);
+	rect.setPosition((width / 2) - (rect_size.x / 2), (height / 2) - (rect_size.y / 2));
+	_win.draw(rect);
+	_win.draw(text);
 }
 
+// -- Exceptions errors --------------------------------------------------------
+
+NibblerSFML::NibblerSFMLException::NibblerSFMLException()
+: std::runtime_error("NibblerSFML Exception") {}
+
+NibblerSFML::NibblerSFMLException::NibblerSFMLException(const char* what_arg)
+: std::runtime_error(std::string(std::string("NibblerSFMLError: ") + what_arg).c_str()) {}
+
+// -- Library external access functions ----------------------------------------
 
 extern "C" {
 	ANibblerGui *makeNibblerSFML() {

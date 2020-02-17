@@ -16,7 +16,7 @@ int	main(int ac, char * const *av) {
 
 	initLogs();  // init logs functions context, Err/Warn/Info...
 
-	// process arguments ----------------------------------------------------
+	// -- process arguments ----------------------------------------------------
 	ap.setProgDescr("The purpose of this project is to create our version of the game Snake,\n"\
 	"with at least 3 different GUIs. These GUIs being shared libraries.");
 
@@ -41,7 +41,9 @@ int	main(int ac, char * const *av) {
 	// -b --boardSize
 	ap.addArgument("gameboard", ArgType::UINT32, 'b', "gameboard")
 		.setHelp("set the gameboard size")
-		.setDefaultU(16);
+		.setDefaultU(16)
+		.setMinU(10)
+		.setMaxU(1000);
 	// -s --speed
 	ap.addArgument("snakeSpeed", ArgType::FLOAT, 's', "snakeSpeed")
 		.setHelp("change the snake speed")
@@ -61,7 +63,7 @@ int	main(int ac, char * const *av) {
 		return EXIT_FAILURE;
 	}
 
-	// ---- retrieve values ----------------------------------------------------
+	// -- retrieve values ------------------------------------------------------
 	// gui
 	gui = ap.get<uint8_t>("gui");
 	// windowSize
@@ -73,18 +75,19 @@ int	main(int ac, char * const *av) {
 	gameInfo.snakeSpeed = ap.get<float>("snakeSpeed");
 
 	logDebug("-- gameInfo ------------");
-	logDebug("windowSize: " << glm::to_string(gameInfo.windowSize));
-	logDebug("gameboard: " << glm::to_string(gameInfo.gameboard));
-	logDebug("play: " << gameInfo.play);
-	logDebug("snakeSpeed: " << gameInfo.snakeSpeed);
+	logDebug(" windowSize: " << glm::to_string(gameInfo.windowSize));
+	logDebug(" gameboard: " << glm::to_string(gameInfo.gameboard));
+	logDebug(" play: " << gameInfo.play);
+	logDebug(" snakeSpeed: " << gameInfo.snakeSpeed);
 	logDebug("-----------------------");
 
-	// init gameManager
-	if (!game.init(gui)) {
-		return EXIT_FAILURE;
-	}
-	// run the game ------------------------------------------------------------
+	// -- run the game ---------------------------------------------------------
 	try {
+		// init gameManager
+		if (!game.init(gui)) {
+			return EXIT_FAILURE;
+		}
+		// run the game
 		game.run();
 	}
 	catch(const std::exception& e) {
