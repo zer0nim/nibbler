@@ -5,8 +5,8 @@
 #include "commonInclude.hpp"
 #include "Shader.hpp"
 
-#define SHADER_SKYBOX_VS "libsGui/nibblerOpenGL/shaders/skybox_vs.glsl"
-#define SHADER_SKYBOX_FS "libsGui/nibblerOpenGL/shaders/skybox_fs.glsl"
+#define SHADER_SKYBOX_VS "./libsGui/nibblerSDL/shaders/skybox_vs.glsl"
+#define SHADER_SKYBOX_FS "./libsGui/nibblerSDL/shaders/skybox_fs.glsl"
 
 #define SKYBOX_USING 2
 #if SKYBOX_USING == 0

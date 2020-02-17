@@ -144,4 +144,6 @@ void main() {
 
 		FragColor = mix(vec4(fog.color.rgb * NIGHTFOG, 1.0), FragColor, fog_factor);
 	}
+
+	FragColor = vec4(0.95, 0.2, 0.3, 1.0);
 }

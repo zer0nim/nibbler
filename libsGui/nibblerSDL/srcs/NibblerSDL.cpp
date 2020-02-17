@@ -1,12 +1,6 @@
 #include "NibblerSDL.hpp"
 #include "Logging.hpp"
 
-// -- help functions -----------------------------------------------------------
-std::chrono::milliseconds getMs() {
-	return std::chrono::duration_cast<std::chrono::milliseconds>(
-		std::chrono::system_clock::now().time_since_epoch());
-}
-
 // -- NibblerSDL ---------------------------------------------------------------
 NibblerSDL::NibblerSDL() :
   ANibblerGui(),
@@ -31,6 +25,10 @@ NibblerSDL::NibblerSDL() :
 
 NibblerSDL::~NibblerSDL() {
 	logInfo("exit SDL");
+
+	// enable cursor
+	SDL_ShowCursor(SDL_ENABLE);
+	SDL_SetRelativeMouseMode(SDL_FALSE);
 
 	// free vao / vbo
 	_cubeShader->use();
@@ -64,30 +62,76 @@ NibblerSDL &NibblerSDL::operator=(NibblerSDL const &rhs) {
 }
 
 void NibblerSDL::updateInput() {
+	uint64_t time = _getMs().count();
+	float dtTime = (time - _lastLoopMs) / 1000.0;
+	_lastLoopMs = time;
+
 	input.direction = Direction::NO_MOVE;
 	while (SDL_PollEvent(_event)) {
-		if (_event->window.event == SDL_WINDOWEVENT_CLOSE)
+		// close button
+		if (_event->window.event == SDL_WINDOWEVENT_CLOSE) {
 			input.quit = true;
-		else if (_event->key.type == SDL_KEYDOWN && _event->key.keysym.sym == SDLK_ESCAPE)
-			input.quit = true;
+		}
 
-		else if (_event->key.type == SDL_KEYDOWN && _event->key.keysym.sym == SDLK_UP)
-			input.direction = Direction::MOVE_UP;
-		else if (_event->key.type == SDL_KEYDOWN && _event->key.keysym.sym == SDLK_RIGHT)
-			input.direction = Direction::MOVE_RIGHT;
-		else if (_event->key.type == SDL_KEYDOWN && _event->key.keysym.sym == SDLK_DOWN)
-			input.direction = Direction::MOVE_DOWN;
-		else if (_event->key.type == SDL_KEYDOWN && _event->key.keysym.sym == SDLK_LEFT)
-			input.direction = Direction::MOVE_LEFT;
+		// key release
+		if (_event->key.type == SDL_KEYDOWN &&
+			_inputsFuncs.find(_event->key.keysym.sym) != _inputsFuncs.end()) {
+			_inputsFuncs.at(_event->key.keysym.sym)(input);
+		}
 
-		else if (_event->key.type == SDL_KEYDOWN && _event->key.keysym.sym == SDLK_1)
-			input.loadGuiID = 0;
-		else if (_event->key.type == SDL_KEYDOWN && _event->key.keysym.sym == SDLK_2)
-			input.loadGuiID = 1;
-		else if (_event->key.type == SDL_KEYDOWN && _event->key.keysym.sym == SDLK_3)
-			input.loadGuiID = 2;
+		// mouse motion
+		if (_event->type == SDL_MOUSEMOTION) {
+			_cam->processMouseMovement(_event->motion.xrel, -_event->motion.yrel);
+		}
+	}
+
+	// get curently pressed keys
+	const Uint8 * keystates = SDL_GetKeyboardState(NULL);
+	// camera movement
+	bool isRun = keystates[SDL_SCANCODE_LSHIFT];
+	if (keystates[SDL_SCANCODE_W]) {
+		_cam->processKeyboard(CamMovement::Forward, dtTime, isRun);
+	}
+	if (keystates[SDL_SCANCODE_D]) {
+		_cam->processKeyboard(CamMovement::Right, dtTime, isRun);
+	}
+	if (keystates[SDL_SCANCODE_S]) {
+		_cam->processKeyboard(CamMovement::Backward, dtTime, isRun);
+	}
+	if (keystates[SDL_SCANCODE_A]) {
+		_cam->processKeyboard(CamMovement::Left, dtTime, isRun);
+	}
+	if (keystates[SDL_SCANCODE_Q]) {
+		_cam->processKeyboard(CamMovement::Down, dtTime, isRun);
+	}
+	if (keystates[SDL_SCANCODE_E]) {
+		_cam->processKeyboard(CamMovement::Up, dtTime, isRun);
 	}
 }
+
+// -- statics const ------------------------------------------------------------
+std::map<SDL_Keycode, NibblerSDL::InputFuncPtr> const	NibblerSDL::_inputsFuncs {
+	{SDLK_ESCAPE, [](ANibblerGui::Input &input) {
+		input.quit = true; }},
+	{SDLK_SPACE, [](ANibblerGui::Input &input) {
+		input.pause = !input.pause; }},
+	{SDLK_r, [](ANibblerGui::Input &input) {
+		input.restart = true; }},
+	{SDLK_UP, [](ANibblerGui::Input &input) {
+		input.direction = Direction::MOVE_UP; }},
+	{SDLK_RIGHT, [](ANibblerGui::Input &input) {
+		input.direction = Direction::MOVE_RIGHT; }},
+	{SDLK_DOWN, [](ANibblerGui::Input &input) {
+		input.direction = Direction::MOVE_DOWN; }},
+	{SDLK_LEFT, [](ANibblerGui::Input &input) {
+		input.direction = Direction::MOVE_LEFT; }},
+	{SDLK_1, [](ANibblerGui::Input &input) {
+		input.loadGuiID = 0; }},
+	{SDLK_2, [](ANibblerGui::Input &input) {
+		input.loadGuiID = 1; }},
+	{SDLK_3, [](ANibblerGui::Input &input) {
+		input.loadGuiID = 2; }},
+};
 
 // -- c extern -----------------------------------------------------------------
 extern "C" {

@@ -27,7 +27,7 @@ namespace Direction {
 }
 
 namespace State {
-	enum eState {
+	enum Enum {
 		S_PLAY,
 		S_PAUSE,
 		S_GAMEOVER,
@@ -38,7 +38,7 @@ struct GameInfo {
 	glm::ivec2				windowSize;
 	glm::ivec2				gameboard;
 	glm::ivec2				food;
-	State::eState			play;
+	State::Enum				play;
 	std::deque<glm::ivec2>	snake;
 	float					snakeSpeed;
 
@@ -57,10 +57,12 @@ class ANibblerGui {
 		virtual	bool	draw() = 0;
 
 		struct Input {
-			bool		quit;
+			bool			quit;
+			bool			pause;
+			bool			restart;
 
 			Direction::Enum	direction;
-			uint8_t		loadGuiID;
+			uint8_t			loadGuiID;
 
 			Input();
 			Input(Input const &src);

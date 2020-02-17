@@ -1,5 +1,14 @@
 #include "NibblerSDL.hpp"
+
 #include "Logging.hpp"
+#include "Material.hpp"
+#include "debug.hpp"
+
+// -- help functions -----------------------------------------------------------
+std::chrono::milliseconds	NibblerSDL::_getMs() const {
+	return std::chrono::duration_cast<std::chrono::milliseconds>(
+		std::chrono::system_clock::now().time_since_epoch());
+}
 
 // -- init ---------------------------------------------------------------------
 bool NibblerSDL::init(GameInfo &gameInfo) {
@@ -46,6 +55,10 @@ bool	NibblerSDL::_initOpengl() {
 		return false;
 	}
 
+	// disable cursor for fps camera
+	SDL_ShowCursor(SDL_DISABLE);
+	SDL_SetRelativeMouseMode(SDL_TRUE);
+
 	// create opengl context
 	_context = SDL_GL_CreateContext(_win);
 	if (_context == 0) {
@@ -67,9 +80,9 @@ bool	NibblerSDL::_initOpengl() {
 }
 
 // -- _initShaders -------------------------------------------------------------
+// create opengl shader stuffs here (buffers, camera, ...)
 bool	NibblerSDL::_initShaders() {
-	// create opengl shader stuffs here (buffers, camera, ...)
-
+	// -- vao vbo --------------------------------------------------------------
 	// create shader
 	_cubeShader = new Shader("./libsGui/nibblerSDL/shaders/cube_vs.glsl",
 		"./libsGui/nibblerSDL/shaders/cube_fs.glsl",
@@ -83,9 +96,8 @@ bool	NibblerSDL::_initShaders() {
 	glBindBuffer(GL_ARRAY_BUFFER, _cubeShVbo);
 
 	// fill buffer
-	glBufferData(GL_ARRAY_BUFFER, _cubeFaces.size() * sizeof(float), &_cubeFaces[0], GL_STATIC_DRAW);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
+	glBufferData(GL_ARRAY_BUFFER, _cubeFaces.size() * sizeof(float),
+		&_cubeFaces[0], GL_STATIC_DRAW);
 
 	// bottom left corner face pos
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, C_VAO_WIDTH * sizeof(float),
@@ -100,7 +112,58 @@ bool	NibblerSDL::_initShaders() {
 		reinterpret_cast<void*>(6 * sizeof(float)));
 	glEnableVertexAttribArray(2);
 
+	// unbind vao / vbo
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+
+	// -- camera ---------------------------------------------------------------
+	_cam = new Camera(glm::vec3(0, 5, -5), glm::vec3(0, 1, 0));
+
+	float angle = _cam->zoom;
+	float ratio = static_cast<float>(gameInfo->windowSize.x) / gameInfo->windowSize.y;
+	float nearD = 0.1f;
+	float farD = 400;
+	_projection = glm::perspective(glm::radians(angle), ratio, nearD, farD);
+
+	// -- set default uniforms -------------------------------------------------
+	// projection
+	_cubeShader->setMat4("projection", _projection);
+
+	// cube material
+	Material material;
+	_cubeShader->setVec3("material.specular", material.specular);
+	_cubeShader->setFloat("material.shininess", material.shininess);
+
+	// direction light
+	_cubeShader->setVec3("dirLight.direction", -0.2f, -0.8f, 0.6f);
+	_cubeShader->setVec3("dirLight.ambient", 0.4f, 0.4f, 0.4f);
+	_cubeShader->setVec3("dirLight.diffuse", 0.8f, 0.8f, 0.8f);
+	_cubeShader->setVec3("dirLight.specular", 0.1f, 0.1f, 0.1f);
+
+	// point light
+	_cubeShader->setFloat("pointLight.constant", 1.0f);
+	_cubeShader->setFloat("pointLight.linear", 0.09f);
+	_cubeShader->setFloat("pointLight.quadratic", 0.032f);
+
+	_cubeShader->setVec3("pointLight.ambient", 0.4f, 0.4f, 0.4f);
+	_cubeShader->setVec3("pointLight.diffuse", 0.8f, 0.8f, 0.8f);
+	_cubeShader->setVec3("pointLight.specular", 0.1f, 0.1f, 0.1f);
+	// disabled for now
+	_cubeShader->setBool("pointLight.enabled", false);
+
+	// disable texture transparency for now
+	_cubeShader->setBool("enableTransparency", false);
+
 	_cubeShader->unuse();
+
+	// -- skybox ---------------------------------------------------------------
+	_skybox = new Skybox;
+	_skybox->getShader().use();
+	_skybox->getShader().setMat4("projection", _projection);
+	_skybox->getShader().unuse();
+
+	// -------------------------------------------------------------------------
+	_lastLoopMs = _getMs().count();  // init first frame
 
 	return true;
 }
@@ -108,12 +171,47 @@ bool	NibblerSDL::_initShaders() {
 
 // -- draw ---------------------------------------------------------------------
 bool NibblerSDL::draw() {
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glViewport(0, 0, gameInfo->windowSize.x, gameInfo->windowSize.y);
+	glClearColor(0.11373f, 0.17647f, 0.27059f, 1.0f);
+
+	glm::mat4	view = _cam->getViewMatrix();
+	_cubeShader->use();
+	_cubeShader->setMat4("view", view);
+	_cubeShader->setVec3("viewPos", _cam->pos);
+	glBindVertexArray(_cubeShVao);
+	_cubeShader->unuse();
+
+	// -- drawing --------------------------------------------------------------
+	_cubeShader->use();
+	glm::mat4 model(1.0);
+	glm::vec3 pos = glm::vec3(0.0, 0.0, 0.0);
+
+	// draw cube
+	model = glm::translate(glm::mat4(1.0), pos);
+	_cubeShader->setMat4("model", model);
+	glDrawArrays(GL_POINTS, 0, C_NB_FACES);
+	_cubeShader->unuse();
+
+	// draw skybox
+	CAMERA_MAT4	skyView = view;
+	skyView[3][0] = 0;  // remove translation for the skybox
+	skyView[3][1] = 0;
+	skyView[3][2] = 0;
+	_skybox->getShader().use();
+	_skybox->getShader().setMat4("view", skyView);
+	_skybox->getShader().unuse();
+	_skybox->draw(0.5);
+
+	// swap buffer and check errors
+	SDL_GL_SwapWindow(_win);
+	checkError();
 	return true;
 }
 
 // -- statics const ------------------------------------------------------------
 // cube faces
-std::array<float, C_FACE_SIZE> const	NibblerSDL::_cubeFaces = {
+std::array<float, C_FACE_A_SIZE> const	NibblerSDL::_cubeFaces = {
 	// bot left corner,		normals,			faceId
 	-0.5f, -0.5f, 0.5f,		0.0f, 0.0f, 1.0f,	0,
 	0.5f, -0.5f, 0.5f,		1.0f, 0.0f, 0.0f,	1,
