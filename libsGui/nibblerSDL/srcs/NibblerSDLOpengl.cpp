@@ -103,21 +103,25 @@ bool	NibblerSDL::_initShaders() {
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, C_VAO_WIDTH * sizeof(float),
 		reinterpret_cast<void*>(0));
 	glEnableVertexAttribArray(0);
-	// face normal
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, C_VAO_WIDTH * sizeof(float),
+	// face size
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, C_VAO_WIDTH * sizeof(float),
 		reinterpret_cast<void*>(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
 	// face id
 	glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, C_VAO_WIDTH * sizeof(float),
-		reinterpret_cast<void*>(6 * sizeof(float)));
+		reinterpret_cast<void*>(5 * sizeof(float)));
 	glEnableVertexAttribArray(2);
+	// block id
+	glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, C_VAO_WIDTH * sizeof(float),
+		reinterpret_cast<void*>(6 * sizeof(float)));
+	glEnableVertexAttribArray(3);
 
 	// unbind vao / vbo
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 
 	// -- camera ---------------------------------------------------------------
-	_cam = new Camera(glm::vec3(0, 5, -5), glm::vec3(0, 1, 0));
+	_cam = new Camera(glm::vec3(0, 5, 5));
 
 	float angle = _cam->zoom;
 	float ratio = static_cast<float>(gameInfo->windowSize.x) / gameInfo->windowSize.y;
@@ -212,11 +216,11 @@ bool NibblerSDL::draw() {
 // -- statics const ------------------------------------------------------------
 // cube faces
 std::array<float, C_FACE_A_SIZE> const	NibblerSDL::_cubeFaces = {
-	// bot left corner,		normals,			faceId
-	-0.5f, -0.5f, 0.5f,		0.0f, 0.0f, 1.0f,	0,
-	0.5f, -0.5f, 0.5f,		1.0f, 0.0f, 0.0f,	1,
-	0.5f, 0.5f, -0.5f,		0.0f, 0.0f, -1.0f,	2,
-	-0.5f, -0.5f, -0.5f,	-1.0f, 0.0f, 0.0f,	3,
-	-0.5f, 0.5f, 0.5f,		0.0f, 1.0f, 0.0f,	4,
-	-0.5f, -0.5f, -0.5f,	0.0f, -1.0f, 0.0f,	5,
+	// bot left corner,		normals,			faceId,		blockId
+	-0.5f, -0.5f, 0.5f,		1.0f, 1.0f,			0,			0,
+	0.5f, -0.5f, 0.5f,		1.0f, 1.0f,			1,			1,
+	0.5f, -0.5f, -0.5f,		1.0f, 1.0f,			2,			2,
+	-0.5f, -0.5f, -0.5f,	1.0f, 1.0f,			3,			3,
+	-0.5f, 0.5f, 0.5f,		1.0f, 1.0f,			4,			4,
+	-0.5f, -0.5f, -0.5f,	1.0f, 1.0f,			5,			5,
 };
