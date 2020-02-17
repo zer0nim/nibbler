@@ -31,11 +31,22 @@ NibblerSDL::NibblerSDL() :
 
 NibblerSDL::~NibblerSDL() {
 	logInfo("exit SDL");
+
+	// free vao / vbo
+	_cubeShader->use();
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+	glDeleteBuffers(1, &_cubeShVbo);
+	glDeleteVertexArrays(1, &_cubeShVao);
+	_cubeShader->unuse();
+
 	delete _event;
 	delete _cubeShader;
 	delete _cam;
 	delete _textRender;
 	delete _skybox;
+
+	// properly quit sdl
 	SDL_GL_DeleteContext(_context);
 	SDL_DestroyWindow(_win);
     SDL_Quit();

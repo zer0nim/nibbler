@@ -69,6 +69,39 @@ bool	NibblerSDL::_initOpengl() {
 // -- _initShaders -------------------------------------------------------------
 bool	NibblerSDL::_initShaders() {
 	// create opengl shader stuffs here (buffers, camera, ...)
+
+	// create shader
+	_cubeShader = new Shader("./libsGui/nibblerSDL/shaders/cube_vs.glsl",
+		"./libsGui/nibblerSDL/shaders/cube_fs.glsl",
+		"./libsGui/nibblerSDL/shaders/cube_gs.glsl");
+	_cubeShader->use();
+
+	// create and bind vao and vbo
+	glGenVertexArrays(1, &_cubeShVao);
+	glBindVertexArray(_cubeShVao);
+	glGenBuffers(1, &_cubeShVbo);
+	glBindBuffer(GL_ARRAY_BUFFER, _cubeShVbo);
+
+	// fill buffer
+	glBufferData(GL_ARRAY_BUFFER, _cubeFaces.size() * sizeof(float), &_cubeFaces[0], GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+
+	// bottom left corner face pos
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, C_VAO_WIDTH * sizeof(float),
+		reinterpret_cast<void*>(0));
+	glEnableVertexAttribArray(0);
+	// face normal
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, C_VAO_WIDTH * sizeof(float),
+		reinterpret_cast<void*>(3 * sizeof(float)));
+	glEnableVertexAttribArray(1);
+	// face id
+	glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, C_VAO_WIDTH * sizeof(float),
+		reinterpret_cast<void*>(6 * sizeof(float)));
+	glEnableVertexAttribArray(2);
+
+	_cubeShader->unuse();
+
 	return true;
 }
 
@@ -79,58 +112,13 @@ bool NibblerSDL::draw() {
 }
 
 // -- statics const ------------------------------------------------------------
-const float	NibblerSDL::_cubeVertices[] = {
-	// positions			// normals
-	0.5f, 0.5f, 0.5f,		0.0f, 0.0f, 1.0f,  // 0l
-	-0.5f, 0.5f, 0.5f,		0.0f, 0.0f, 1.0f,  // 0l
-	-0.5f, -0.5f, 0.5f,		0.0f, 0.0f, 1.0f,  // 0l
-
-	-0.5f, -0.5f, 0.5f,		0.0f, 0.0f, 1.0f,  // 0r
-	0.5f, -0.5f, 0.5f,		0.0f, 0.0f, 1.0f,  // 0r
-	0.5f, 0.5f, 0.5f,		0.0f, 0.0f, 1.0f,  // 0r
-
-
-	0.5f, -0.5f, -0.5f,		1.0f, 0.0f, 0.0f,  // 1l
-	0.5f, 0.5f, 0.5f,		1.0f, 0.0f, 0.0f,  // 1l
-	0.5f, -0.5f, 0.5f,		1.0f, 0.0f, 0.0f,  // 1l
-
-	0.5f, 0.5f, 0.5f,		1.0f, 0.0f, 0.0f,  // 1r
-	0.5f, -0.5f, -0.5f,		1.0f, 0.0f, 0.0f,  // 1r
-	0.5f, 0.5f, -0.5f,		1.0f, 0.0f, 0.0f,  // 1r
-
-
-	-0.5f, -0.5f, -0.5f,	0.0f, 0.0f, -1.0f,  // 2l
-	0.5f, 0.5f, -0.5f,		0.0f, 0.0f, -1.0f,  // 2l
-	0.5f, -0.5f, -0.5f,		0.0f, 0.0f, -1.0f,  // 2l
-
-	0.5f, 0.5f, -0.5f,		0.0f, 0.0f, -1.0f,  // 2r
-	-0.5f, -0.5f, -0.5f,	0.0f, 0.0f, -1.0f,  // 2r
-	-0.5f, 0.5f, -0.5f,		0.0f, 0.0f, -1.0f,  // 2r
-
-
-	-0.5f, 0.5f, 0.5f,		-1.0f, 0.0f, 0.0f,  // 3l
-	-0.5f, 0.5f, -0.5f,		-1.0f, 0.0f, 0.0f,  // 3l
-	-0.5f, -0.5f, -0.5f,	-1.0f, 0.0f, 0.0f,  // 3l
-
-	-0.5f, -0.5f, -0.5f,	-1.0f, 0.0f, 0.0f,  // 3r
-	-0.5f, -0.5f, 0.5f,		-1.0f, 0.0f, 0.0f,  // 3r
-	-0.5f, 0.5f, 0.5f,		-1.0f, 0.0f, 0.0f,  // 3r
-
-
-	-0.5f, 0.5f, -0.5f,		0.0f, 1.0f, 0.0f,  // 4l
-	0.5f, 0.5f, 0.5f,		0.0f, 1.0f, 0.0f,  // 4l
-	0.5f, 0.5f, -0.5f,		0.0f, 1.0f, 0.0f,  // 4l
-
-	0.5f, 0.5f, 0.5f,		0.0f, 1.0f, 0.0f,  // 4r
-	-0.5f, 0.5f, -0.5f,		0.0f, 1.0f, 0.0f,  // 4r
-	-0.5f, 0.5f, 0.5f,		0.0f, 1.0f, 0.0f,  // 4r
-
-
-	-0.5f, -0.5f, -0.5f,	0.0f, -1.0f, 0.0f,  // 5l
-	0.5f, -0.5f, -0.5f,		0.0f, -1.0f, 0.0f,  // 5l
-	0.5f, -0.5f, 0.5f,		0.0f, -1.0f, 0.0f,  // 5l
-
-	0.5f, -0.5f, 0.5f,		0.0f, -1.0f, 0.0f,  // 5r
-	-0.5f, -0.5f, 0.5f,		0.0f, -1.0f, 0.0f,  // 5r
-	-0.5f, -0.5f, -0.5f,	0.0f, -1.0f, 0.0f   // 5r
+// cube faces
+std::array<float, C_FACE_SIZE> const	NibblerSDL::_cubeFaces = {
+	// bot left corner,		normals,			faceId
+	-0.5f, -0.5f, 0.5f,		0.0f, 0.0f, 1.0f,	0,
+	0.5f, -0.5f, 0.5f,		1.0f, 0.0f, 0.0f,	1,
+	0.5f, 0.5f, -0.5f,		0.0f, 0.0f, -1.0f,	2,
+	-0.5f, -0.5f, -0.5f,	-1.0f, 0.0f, 0.0f,	3,
+	-0.5f, 0.5f, 0.5f,		0.0f, 1.0f, 0.0f,	4,
+	-0.5f, -0.5f, -0.5f,	0.0f, -1.0f, 0.0f,	5,
 };

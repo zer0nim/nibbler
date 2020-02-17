@@ -1,8 +1,13 @@
 #pragma once
 
+#define C_VAO_WIDTH 7
+#define C_FACE_SIZE 42
+
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 #include <iostream>
+#include <array>
+
 #include "ANibblerGui.hpp"
 #include "Shader.hpp"
 #include "Camera.hpp"
@@ -31,10 +36,11 @@ class NibblerSDL : public ANibblerGui {
 		TextRender			*_textRender;
 		Skybox				*_skybox;
 
-		uint32_t			_cubeShaderVAO;
-		uint32_t			_cubeShaderVBO;
-		static const float	_cubeVertices[];
+		uint32_t			_cubeShVao;
+		uint32_t			_cubeShVbo;
 		glm::mat4			_projection;
+
+		static std::array<float, C_FACE_SIZE> const	_cubeFaces;
 
 		bool	_init();
 		bool	_initOpengl();
