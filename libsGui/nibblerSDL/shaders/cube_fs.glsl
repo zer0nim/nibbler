@@ -61,7 +61,7 @@ uniform Fog			fog = Fog(
 );
 uniform float nightProgress = 0.0;
 
-vec3 calcDirLight(DirLight light, vec3 norm, vec3 viewDir) {
+vec3 calcDirLight(DirLight light, vec3 norm, vec3 viewDir, vec3 color) {
 	vec3	lightDir = normalize(-light.direction);
 	// diffuse
 	float	diff = max(dot(norm, lightDir), 0.0);
@@ -73,9 +73,8 @@ vec3 calcDirLight(DirLight light, vec3 norm, vec3 viewDir) {
 	vec3	ambient = light.ambient;
 	vec3	diffuse = light.diffuse;
 
-	vec3 tmp = vec3(texture(textureAtlas, vec3(fs_in.TexCoords, fs_in.TextureId)));
-	ambient *= tmp;
-	diffuse *= diff * tmp;
+	ambient *= color;
+	diffuse *= diff * color;
 
 	// use texture or color for the specular
 	vec3 specular = light.specular;
@@ -84,7 +83,7 @@ vec3 calcDirLight(DirLight light, vec3 norm, vec3 viewDir) {
 	return ((ambient + diffuse + specular) * NIGHT);
 }
 
-vec3 calcPointLight(PointLight light, vec3 norm, vec3 fragPos, vec3 viewDir) {
+vec3 calcPointLight(PointLight light, vec3 norm, vec3 fragPos, vec3 viewDir, vec3 color) {
 	vec3    lightDir = normalize(light.position - fragPos);
 	// diffuse
 	float	diff = max(dot(norm, lightDir), 0.0);
@@ -96,9 +95,8 @@ vec3 calcPointLight(PointLight light, vec3 norm, vec3 fragPos, vec3 viewDir) {
 	vec3	ambient = light.ambient;
 	vec3	diffuse = light.diffuse;
 
-	vec3 tmp = vec3(texture(textureAtlas, vec3(fs_in.TexCoords, fs_in.TextureId)));
-	ambient *= tmp;
-	diffuse *= diff * tmp;
+	ambient *= color;
+	diffuse *= diff * color;
 
 	// specular
 	vec3 specular = light.specular;
@@ -123,15 +121,17 @@ void main() {
 	vec3 norm = normalize(fs_in.Normal);
 	vec3 viewDir = normalize(viewPos - fs_in.FragPos);
 
+	vec4 color = texture(textureAtlas, vec3(fs_in.TexCoords, fs_in.TextureId));
+
 	// Directional lighting
-	vec3 res = calcDirLight(dirLight, norm, viewDir);
+	vec3 res = calcDirLight(dirLight, norm, viewDir, vec3(color));
 
 	// PointLight
 	if (pointLight.enabled) {
-		res += calcPointLight(pointLight, norm, fs_in.FragPos, viewDir);
+		res += calcPointLight(pointLight, norm, fs_in.FragPos, viewDir, vec3(color));
 	}
 
-	FragColor = vec4(res, 1.0);
+	FragColor = vec4(res, color.a);
 
 	// apply gamma correction
     FragColor.rgb = pow(FragColor.rgb, vec3(1.0 / GAMMA));

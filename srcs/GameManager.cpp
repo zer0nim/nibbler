@@ -250,7 +250,7 @@ bool GameManager::_checkContact() {
 		return true;
 
 	if (head == _gameInfo.food) {
-		_eating += 1;
+		_eating += 9;
 		_generateFood();
 		return true;
 	} else {
