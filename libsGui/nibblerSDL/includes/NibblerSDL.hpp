@@ -1,6 +1,6 @@
 #pragma once
 
-#define C_VAO_WIDTH 7
+#define C_VAO_WIDTH 6
 #define C_NB_FACES 6
 // C_VAO_WIDTH * C_NB_FACES
 #define C_FACE_A_SIZE 42
@@ -17,6 +17,7 @@
 #include "Camera.hpp"
 #include "TextRender.hpp"
 #include "Skybox.hpp"
+#include "TextureManager.hpp"
 
 class NibblerSDL : public ANibblerGui {
 	public:
@@ -35,6 +36,7 @@ class NibblerSDL : public ANibblerGui {
 		SDL_GLContext	_context;
 		uint64_t		_lastLoopMs;
 
+		TextureManager		*_textureManager;
 		Shader				*_cubeShader;
 		Camera				*_cam;
 		TextRender			*_textRender;

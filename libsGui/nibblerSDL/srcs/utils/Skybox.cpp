@@ -1,5 +1,5 @@
 #include "Skybox.hpp"
-#define STB_IMAGE_IMPLEMENTATION
+
 #include "libs/stb_image.h"
 #include "Logging.hpp"
 

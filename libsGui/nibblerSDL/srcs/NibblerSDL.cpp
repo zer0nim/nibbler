@@ -8,6 +8,7 @@ NibblerSDL::NibblerSDL() :
   _event(new SDL_Event()),
   _context(0),
   _lastLoopMs(0),
+  _textureManager(nullptr),
   _cubeShader(nullptr),
   _cam(nullptr),
   _textRender(nullptr),
@@ -39,6 +40,7 @@ NibblerSDL::~NibblerSDL() {
 	_cubeShader->unuse();
 
 	delete _event;
+	delete _textureManager;
 	delete _cubeShader;
 	delete _cam;
 	delete _textRender;

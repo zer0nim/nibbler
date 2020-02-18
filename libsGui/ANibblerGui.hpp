@@ -3,7 +3,7 @@
 
 #define NO_GUI_LOADED 255
 
-#define VOID_POS {-1, -1}
+#define VOID_POS glm::ivec2 {-1, -1}
 
 #include <unistd.h>
 #include <iostream>
