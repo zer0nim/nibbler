@@ -105,7 +105,6 @@ bool	GameManager::init(uint8_t guiId) {
 	_gameInfo.snake.push_back({1, 7});
 	_gameInfo.snake.push_back({1, 8});
 
-	std::cout << "srand" << std::endl;
 	srand(time(NULL));
 
 	_generateFood();

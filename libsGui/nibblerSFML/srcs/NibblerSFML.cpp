@@ -37,7 +37,7 @@ NibblerSFML::NibblerSFML() :
 
 	_block = {10, 10};
 	_margin = {5, 5};
-	_padding = {0, 0};
+	_padding = {5, 5};
 }
 
 NibblerSFML::~NibblerSFML() {
@@ -70,6 +70,20 @@ bool NibblerSFML::init(GameInfo &gameInfo) {
 
 	this->gameInfo = &gameInfo;
 
+	// Game resizing.
+	sf::Vector2u	win_size = _win.getSize();
+	sf::Vector2f	game_size = {
+		static_cast<float>(this->gameInfo->gameboard.x + 1),
+		static_cast<float>(this->gameInfo->gameboard.y + 1)
+	};
+	sf::Vector2f	block_size = {
+		win_size.x / game_size.x,
+		win_size.y / game_size.y
+	};
+	float			block = std::min(block_size.x, block_size.y);
+	_block = {std::max(block, 1.f), std::max(block, 1.f)};
+	_padding = {std::max(block/2, 1.f), std::max(block/2, 1.f)};
+
 	return true;
 }
 
@@ -97,8 +111,7 @@ void NibblerSFML::updateInput() {
 bool NibblerSFML::draw() {
 	_win.clear();
 
-	sf::View board(sf::FloatRect(0.f, 0.f, _margin.x * 2 + gameInfo->gameboard.x * _block.x,
-	_margin.y * 2 + gameInfo->gameboard.y * _block.y));
+	sf::View board(sf::FloatRect(0.f, 0.f, GAMESIZE_X, GAMESIZE_Y));
 
 	glm::vec2	ratio;
 	ratio.y = 1.f;
@@ -139,8 +152,8 @@ void	NibblerSFML::_printBoard() {
 		sf::Color(0x1E1E1EFF),		// #1E1E1Eff
 	};
 
-	sf::RectangleShape rect(sf::Vector2f(_margin.x * 2 + gameInfo->gameboard.x * _block.x,
-	_margin.y * 2 + gameInfo->gameboard.y * _block.y));
+	sf::RectangleShape rect(sf::Vector2f(_padding.x * 2 + gameInfo->gameboard.x * _block.x,
+	_padding.y * 2 + gameInfo->gameboard.y * _block.y));
 	rect.setPosition(0, 0);
 	rect.setFillColor(sf::Color(0x587C0CFF));
 	_win.draw(rect);
@@ -148,7 +161,7 @@ void	NibblerSFML::_printBoard() {
 	// Board sized optimisation
 	if (size_board >  22500) {
 		rect.setSize(sf::Vector2f(gameInfo->gameboard.x * _block.x, gameInfo->gameboard.y * _block.y));
-		rect.setPosition(_margin.x, _margin.y);
+		rect.setPosition(_padding.x, _padding.y);
 		rect.setFillColor(color[1]);
 		_win.draw(rect);
 		return;
@@ -193,13 +206,13 @@ void	NibblerSFML::_printLine(int line_nb, std::string line) {
 	text.setString(line);
 	text.setFillColor(sf::Color(0x55BAE1AA));
 	sf::Vector2f text_size = sf::Vector2f(text.getLocalBounds().width, text.getLocalBounds().height);
-	text.setPosition(width - text_size.x - width / 40, line_nb * text_size.y * 1.4f + width / 40 + _margin.y);
+	text.setPosition(width - text_size.x - width / 40, line_nb * text_size.y * 1.4f + width / 40 + _padding.y);
 	_win.draw(text);
 }
 
 void	NibblerSFML::_printState(std::string str, sf::Color color) {
-	float		width = MARGED_X(gameInfo->gameboard);
-	float		height = MARGED_Y(gameInfo->gameboard);
+	float		width = GAMESIZE_X;
+	float		height = GAMESIZE_Y;
 	sf::Text	text;
 
 	text.setFont(_font);

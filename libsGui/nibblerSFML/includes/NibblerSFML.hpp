@@ -5,11 +5,10 @@
 #include <SFML/Graphics.hpp>
 #include "ANibblerGui.hpp"
 
-#define WIDTH 800
-#define HEIGHT 600
-
-#define MARGED_X(pos) _margin.x + _block.x * pos.x
-#define MARGED_Y(pos) _margin.y + _block.y * pos.y
+#define MARGED_X(pos) _padding.x + _block.x * pos.x
+#define MARGED_Y(pos) _padding.y + _block.y * pos.y
+#define GAMESIZE_X _padding.x * 2 + _block.x * gameInfo->gameboard.x
+#define GAMESIZE_Y _padding.y * 2 + _block.y * gameInfo->gameboard.y
 #define MARGED_POS(pos) MARGED_X(pos), MARGED_Y(pos)
 
 class NibblerSFML : public ANibblerGui {
