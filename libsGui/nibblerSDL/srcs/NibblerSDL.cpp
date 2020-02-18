@@ -68,6 +68,10 @@ void NibblerSDL::updateInput() {
 	float dtTime = (time - _lastLoopMs) / 1000.0;
 	_lastLoopMs = time;
 
+	// reset inputs
+	input.togglePause = false;
+	input.restart = false;
+
 	input.direction = Direction::NO_MOVE;
 	while (SDL_PollEvent(_event)) {
 		// close button
@@ -116,7 +120,7 @@ std::map<SDL_Keycode, NibblerSDL::InputFuncPtr> const	NibblerSDL::_inputsFuncs {
 	{SDLK_ESCAPE, [](ANibblerGui::Input &input) {
 		input.quit = true; }},
 	{SDLK_SPACE, [](ANibblerGui::Input &input) {
-		input.pause = !input.pause; }},
+		input.togglePause = true; }},
 	{SDLK_r, [](ANibblerGui::Input &input) {
 		input.restart = true; }},
 	{SDLK_UP, [](ANibblerGui::Input &input) {

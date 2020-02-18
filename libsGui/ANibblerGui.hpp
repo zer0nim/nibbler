@@ -58,7 +58,7 @@ class ANibblerGui {
 
 		struct Input {
 			bool			quit;
-			bool			pause;
+			bool			togglePause;
 			bool			restart;
 
 			Direction::Enum	direction;

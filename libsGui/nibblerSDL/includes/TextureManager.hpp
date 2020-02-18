@@ -6,7 +6,7 @@
 #include "utils/Shader.hpp"
 #include "commonInclude.hpp"
 
-#define NB_BLOCK_TYPES 4  // number of blocks types
+#define NB_BLOCK_TYPES 5
 
 namespace Block {
 	enum Enum {
@@ -14,6 +14,7 @@ namespace Block {
 		SNAKE_BODY,
 		SNAKE_HEAD,
 		FOOD,
+		WATER,
 	};
 }
 

@@ -107,22 +107,24 @@ bool	NibblerSDL::_initShaders() {
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, C_VAO_WIDTH * sizeof(float),
 		reinterpret_cast<void*>(0));
 	glEnableVertexAttribArray(0);
-	// face size
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, C_VAO_WIDTH * sizeof(float),
+	// face id
+	glVertexAttribPointer(1, 1, GL_FLOAT, GL_FALSE, C_VAO_WIDTH * sizeof(float),
 		reinterpret_cast<void*>(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
-	// face id
-	glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, C_VAO_WIDTH * sizeof(float),
-		reinterpret_cast<void*>(5 * sizeof(float)));
-	glEnableVertexAttribArray(2);
 
 	// unbind vao / vbo
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 
 	// -- camera ---------------------------------------------------------------
-	_cam = new Camera({0.0f, 5.0f, 5.0f});
-	_cam->lookAt(glm::vec3());
+	_cam = new Camera({
+		gameInfo->gameboard[0] / 2 + 0.5f,
+		25.0f,
+		gameInfo->gameboard[1] + 15.0f});
+	_cam->lookAt(glm::vec3(
+		gameInfo->gameboard[0] / 2 + 0.5f,
+		1.0f,
+		gameInfo->gameboard[1] / 2 + 0.5f));
 
 	float angle = _cam->zoom;
 	float ratio = static_cast<float>(gameInfo->windowSize.x) / gameInfo->windowSize.y;
@@ -157,7 +159,10 @@ bool	NibblerSDL::_initShaders() {
 	_cubeShader->setBool("pointLight.enabled", false);
 
 	// disable texture transparency for now
-	_cubeShader->setBool("enableTransparency", false);
+	_cubeShader->setBool("enableTransparency", true);
+
+	// disable fog for now
+	_cubeShader->setBool("fog.enabled", false);
 
 	_cubeShader->unuse();
 
@@ -195,18 +200,19 @@ bool NibblerSDL::draw() {
 	_textureManager->activateTextures();
 	_cubeShader->setInt("blockId", 0);
 
+	_cubeShader->setVec3("blockSize",
+		{gameInfo->gameboard.x, 1.0f, gameInfo->gameboard.y});
+
 	// draw board
-	for (int y = 0; y < gameInfo->gameboard.y; ++y) {
-		for (int x = 0; x < gameInfo->gameboard.x; ++x) {
-			// set block type
-			_cubeShader->setInt("blockId", Block::B_FLOOR);
-			// set block pos
-			pos = glm::vec3(x, -1.0f, y);
-			model = glm::translate(glm::mat4(1.0), pos);
-			_cubeShader->setMat4("model", model);
-			glDrawArrays(GL_POINTS, 0, C_NB_FACES);  // draw
-		}
-	}
+	_cubeShader->setInt("blockId", Block::B_FLOOR);  // set block type
+	// set block pos
+	pos = glm::vec3(0.0f, -1.0f, gameInfo->gameboard.y - 1.0f);
+	model = glm::translate(glm::mat4(1.0), pos);
+	_cubeShader->setMat4("model", model);
+	glDrawArrays(GL_POINTS, 0, C_NB_FACES);  // draw
+
+	// reset blockSize
+	_cubeShader->setVec3("blockSize", {1.0f, 1.0f, 1.0f});
 
 	// draw snake
 	for (auto it = gameInfo->snake.begin(); it != gameInfo->snake.end(); ++it) {
@@ -254,11 +260,11 @@ bool NibblerSDL::draw() {
 // -- statics const ------------------------------------------------------------
 // cube faces
 std::array<float, C_FACE_A_SIZE> const	NibblerSDL::_cubeFaces = {
-	// bot left corner,		faceSize,			faceId
-	-0.5f, -0.5f, 0.5f,		1.0f, 1.0f,			0,
-	0.5f, -0.5f, 0.5f,		1.0f, 1.0f,			1,
-	0.5f, -0.5f, -0.5f,		1.0f, 1.0f,			2,
-	-0.5f, -0.5f, -0.5f,	1.0f, 1.0f,			3,
-	-0.5f, 0.5f, 0.5f,		1.0f, 1.0f,			4,
-	-0.5f, -0.5f, -0.5f,	1.0f, 1.0f,			5,
+	// bot left corner,		faceId
+	-0.5f, -0.5f, 0.5f,		0,
+	0.5f, -0.5f, 0.5f,		1,
+	0.5f, -0.5f, -0.5f,		2,
+	-0.5f, -0.5f, -0.5f,	3,
+	-0.5f, 0.5f, 0.5f,		4,
+	-0.5f, -0.5f, -0.5f,	5,
 };

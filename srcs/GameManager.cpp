@@ -9,7 +9,7 @@
 
 GameManager::GameManager(GameInfo &gameInfo)
 : _gameInfo(gameInfo) {
-	_direction = Direction::MOVE_RIGHT;
+	_direction = Direction::MOVE_UP;
 	_eating = 0;
 }
 
@@ -123,6 +123,13 @@ void	GameManager::run() {
 		time_start = _getMs();
 		nibblerGui->updateInput();
 
+		if (nibblerGui->input.togglePause) {
+			if (_gameInfo.play == State::S_PAUSE)
+				_gameInfo.play = State::S_PLAY;
+			else if (_gameInfo.play == State::S_PLAY)
+				_gameInfo.play = State::S_PAUSE;
+		}
+
 		if (_gameInfo.play == State::S_PAUSE && nibblerGui->input.direction != Direction::NO_MOVE)
 			_gameInfo.play = State::S_PLAY;
 
@@ -144,6 +151,7 @@ void	GameManager::run() {
 			nibblerGui->init(_gameInfo);
 
 			nibblerGui->input.loadGuiID = NO_GUI_LOADED;
+			_gameInfo.play = State::S_PAUSE;
 		}
 
 		nibblerGui->draw();
