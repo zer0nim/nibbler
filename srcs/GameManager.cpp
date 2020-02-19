@@ -150,13 +150,15 @@ void	GameManager::run() {
 		// verify id viability
 		if (nibblerGui->input.loadGuiID < NB_GUI && \
 		nibblerGui->input.loadGuiID != _dynGuiManager.getCurrentGuiID()) {
+			if (_gameInfo.play != State::S_GAMEOVER) {
+				_gameInfo.play = State::S_PAUSE;
+			}
 			// change Gui
 			_dynGuiManager.loadGui(nibblerGui->input.loadGuiID);
 			nibblerGui = _dynGuiManager.nibblerGui;
 			nibblerGui->init(_gameInfo);
 
 			nibblerGui->input.loadGuiID = NO_GUI_LOADED;
-			_gameInfo.play = State::S_PAUSE;
 		}
 
 		nibblerGui->draw();
