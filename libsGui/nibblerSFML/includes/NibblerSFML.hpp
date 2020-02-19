@@ -43,6 +43,9 @@ class NibblerSFML : public ANibblerGui {
 		glm::ivec2			_block;
 		glm::ivec2			_margin;
 		glm::ivec2			_padding;
+		bool				_isMoving;
+		sf::Vector2i		_relativePos;
+		bool				_isActive;
 
 		// Methods
 		void				_printBoard();

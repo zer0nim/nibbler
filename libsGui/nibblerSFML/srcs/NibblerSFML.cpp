@@ -38,6 +38,7 @@ NibblerSFML::NibblerSFML() :
 	_block = {10, 10};
 	_margin = {5, 5};
 	_padding = {0, 0};
+	_isActive = false;
 }
 
 NibblerSFML::~NibblerSFML() {
@@ -66,7 +67,11 @@ bool NibblerSFML::init(GameInfo &gameInfo) {
 	sf::ContextSettings settings;
 	settings.antialiasingLevel = 8;
 
-	_win.create(sf::VideoMode(gameInfo.windowSize.x, gameInfo.windowSize.y), TITLE, sf::Style::Default, settings);
+	int size = std::min(gameInfo.windowSize.x, gameInfo.windowSize.y);
+
+	_win.create(sf::VideoMode(size, size), TITLE, sf::Style::None, settings);
+	sf::Vector2i position = {10, 50};
+	_win.setPosition(position);
 
 	this->gameInfo = &gameInfo;
 
@@ -82,6 +87,14 @@ void NibblerSFML::updateInput() {
 			case sf::Event::Closed:
 				input.quit = true;
 				break;
+			case sf::Event::LostFocus:
+				_isActive = false;
+				input.pause = true;
+				break;
+			case sf::Event::GainedFocus:
+				_isActive = true;
+				input.pause = true;
+				break;
 
 			// key pressed
 			case sf::Event::KeyPressed:
@@ -91,6 +104,24 @@ void NibblerSFML::updateInput() {
 			default:
 				break;
 		}
+	}
+
+
+	if (_isActive && sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+		if (_isMoving == true) {
+			sf::Vector2i position = sf::Mouse::getPosition();
+			_win.setPosition(position - _relativePos);
+		} else {
+			sf::Vector2i position = sf::Mouse::getPosition(_win);
+			if (position.x >= 0 && position.x <= static_cast<int>(_win.getSize().x)
+				&& position.y >= 0 && position.y <= static_cast<int>(_win.getSize().y)) {
+				_isMoving = true;
+				_relativePos = position;
+				std::cout << "position : " << position.x << ", " << position.y << std::endl;
+			}
+		}
+	} else {
+		_isMoving = false;
 	}
 }
 
