@@ -213,6 +213,7 @@ class ArgsParser {
 
 		void		_initGetopt();
 		AInfoArg	*_get(std::string const name, ArgType::Enum const type) const;
+		void		_strReplace(std::string &str, std::string search, std::string replace);
 		ArgsParser();
 };
 

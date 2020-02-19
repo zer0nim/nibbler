@@ -5,7 +5,7 @@
 
 std::map<sf::Keyboard::Key , NibblerSFML::inputFuncPtr>	NibblerSFML::_inputKeyPressed = {
 	{sf::Keyboard::Escape, [](Input &input) { input.quit = true; } },
-	{sf::Keyboard::Space, [](Input &input) { input.pause = true; } },
+	{sf::Keyboard::Space, [](Input &input) { input.togglePause = true; } },
 
 	{sf::Keyboard::Up, [](Input &input) { input.direction = Direction::MOVE_UP; } },
 	{sf::Keyboard::Right, [](Input &input) { input.direction = Direction::MOVE_RIGHT; } },
@@ -92,7 +92,7 @@ bool NibblerSFML::init(GameInfo &gameInfo) {
 
 void NibblerSFML::updateInput() {
 	input.direction = Direction::NO_MOVE;
-	input.pause = false;
+	input.togglePause = false;
 	while (_win.pollEvent(_event)) {
 		switch (_event.type) {
 			// window closed
@@ -102,7 +102,7 @@ void NibblerSFML::updateInput() {
 			// window lost focus
 			case sf::Event::LostFocus:
 				if (gameInfo->play == State::S_PLAY)
-					input.pause = true;
+					input.togglePause = true;
 				_isActive = false;
 				break;
 			// window gain focus
@@ -208,9 +208,11 @@ void	NibblerSFML::_printBoard() {
 void	NibblerSFML::_printSnake() {
 	sf::RectangleShape rect(sf::Vector2f(_block.x, _block.y));
 
-	for (auto &&i : gameInfo->snake) {
-		rect.setFillColor(sf::Color(0xBD63B9));
-		rect.setPosition(MARGED_POS(i));
+	for (auto it = gameInfo->snake.begin(); it != gameInfo->snake.end(); ++it) {
+		rect.setFillColor(sf::Color((it == gameInfo->snake.begin()
+			? 0x5eed00B9  // head color
+			: 0x00BD63B9)));  // body color
+		rect.setPosition(MARGED_POS((*it)));
 		_win.draw(rect);
 	}
 }

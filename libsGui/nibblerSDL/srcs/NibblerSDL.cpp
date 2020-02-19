@@ -1,10 +1,18 @@
 #include "NibblerSDL.hpp"
 #include "Logging.hpp"
 
+// -- NibblerSDL ---------------------------------------------------------------
 NibblerSDL::NibblerSDL() :
   ANibblerGui(),
   _win(nullptr),
-  _event(new SDL_Event()) {
+  _event(new SDL_Event()),
+  _context(0),
+  _lastLoopMs(0),
+  _textureManager(nullptr),
+  _cubeShader(nullptr),
+  _cam(nullptr),
+  _textRender(nullptr),
+  _skybox(nullptr) {
 	// init logging
 	#if DEBUG
 		logging.setLoglevel(LOGDEBUG);
@@ -18,7 +26,28 @@ NibblerSDL::NibblerSDL() :
 
 NibblerSDL::~NibblerSDL() {
 	logInfo("exit SDL");
+
+	// enable cursor
+	SDL_ShowCursor(SDL_ENABLE);
+	SDL_SetRelativeMouseMode(SDL_FALSE);
+
+	// free vao / vbo
+	_cubeShader->use();
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+	glDeleteBuffers(1, &_cubeShVbo);
+	glDeleteVertexArrays(1, &_cubeShVao);
+	_cubeShader->unuse();
+
 	delete _event;
+	delete _textureManager;
+	delete _cubeShader;
+	delete _cam;
+	delete _textRender;
+	delete _skybox;
+
+	// properly quit sdl
+	SDL_GL_DeleteContext(_context);
 	SDL_DestroyWindow(_win);
     SDL_Quit();
 }
@@ -29,142 +58,85 @@ NibblerSDL::NibblerSDL(NibblerSDL const &src) {
 
 NibblerSDL &NibblerSDL::operator=(NibblerSDL const &rhs) {
 	if (this != &rhs) {
-		_win = rhs._win;
-		_surface = rhs._surface;
-		_event = rhs._event;
+		logErr("The copy operator should not be called")
 	}
 	return *this;
 }
 
-bool NibblerSDL::init(GameInfo &gameInfo) {
-	logInfo("loading SDL");
-
-	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-		logErr("while loading SDL: " << SDL_GetError());
-		SDL_Quit();
-		return false;
-	}
-
-	_win = SDL_CreateWindow(TITLE, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-		WIDTH, HEIGHT, SDL_WINDOW_SHOWN);
-	if (_win == nullptr) {
-		logErr("while loading SDL: " << SDL_GetError());
-		SDL_Quit();
-		return false;
-	}
-
-	_surface = SDL_GetWindowSurface(_win);
-	if (_surface == nullptr) {
-		logErr("while loading SDL: " << SDL_GetError());
-		SDL_Quit();
-		return false;
-	}
-
-	this->gameInfo = &gameInfo;
-
-	return true;
-}
-
 void NibblerSDL::updateInput() {
+	uint64_t time = _getMs().count();
+	float dtTime = (time - _lastLoopMs) / 1000.0;
+	_lastLoopMs = time;
+
+	// reset inputs
+	input.togglePause = false;
+
 	input.direction = Direction::NO_MOVE;
 	while (SDL_PollEvent(_event)) {
-		if (_event->window.event == SDL_WINDOWEVENT_CLOSE)
+		// close button
+		if (_event->window.event == SDL_WINDOWEVENT_CLOSE) {
 			input.quit = true;
-		else if (_event->key.type == SDL_KEYDOWN && _event->key.keysym.sym == SDLK_ESCAPE)
-			input.quit = true;
-
-		else if (_event->key.type == SDL_KEYDOWN && _event->key.keysym.sym == SDLK_UP)
-			input.direction = Direction::MOVE_UP;
-		else if (_event->key.type == SDL_KEYDOWN && _event->key.keysym.sym == SDLK_RIGHT)
-			input.direction = Direction::MOVE_RIGHT;
-		else if (_event->key.type == SDL_KEYDOWN && _event->key.keysym.sym == SDLK_DOWN)
-			input.direction = Direction::MOVE_DOWN;
-		else if (_event->key.type == SDL_KEYDOWN && _event->key.keysym.sym == SDLK_LEFT)
-			input.direction = Direction::MOVE_LEFT;
-
-		else if (_event->key.type == SDL_KEYDOWN && _event->key.keysym.sym == SDLK_1)
-			input.loadGuiID = 0;
-		else if (_event->key.type == SDL_KEYDOWN && _event->key.keysym.sym == SDLK_2)
-			input.loadGuiID = 1;
-		else if (_event->key.type == SDL_KEYDOWN && _event->key.keysym.sym == SDLK_3)
-			input.loadGuiID = 2;
-	}
-}
-
-bool NibblerSDL::draw() {
-	// clear screen
-	SDL_FillRect(_surface, NULL, 0x000000);
-
-	// draw rect on the screen
-	SDL_Rect rect = {
-		100,
-		100,
-		10 + 100 * input.direction,
-		10 + 100 * (4 - input.direction),
-	};
-	SDL_FillRect(_surface, &rect, SDL_MapRGB(_surface->format, 255, 0, 0));
-	SDL_UpdateWindowSurface(_win);
-
-
-	std::cout << "NibblerSDL::draw : " << _toString() << std::endl;
-
-	return true;
-}
-
-std::string	NibblerSDL::_toString() const {
-	std::string result = "";
-
-	result += "Gameboard [" + std::to_string(gameInfo->gameboard.x) + ", "
-			+ std::to_string(gameInfo->gameboard.y) + "]\n"
-			"snake length: " + std::to_string(gameInfo->snake.size()) + "\n"
-			"game [";
-	switch (gameInfo->play) {
-	case State::S_PLAY:
-		result += "PLAY";
-		break;
-	case State::S_PAUSE:
-		result += "PAUSE";
-		break;
-	case State::S_GAMEOVER:
-		result += "GAME OVER";
-		break;
-	default:
-		break;
-	}
-	result += "]\n";
-
-	result += _getBoard();
-
-	for (glm::ivec2 const &i : gameInfo->snake) {
-		result += ">>" + glm::to_string(i);
-	}
-
-	return result;
-}
-
-std::string	NibblerSDL::_getBoard() const {
-	std::string result;
-
-	for (int j = 0; j < gameInfo->gameboard.y; j++) {
-		for (int i = 0; i < gameInfo->gameboard.x; i++) {
-			if (std::find(gameInfo->snake.begin(), gameInfo->snake.end(), glm::ivec2(i, j)) != gameInfo->snake.end()) {
-				if (gameInfo->food == glm::ivec2(i, j))
-					result += LOG_COL_GREEN "o" LOG_COL_EOC;
-				else if (gameInfo->snake.front() == glm::ivec2(i, j))
-					result += LOG_COL_RED "x" LOG_COL_EOC;
-				else
-					result += "x";
-			} else if (gameInfo->food == glm::ivec2(i, j))
-					result += LOG_COL_GREEN "o" LOG_COL_EOC;
-			else
-				result += "_";
 		}
-		result += "\n";
+
+		// key release
+		if (_event->key.type == SDL_KEYDOWN &&
+			_inputsFuncs.find(_event->key.keysym.sym) != _inputsFuncs.end()) {
+			_inputsFuncs.at(_event->key.keysym.sym)(input);
+		}
+
+		// mouse motion
+		if (_event->type == SDL_MOUSEMOTION) {
+			_cam->processMouseMovement(_event->motion.xrel, -_event->motion.yrel);
+		}
 	}
-	return result;
+
+	// get currently pressed keys
+	const Uint8 * keystates = SDL_GetKeyboardState(NULL);
+	// camera movement
+	bool isRun = keystates[SDL_SCANCODE_LSHIFT];
+	if (keystates[SDL_SCANCODE_W]) {
+		_cam->processKeyboard(CamMovement::Forward, dtTime, isRun);
+	}
+	if (keystates[SDL_SCANCODE_D]) {
+		_cam->processKeyboard(CamMovement::Right, dtTime, isRun);
+	}
+	if (keystates[SDL_SCANCODE_S]) {
+		_cam->processKeyboard(CamMovement::Backward, dtTime, isRun);
+	}
+	if (keystates[SDL_SCANCODE_A]) {
+		_cam->processKeyboard(CamMovement::Left, dtTime, isRun);
+	}
+	if (keystates[SDL_SCANCODE_Q]) {
+		_cam->processKeyboard(CamMovement::Down, dtTime, isRun);
+	}
+	if (keystates[SDL_SCANCODE_E]) {
+		_cam->processKeyboard(CamMovement::Up, dtTime, isRun);
+	}
 }
 
+// -- statics const ------------------------------------------------------------
+std::map<SDL_Keycode, NibblerSDL::InputFuncPtr> const	NibblerSDL::_inputsFuncs {
+	{SDLK_ESCAPE, [](ANibblerGui::Input &input) {
+		input.quit = true; }},
+	{SDLK_SPACE, [](ANibblerGui::Input &input) {
+		input.togglePause = true; }},
+	{SDLK_UP, [](ANibblerGui::Input &input) {
+		input.direction = Direction::MOVE_UP; }},
+	{SDLK_RIGHT, [](ANibblerGui::Input &input) {
+		input.direction = Direction::MOVE_RIGHT; }},
+	{SDLK_DOWN, [](ANibblerGui::Input &input) {
+		input.direction = Direction::MOVE_DOWN; }},
+	{SDLK_LEFT, [](ANibblerGui::Input &input) {
+		input.direction = Direction::MOVE_LEFT; }},
+	{SDLK_1, [](ANibblerGui::Input &input) {
+		input.loadGuiID = 0; }},
+	{SDLK_2, [](ANibblerGui::Input &input) {
+		input.loadGuiID = 1; }},
+	{SDLK_3, [](ANibblerGui::Input &input) {
+		input.loadGuiID = 2; }},
+};
 
+// -- c extern -----------------------------------------------------------------
 extern "C" {
 	ANibblerGui *makeNibblerSDL() {
 		return new NibblerSDL();

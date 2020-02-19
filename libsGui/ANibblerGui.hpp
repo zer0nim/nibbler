@@ -3,7 +3,7 @@
 
 #define NO_GUI_LOADED 255
 
-#define VOID_POS {-1, -1}
+#define VOID_POS glm::ivec2 {-1, -1}
 
 #include <unistd.h>
 #include <iostream>
@@ -27,7 +27,7 @@ namespace Direction {
 }
 
 namespace State {
-	enum eState {
+	enum Enum {
 		S_PLAY,
 		S_PAUSE,
 		S_GAMEOVER,
@@ -38,7 +38,7 @@ struct GameInfo {
 	glm::ivec2				windowSize;
 	glm::ivec2				gameboard;
 	glm::ivec2				food;
-	State::eState			play;
+	State::Enum				play;
 	std::deque<glm::ivec2>	snake;
 	float					snakeSpeed;
 
@@ -57,11 +57,11 @@ class ANibblerGui {
 		virtual	bool	draw() = 0;
 
 		struct Input {
-			bool		quit;
-			bool		pause;
+			bool			quit;
+			bool			togglePause;
 
 			Direction::Enum	direction;
-			uint8_t		loadGuiID;
+			uint8_t			loadGuiID;
 
 			Input();
 			Input(Input const &src);

@@ -95,7 +95,7 @@ glm::ivec2	GameManager::getHead() const {
 
 // -- Methods ------------------------------------------------------------------
 
-bool	GameManager::init(uint8_t guiId) {
+bool	GameManager::init(int8_t guiId) {
 	_gameInfo.snake.push_back({1, 1});
 	_gameInfo.snake.push_back({1, 2});
 	_gameInfo.snake.push_back({1, 3});
@@ -109,8 +109,21 @@ bool	GameManager::init(uint8_t guiId) {
 
 	_generateFood();
 
-	_dynGuiManager.loadGui(guiId);
-	return _dynGuiManager.nibblerGui->init(_gameInfo);
+	// init gui if id is valid
+	if (guiId != -1) {
+		_dynGuiManager.loadGui(guiId);
+		return _dynGuiManager.nibblerGui->init(_gameInfo);
+	}
+	return true;
+}
+
+void	GameManager::restart() {
+	_direction = Direction::MOVE_UP;
+	_eating = 0;
+	_gameInfo.food = VOID_POS;
+	_gameInfo.snake.clear();
+	init();
+	_gameInfo.play = State::S_PAUSE;
 }
 
 void	GameManager::run() {
@@ -128,18 +141,23 @@ void	GameManager::run() {
 		time_start = _getMs();
 		nibblerGui->updateInput();
 
-		if (nibblerGui->input.pause == true) {
+		// toggle play/pause
+		if (nibblerGui->input.togglePause && _gameInfo.play != State::S_GAMEOVER) {
 			if (_gameInfo.play == State::S_PAUSE)
 				_gameInfo.play = State::S_PLAY;
 			else if (_gameInfo.play == State::S_PLAY)
 				_gameInfo.play = State::S_PAUSE;
 		}
+		// restart if the player is dead
+		else if (nibblerGui->input.togglePause) {
+			restart();
+		}
 
 		if (_gameInfo.play == State::S_PAUSE && nibblerGui->input.direction != Direction::NO_MOVE)
 			_gameInfo.play = State::S_PLAY;
 
-		logDebug("Game : " << *this);
-		logDebug("moving direction " << nibblerGui->input.direction);
+		// logDebug("Game : " << *this);
+		// logDebug("moving direction " << nibblerGui->input.direction);
 
 		// on play mode
 		if (_gameInfo.play == State::S_PLAY) {
@@ -150,13 +168,15 @@ void	GameManager::run() {
 		// verify id viability
 		if (nibblerGui->input.loadGuiID < NB_GUI && \
 		nibblerGui->input.loadGuiID != _dynGuiManager.getCurrentGuiID()) {
+			if (_gameInfo.play != State::S_GAMEOVER) {
+				_gameInfo.play = State::S_PAUSE;
+			}
 			// change Gui
 			_dynGuiManager.loadGui(nibblerGui->input.loadGuiID);
 			nibblerGui = _dynGuiManager.nibblerGui;
 			nibblerGui->init(_gameInfo);
 
 			nibblerGui->input.loadGuiID = NO_GUI_LOADED;
-			_gameInfo.play = State::S_PAUSE;
 		}
 
 		nibblerGui->draw();
@@ -255,7 +275,7 @@ bool GameManager::_checkContact() {
 		return true;
 
 	if (head == _gameInfo.food) {
-		_eating += 1;
+		_eating += 9;
 		_generateFood();
 		return true;
 	} else {
