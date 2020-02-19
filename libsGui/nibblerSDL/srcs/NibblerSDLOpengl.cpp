@@ -181,26 +181,43 @@ bool	NibblerSDL::_initShaders() {
 
 // -- draw ---------------------------------------------------------------------
 bool NibblerSDL::draw() {
+	// clear buffer
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glViewport(0, 0, gameInfo->windowSize.x, gameInfo->windowSize.y);
 	glClearColor(0.11373f, 0.17647f, 0.27059f, 1.0f);
 
+	// use cubeShader, set uniform and activate textures
 	glm::mat4	view = _cam->getViewMatrix();
 	_cubeShader->use();
 	_cubeShader->setMat4("view", view);
 	_cubeShader->setVec3("viewPos", _cam->pos);
 	glBindVertexArray(_cubeShVao);
-	_cubeShader->unuse();
-
-	// -- drawing init ---------------------------------------------------------
-	glm::mat4 model(1.0);
-	glm::vec3 pos;
-
-	_cubeShader->use();
 	_textureManager->activateTextures();
 	_cubeShader->setInt("blockId", 0);
 
-	// -- draw board -----------------------------------------------------------
+	// draw scene
+	_drawBoard();
+	_drawSnake();
+	_drawFood();
+
+	// release cubeShader and textures
+	_textureManager->disableTextures();
+	_cubeShader->unuse();
+
+	// draw skybox
+	_drawSkybox(view);
+
+	// swap buffer and check errors
+	SDL_GL_SwapWindow(_win);
+	checkError();
+	return true;
+}
+
+// -- _drawBoard ---------------------------------------------------------------
+void	NibblerSDL::_drawBoard() {
+	glm::mat4 model(1.0);
+	glm::vec3 pos;
+
 	// board floor
 	_cubeShader->setVec3("blockSize",
 		{gameInfo->gameboard.x, 1.0f, gameInfo->gameboard.y});
@@ -242,7 +259,7 @@ bool NibblerSDL::draw() {
 	_cubeShader->setMat4("model", model);
 	glDrawArrays(GL_POINTS, 0, C_NB_FACES);  // draw
 
-	// -- draw water -----------------------------------------------------------
+	// water
 	_cubeShader->setVec3("blockSize",
 		{gameInfo->gameboard.x, 1.0f, gameInfo->gameboard.y});
 	_cubeShader->setInt("blockId", Block::WATER);  // set block type
@@ -250,8 +267,13 @@ bool NibblerSDL::draw() {
 	model = glm::translate(glm::mat4(1.0), pos);
 	_cubeShader->setMat4("model", model);
 	glDrawArrays(GL_POINTS, 0, C_NB_FACES);  // draw
+}
 
-	// -- draw snake -----------------------------------------------------------
+// -- _drawSnake ---------------------------------------------------------------
+void	NibblerSDL::_drawSnake() {
+	glm::mat4 model(1.0);
+	glm::vec3 pos;
+
 	_cubeShader->setVec3("blockSize", {1.0f, 1.0f, 1.0f});
 	for (auto it = gameInfo->snake.begin(); it != gameInfo->snake.end(); ++it) {
 		// set block type
@@ -264,8 +286,12 @@ bool NibblerSDL::draw() {
 		_cubeShader->setMat4("model", model);
 		glDrawArrays(GL_POINTS, 0, C_NB_FACES);  // draw
 	}
+}
+// -- _drawFood ----------------------------------------------------------------
+void	NibblerSDL::_drawFood() {
+	glm::mat4 model(1.0);
+	glm::vec3 pos;
 
-	// -- draw food ------------------------------------------------------------
 	if (gameInfo->food != VOID_POS) {
 		// set block type
 		_cubeShader->setInt("blockId", Block::FOOD);
@@ -275,11 +301,10 @@ bool NibblerSDL::draw() {
 		_cubeShader->setMat4("model", model);
 		glDrawArrays(GL_POINTS, 0, C_NB_FACES);  // draw
 	}
+}
 
-	_textureManager->disableTextures();
-	_cubeShader->unuse();
-
-	// -- draw skybox ----------------------------------------------------------
+// -- _drawSkybox ----------------------------------------------------------------
+void	NibblerSDL::_drawSkybox(glm::mat4 &view) {
 	CAMERA_MAT4	skyView = view;
 	skyView[3][0] = 0;  // remove translation for the skybox
 	skyView[3][1] = 0;
@@ -288,11 +313,7 @@ bool NibblerSDL::draw() {
 	_skybox->getShader().setMat4("view", skyView);
 	_skybox->getShader().unuse();
 	_skybox->draw(0.5);
-
-	// swap buffer and check errors
-	SDL_GL_SwapWindow(_win);
-	checkError();
-	return true;
+	_skybox->getShader().unuse();
 }
 
 // -- statics const ------------------------------------------------------------

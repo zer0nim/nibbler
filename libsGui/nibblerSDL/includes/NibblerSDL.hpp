@@ -53,5 +53,9 @@ class NibblerSDL : public ANibblerGui {
 		bool	_init();
 		bool	_initOpengl();
 		bool	_initShaders();
+		void	_drawBoard();
+		void	_drawSnake();
+		void	_drawFood();
+		void	_drawSkybox(glm::mat4 &view);
 		std::chrono::milliseconds	_getMs() const;
 };
