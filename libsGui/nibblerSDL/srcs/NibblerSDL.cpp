@@ -81,7 +81,7 @@ void NibblerSDL::updateInput() {
 		// key release
 		if (_event->key.type == SDL_KEYDOWN &&
 			_inputsFuncs.find(_event->key.keysym.sym) != _inputsFuncs.end()) {
-			_inputsFuncs.at(_event->key.keysym.sym)(input);
+			_inputsFuncs.at(_event->key.keysym.sym)(input, gameInfo);
 		}
 
 		// mouse motion
@@ -115,24 +115,39 @@ void NibblerSDL::updateInput() {
 }
 
 // -- statics const ------------------------------------------------------------
-std::map<SDL_Keycode, NibblerSDL::InputFuncPtr> const	NibblerSDL::_inputsFuncs {
-	{SDLK_ESCAPE, [](ANibblerGui::Input &input) {
+std::unordered_map<SDL_Keycode, NibblerSDL::InputFuncPtr> const	NibblerSDL::_inputsFuncs {
+	{SDLK_ESCAPE, [](ANibblerGui::Input &input, GameInfo const *gameInfo) {
+		(void)gameInfo;
 		input.quit = true; }},
-	{SDLK_SPACE, [](ANibblerGui::Input &input) {
+	{SDLK_SPACE, [](ANibblerGui::Input &input, GameInfo const *gameInfo) {
+		(void)gameInfo;
 		input.togglePause = true; }},
-	{SDLK_UP, [](ANibblerGui::Input &input) {
-		input.direction = Direction::MOVE_UP; }},
-	{SDLK_RIGHT, [](ANibblerGui::Input &input) {
-		input.direction = Direction::MOVE_RIGHT; }},
-	{SDLK_DOWN, [](ANibblerGui::Input &input) {
-		input.direction = Direction::MOVE_DOWN; }},
-	{SDLK_LEFT, [](ANibblerGui::Input &input) {
-		input.direction = Direction::MOVE_LEFT; }},
-	{SDLK_1, [](ANibblerGui::Input &input) {
+	{SDLK_RIGHT, [](ANibblerGui::Input &input, GameInfo const *gameInfo) {
+		if (gameInfo->direction != Direction::NO_MOVE) {
+			uint8_t dir = (gameInfo->direction + 1) % 5;
+			if (dir == 0) {
+				dir = 1;
+			}
+			input.direction = static_cast<Direction::Enum>(dir);
+		}
+	}},
+	{SDLK_LEFT, [](ANibblerGui::Input &input, GameInfo const *gameInfo) {
+		if (gameInfo->direction != Direction::NO_MOVE) {
+			uint8_t dir = (gameInfo->direction - 1) % 5;
+			if (dir == 0) {
+				dir = 4;
+			}
+			input.direction = static_cast<Direction::Enum>(dir);
+		}
+	}},
+	{SDLK_1, [](ANibblerGui::Input &input, GameInfo const *gameInfo) {
+		(void)gameInfo;
 		input.loadGuiID = 0; }},
-	{SDLK_2, [](ANibblerGui::Input &input) {
+	{SDLK_2, [](ANibblerGui::Input &input, GameInfo const *gameInfo) {
+		(void)gameInfo;
 		input.loadGuiID = 1; }},
-	{SDLK_3, [](ANibblerGui::Input &input) {
+	{SDLK_3, [](ANibblerGui::Input &input, GameInfo const *gameInfo) {
+		(void)gameInfo;
 		input.loadGuiID = 2; }},
 };
 

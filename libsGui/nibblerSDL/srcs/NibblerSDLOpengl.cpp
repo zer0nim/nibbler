@@ -195,6 +195,19 @@ bool NibblerSDL::draw() {
 	_textureManager->activateTextures();
 	_cubeShader->setInt("blockId", 0);
 
+	// move camera to follow snake head
+	if (gameInfo->snake.size() > 0) {
+		glm::ivec2	head = gameInfo->snake.front();
+		_cam->pos = glm::vec3(head.x, 10.0f, head.y + 5.0f);
+
+		if (_camPos.find(gameInfo->direction) != _camPos.end()) {
+			_cam->pos = glm::vec3(head.x, CAM_HEIGHT, head.y);
+			_cam->pos += _camPos.at(gameInfo->direction) * CAM_DIST_HEAD;
+		}
+
+		_cam->lookAt(glm::vec3(head.x, 1.0f, head.y));
+	}
+
 	// draw scene
 	_drawBoard();
 	_drawSnake();
@@ -326,4 +339,12 @@ std::array<float, C_FACE_A_SIZE> const	NibblerSDL::_cubeFaces = {
 	-0.5f, -0.5f, -0.5f,	3,
 	-0.5f, 0.5f, 0.5f,		4,
 	-0.5f, -0.5f, -0.5f,	5,
+};
+
+// cam position according to snake direction
+std::unordered_map<Direction::Enum, glm::vec3, EnumClassHash> const	NibblerSDL::_camPos = {
+	{Direction::MOVE_UP, glm::vec3(0.0f, 0.0f, 1.0f)},
+	{Direction::MOVE_RIGHT, glm::vec3(-1.0f, 0.0f, 0.0f)},
+	{Direction::MOVE_DOWN, glm::vec3(0.0f, 0.0f, -1.0f)},
+	{Direction::MOVE_LEFT, glm::vec3(1.0f, 0.0f, 0.0f)}
 };

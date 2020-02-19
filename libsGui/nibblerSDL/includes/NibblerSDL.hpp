@@ -4,13 +4,14 @@
 #define C_NB_FACES 6
 // C_VAO_WIDTH * C_NB_FACES
 #define C_FACE_A_SIZE 42
+#define CAM_DIST_HEAD 8.0f
+#define CAM_HEIGHT 5.0f
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 #include <iostream>
 #include <array>
-
-#include <map>
+#include <unordered_map>
 
 #include "ANibblerGui.hpp"
 #include "Shader.hpp"
@@ -47,8 +48,10 @@ class NibblerSDL : public ANibblerGui {
 		glm::mat4			_projection;
 
 		static std::array<float, C_FACE_A_SIZE> const		_cubeFaces;
-		typedef void (*InputFuncPtr)(Input &input);
-		static std::map<SDL_Keycode, InputFuncPtr> const	_inputsFuncs;
+		typedef void (*InputFuncPtr)(Input &input, GameInfo const *gameInfo);
+
+		static std::unordered_map<SDL_Keycode, InputFuncPtr> const	_inputsFuncs;
+		static std::unordered_map<Direction::Enum, glm::vec3, EnumClassHash> const	_camPos;
 
 		bool	_init();
 		bool	_initOpengl();
