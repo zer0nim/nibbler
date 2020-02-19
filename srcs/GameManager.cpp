@@ -76,9 +76,9 @@ std::string	GameManager::getBoard() const {
 		for (int i = 0; i < _gameInfo.gameboard.x; i++) {
 			if (!isEmpty(glm::ivec2(i, j))) {
 				if (_gameInfo.food == glm::ivec2(i, j))
-					result += COLOR_GREEN "o" COLOR_EOC;
+					result += LOG_COL_GREEN "o" LOG_COL_EOC;
 				else if (getHead() == glm::ivec2(i, j))
-					result += COLOR_RED "x" COLOR_EOC;
+					result += LOG_COL_RED "x" LOG_COL_EOC;
 				else
 					result += "x";
 			} else

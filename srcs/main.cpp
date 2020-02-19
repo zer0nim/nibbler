@@ -36,7 +36,7 @@ int	main(int ac, char * const *av) {
 	// -g --gui
 	ap.addArgument("gui", ArgType::UINT8, 'g', "gui")
 		.setHelp("change the starting gui id")
-		.setMaxU(1)
+		.setMaxU(NB_GUI - 1)
 		.setDefaultU(0);
 	// -b --boardSize
 	ap.addArgument("gameboard", ArgType::UINT32, 'b', "gameboard")

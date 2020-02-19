@@ -46,14 +46,14 @@ class NumberArg : public AInfoArg {
 
 			// print defaut int value
 			if (!_required) {
-				out << " " COLOR_L_VAL "default" COLOR_WHITE "=" COLOR_R_VAL <<
-					_defaultV << COLOR_WHITE;
+				out << " " COLOR_L_VAL "default" LOG_COL_WHITE "=" COLOR_R_VAL <<
+					_defaultV << LOG_COL_WHITE;
 			}
 
 			// print string min/max
 			if (_min != std::numeric_limits<T>::lowest() ||
 				_max != std::numeric_limits<T>::max()) {
-				out << " " COLOR_L_VAL "range" COLOR_WHITE "=" COLOR_R_VAL "[";
+				out << " " COLOR_L_VAL "range" LOG_COL_WHITE "=" COLOR_R_VAL "[";
 				if (_min != std::numeric_limits<T>::lowest()) {
 					out << std::fixed << std::setprecision(3) << _min;
 				}
@@ -61,7 +61,7 @@ class NumberArg : public AInfoArg {
 				if (_max != std::numeric_limits<T>::max()) {
 					out << std::fixed << std::setprecision(3) << _max;
 				}
-				out << "]" COLOR_WHITE;
+				out << "]" LOG_COL_WHITE;
 			}
 
 			out << ">";

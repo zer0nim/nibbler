@@ -149,13 +149,13 @@ std::string	NibblerSDL::_getBoard() const {
 		for (int i = 0; i < gameInfo->gameboard.x; i++) {
 			if (std::find(gameInfo->snake.begin(), gameInfo->snake.end(), glm::ivec2(i, j)) != gameInfo->snake.end()) {
 				if (gameInfo->food == glm::ivec2(i, j))
-					result += COLOR_GREEN "o" COLOR_EOC;
+					result += LOG_COL_GREEN "o" LOG_COL_EOC;
 				else if (gameInfo->snake.front() == glm::ivec2(i, j))
-					result += COLOR_RED "x" COLOR_EOC;
+					result += LOG_COL_RED "x" LOG_COL_EOC;
 				else
 					result += "x";
 			} else if (gameInfo->food == glm::ivec2(i, j))
-					result += COLOR_GREEN "o" COLOR_EOC;
+					result += LOG_COL_GREEN "o" LOG_COL_EOC;
 			else
 				result += "_";
 		}

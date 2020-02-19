@@ -3,7 +3,8 @@
 // contain dynamic libs info
 std::array<std::pair< std::string const, std::string const >, NB_GUI> const	DynGuiManager::_guiInfos = {{
 	{"libNibblerSDL.so", "makeNibblerSDL"},
-	{"libNibblerSFML.so", "makeNibblerSFML"}
+	{"libNibblerSFML.so", "makeNibblerSFML"},
+	{"libNibblerNcurses.so", "makeNibblerNcurses"}
 }};
 
 DynGuiManager::DynGuiManager()

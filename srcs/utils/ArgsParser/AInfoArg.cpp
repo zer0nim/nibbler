@@ -117,7 +117,7 @@ AInfoArg	&AInfoArg::setStoreTrue(bool storeTrue) {
 
 // print argument type, (overloaded by children)
 void AInfoArg::print(std::ostream &out) const {
-	out << "<" << COLOR_TYPE << ArgType::enumNames[_type] << COLOR_WHITE;
+	out << "<" << COLOR_TYPE << ArgType::enumNames[_type] << LOG_COL_WHITE;
 }
 
 std::ostream & operator << (std::ostream &out, AInfoArg const &aInfo) {
@@ -180,16 +180,16 @@ void StringArg::print(std::ostream &out) const {
 
 	// print defaut string value
 	if (!_required) {
-		out << " " COLOR_L_VAL "default" COLOR_WHITE "=" COLOR_R_VAL "\"" <<
-			_defaultV << "\"" COLOR_WHITE;
+		out << " " COLOR_L_VAL "default" LOG_COL_WHITE "=" COLOR_R_VAL "\"" <<
+			_defaultV << "\"" LOG_COL_WHITE;
 	}
 
 	// print string min/max
 	if (_min != 0 || _max != std::numeric_limits<uint32_t>::max()) {
-		out << " " COLOR_L_VAL "length" COLOR_WHITE "=" COLOR_R_VAL "[" << \
+		out << " " COLOR_L_VAL "length" LOG_COL_WHITE "=" COLOR_R_VAL "[" << \
 		(_min != 0 ? std::to_string(_min) : "") << ":" << \
 		(_max != std::numeric_limits<uint32_t>::max() ? std::to_string(_max) : "") \
-		<< "]" COLOR_WHITE;
+		<< "]" LOG_COL_WHITE;
 	}
 
 	out << ">";
@@ -298,10 +298,10 @@ void BoolArg::print(std::ostream &out) const {
 	AInfoArg::print(out);
 
 	// print defaut string value
-	out << " " COLOR_L_VAL "default" COLOR_WHITE "=" COLOR_R_VAL << std::boolalpha << _defaultV << COLOR_WHITE;
+	out << " " COLOR_L_VAL "default" LOG_COL_WHITE "=" COLOR_R_VAL << std::boolalpha << _defaultV << LOG_COL_WHITE;
 
 	if (_storeTrue) {
-		out << " " COLOR_L_VAL "storeTrue" COLOR_WHITE;
+		out << " " COLOR_L_VAL "storeTrue" LOG_COL_WHITE;
 	}
 
 	out << ">";
