@@ -103,7 +103,7 @@ void	ArgsParser::usage(bool longUsage) const {
 		// print program description
 		if (!_progDescr.empty()) {
 			std::cout << COLOR_ULINE "\ndescription" COLOR_ULINE_R << std::endl;
-			std::cout << _progDescr << std::endl;
+			std::cout << "  " << _progDescr << std::endl;
 		}
 	}
 }
@@ -324,7 +324,19 @@ void	ArgsParser::parseArgs() {
 	}
 }
 
-void	ArgsParser::setProgDescr(std::string const &progDescr) { _progDescr = progDescr; }
+void	ArgsParser::_strReplace(std::string &str, std::string search, std::string replace) {
+	size_t it = str.find(search);
+
+	while (it != std::string::npos) {
+		str.replace(it, search.size(), replace);
+		it = str.find(search, it + replace.size());
+	}
+}
+
+void	ArgsParser::setProgDescr(std::string const &progDescr) {
+	_progDescr = progDescr;
+	_strReplace(_progDescr, "\n", "\n  ");
+}
 
 // helper function to retrieve an argument by name
 AInfoArg	*ArgsParser::_get(std::string const name, ArgType::Enum const type) const {
