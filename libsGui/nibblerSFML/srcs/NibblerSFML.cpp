@@ -208,9 +208,11 @@ void	NibblerSFML::_printBoard() {
 void	NibblerSFML::_printSnake() {
 	sf::RectangleShape rect(sf::Vector2f(_block.x, _block.y));
 
-	for (auto &&i : gameInfo->snake) {
-		rect.setFillColor(sf::Color(0xBD63B9));
-		rect.setPosition(MARGED_POS(i));
+	for (auto it = gameInfo->snake.begin(); it != gameInfo->snake.end(); ++it) {
+		rect.setFillColor(sf::Color((it == gameInfo->snake.begin()
+			? 0x5eed00B9  // head color
+			: 0x00BD63B9)));  // body color
+		rect.setPosition(MARGED_POS((*it)));
 		_win.draw(rect);
 	}
 }
