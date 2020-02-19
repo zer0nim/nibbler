@@ -18,6 +18,8 @@ NibblerNcurses::NibblerNcurses() :
 NibblerNcurses::~NibblerNcurses() {
 	logInfo("exit SDL");
 	delwin(_win);
+	// shutdown ncurses
+	endwin();
 }
 
 NibblerNcurses::NibblerNcurses(NibblerNcurses const &src) {
@@ -36,14 +38,13 @@ NibblerNcurses &NibblerNcurses::operator=(NibblerNcurses const &rhs) {
 bool NibblerNcurses::init(GameInfo &gameInfo) {
 	logInfo("loading Ncurses");
 
-	// Init Ncurses
+	// standard ncurses init
 	initscr();
-	// One-character-a-time.
-	cbreak();
-	// No echo.
-	noecho();
-	// Special keys.
-	keypad(stdscr, TRUE);
+	start_color();
+	cbreak(); noecho();		// character-at-a-time input, no echo
+	nonl();
+	intrflush(stdscr, FALSE);
+	keypad(stdscr, TRUE);		// interpret function keys for us
 
 	this->gameInfo = &gameInfo;
 
@@ -121,3 +122,7 @@ extern "C" {
 		return new NibblerNcurses();
 	}
 }
+
+// == Window ===================================================================
+
+// == BorderWindow =============================================================
