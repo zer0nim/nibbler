@@ -99,6 +99,11 @@ bool	GameManager::init(uint8_t guiId) {
 	_gameInfo.snake.push_back({1, 1});
 	_gameInfo.snake.push_back({1, 2});
 	_gameInfo.snake.push_back({1, 3});
+	_gameInfo.snake.push_back({1, 4});
+	_gameInfo.snake.push_back({1, 5});
+	_gameInfo.snake.push_back({1, 6});
+	_gameInfo.snake.push_back({1, 7});
+	_gameInfo.snake.push_back({1, 8});
 
 	srand(time(NULL));
 

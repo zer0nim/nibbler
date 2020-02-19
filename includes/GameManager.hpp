@@ -35,7 +35,7 @@ private:
 	DynGuiManager			_dynGuiManager;
 	GameInfo				&_gameInfo;
 	Direction::Enum			_direction;
-	int						_eating;  // nb food eated
+	int						_eating;  // nb food eaten
 
 	// Methods
 	bool						_move(Direction::Enum dir);
