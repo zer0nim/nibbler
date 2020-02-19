@@ -60,7 +60,7 @@ public:
 	glm::ivec2				getHead() const;
 
 	// Methods
-	bool					init(uint8_t guiId);
+	bool					init(int8_t guiId = -1);
 	void					run();
 	void					restart();
 	bool					isEmpty(glm::ivec2 pos, bool head = false) const;

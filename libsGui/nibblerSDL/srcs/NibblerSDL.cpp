@@ -70,7 +70,6 @@ void NibblerSDL::updateInput() {
 
 	// reset inputs
 	input.togglePause = false;
-	input.restart = false;
 
 	input.direction = Direction::NO_MOVE;
 	while (SDL_PollEvent(_event)) {
@@ -121,8 +120,6 @@ std::map<SDL_Keycode, NibblerSDL::InputFuncPtr> const	NibblerSDL::_inputsFuncs {
 		input.quit = true; }},
 	{SDLK_SPACE, [](ANibblerGui::Input &input) {
 		input.togglePause = true; }},
-	{SDLK_r, [](ANibblerGui::Input &input) {
-		input.restart = true; }},
 	{SDLK_UP, [](ANibblerGui::Input &input) {
 		input.direction = Direction::MOVE_UP; }},
 	{SDLK_RIGHT, [](ANibblerGui::Input &input) {
