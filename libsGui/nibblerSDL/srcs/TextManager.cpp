@@ -55,8 +55,8 @@ void	TextManager::draw() {
 }
 
 void	TextManager::_drawScore() {
-	int x = TXT_PADDING_TOP;
-	int y = _gameInfo->windowSize.y - _normalTxtSize - TXT_PADDING_LEFT;
+	int x = TXT_PADDING_LEFT;
+	int y = _gameInfo->windowSize.y - _normalTxtSize - TXT_PADDING_TOP;
 	int lineSz = _normalTxtSize * 1.2;
 	std::string text = "score: " + std::to_string(_gameInfo->snake.size());
 	_textRender->write("normalTxt", text, x, y, 1, NORMAL_TEXT_COLOR);
