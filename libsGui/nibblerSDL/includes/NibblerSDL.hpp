@@ -20,6 +20,7 @@
 #include "TextRender.hpp"
 #include "Skybox.hpp"
 #include "TextureManager.hpp"
+#include "TextManager.hpp"
 
 class NibblerSDL : public ANibblerGui {
 	public:
@@ -40,6 +41,7 @@ class NibblerSDL : public ANibblerGui {
 		float			_dtTime;
 
 		TextureManager		*_textureManager;
+		TextManager			*_textManager;
 		Shader				*_cubeShader;
 		Camera				*_cam;
 		TextRender			*_textRender;

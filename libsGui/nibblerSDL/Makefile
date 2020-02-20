@@ -81,6 +81,7 @@ DEBUG_DIR	= $(DEP_DIR)
 SRC =	NibblerSDL.cpp \
 		NibblerSDLOpengl.cpp \
 		TextureManager.cpp \
+		TextManager.cpp \
 		../../ANibblerGui.cpp \
 		utils/Logging.cpp \
 		utils/Texture.cpp \
@@ -94,6 +95,7 @@ SRC =	NibblerSDL.cpp \
 # INC_DIR/HEAD
 HEAD =	NibblerSDL.hpp \
 		TextureManager.hpp \
+		TextManager.hpp \
 		utils/Logging.hpp \
 		utils/Texture.hpp \
 		utils/Shader.hpp \

@@ -27,6 +27,12 @@ bool NibblerSDL::init(GameInfo &gameInfo) {
 		return false;
 	}
 
+	// create text manager
+	_textManager = new TextManager(this->gameInfo);
+	if (!_textManager->init()) {
+		return false;
+	}
+
 	// init shaders attributes
 	if (!_initShaders()) {
 		return false;
@@ -225,6 +231,9 @@ bool NibblerSDL::draw() {
 
 	// draw skybox
 	_drawSkybox(view);
+
+	// draw text
+	_textManager->draw();
 
 	// swap buffer and check errors
 	SDL_GL_SwapWindow(_win);

@@ -7,8 +7,8 @@
 #include "commonInclude.hpp"
 #include "Shader.hpp"
 
-#define SHADER_TEXT_VS "libsGui/nibblerOpenGL/shaders/text_vs.glsl"
-#define SHADER_TEXT_FS "libsGui/nibblerOpenGL/shaders/text_fs.glsl"
+#define SHADER_TEXT_VS "libsGui/nibblerSDL/shaders/text_vs.glsl"
+#define SHADER_TEXT_FS "libsGui/nibblerSDL/shaders/text_fs.glsl"
 #define SHADER_TEXT_ROW_SIZE 4
 
 class TextRender {

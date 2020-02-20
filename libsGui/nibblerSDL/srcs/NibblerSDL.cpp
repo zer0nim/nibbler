@@ -10,6 +10,7 @@ NibblerSDL::NibblerSDL() :
   _lastLoopMs(0),
   _dtTime(0),
   _textureManager(nullptr),
+  _textManager(nullptr),
   _cubeShader(nullptr),
   _cam(nullptr),
   _textRender(nullptr),
@@ -42,6 +43,7 @@ NibblerSDL::~NibblerSDL() {
 
 	delete _event;
 	delete _textureManager;
+	delete _textManager;
 	delete _cubeShader;
 	delete _cam;
 	delete _textRender;
