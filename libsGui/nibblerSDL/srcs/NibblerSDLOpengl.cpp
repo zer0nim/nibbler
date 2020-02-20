@@ -198,14 +198,21 @@ bool NibblerSDL::draw() {
 	// move camera to follow snake head
 	if (gameInfo->snake.size() > 0) {
 		glm::ivec2	head = gameInfo->snake.front();
-		_cam->pos = glm::vec3(head.x, 10.0f, head.y + 5.0f);
+		if (_camDirAngle.find(gameInfo->direction) != _camDirAngle.end()) {
+			glm::vec4	pos = glm::vec4(CAM_POS_OFFSET, 0.0f);
+			glm::vec4	target = glm::vec4(CAM_TARG_OFFSET, 0.0f);
+			// calculate transforamtion matrix
+			glm::mat4	transformPos = glm::rotate(glm::mat4(1.0),
+				_camDirAngle.at(gameInfo->direction), WORD_UP);
+			// rotate pos according to the snake direction
+			pos = transformPos * pos;
+			target = transformPos * target;
+			pos.z = -pos.z;
+			target.z = -target.z;
 
-		if (_camPos.find(gameInfo->direction) != _camPos.end()) {
-			_cam->pos = glm::vec3(head.x, CAM_HEIGHT, head.y);
-			_cam->pos += _camPos.at(gameInfo->direction) * CAM_DIST_HEAD;
+			_cam->pos = glm::vec3(head.x, 0.0f, head.y) + glm::vec3(pos);
+			_cam->lookAt(glm::vec3(head.x, 0.0f, head.y) + glm::vec3(target));
 		}
-
-		_cam->lookAt(glm::vec3(head.x, 1.0f, head.y));
 	}
 
 	// draw scene
@@ -342,9 +349,9 @@ std::array<float, C_FACE_A_SIZE> const	NibblerSDL::_cubeFaces = {
 };
 
 // cam position according to snake direction
-std::unordered_map<Direction::Enum, glm::vec3, EnumClassHash> const	NibblerSDL::_camPos = {
-	{Direction::MOVE_UP, glm::vec3(0.0f, 0.0f, 1.0f)},
-	{Direction::MOVE_RIGHT, glm::vec3(-1.0f, 0.0f, 0.0f)},
-	{Direction::MOVE_DOWN, glm::vec3(0.0f, 0.0f, -1.0f)},
-	{Direction::MOVE_LEFT, glm::vec3(1.0f, 0.0f, 0.0f)}
+std::unordered_map<Direction::Enum, float, EnumClassHash> const	NibblerSDL::_camDirAngle = {
+	{Direction::MOVE_UP, 0.0f},  // 0°
+	{Direction::MOVE_RIGHT, 1.5708f},  // 90°
+	{Direction::MOVE_DOWN, 3.14159f},  // 180°
+	{Direction::MOVE_LEFT, 4.71239f}  // 270°
 };
