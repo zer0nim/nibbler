@@ -34,6 +34,11 @@ namespace glm {
 	bool operator==(tvec2<T> const &lhs, tvec2<T> const &rhs) {
 		return (lhs.x == rhs.x && lhs.y == rhs.y);
 	}
+
+	template <typename T>
+	tvec3<T>	lerp(tvec3<T> start, tvec3<T> end, float percent) {
+		return (start + percent * (end - start));
+	}
 };  // namespace glm
 
 #endif  // COMMONINCLUDE_HPP_

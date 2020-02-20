@@ -4,8 +4,9 @@
 #define C_NB_FACES 6
 // C_VAO_WIDTH * C_NB_FACES
 #define C_FACE_A_SIZE 42
-#define CAM_POS_OFFSET glm::vec3(0.0f, 5.0f, -5.0f)
-#define CAM_TARG_OFFSET glm::vec3(0.0f, 1.0f, 5.0f)
+#define CAM_POS_OFFSET glm::vec3(0.0f, 20.0f, -10.0f)
+#define CAM_TARG_OFFSET glm::vec3(0.0f, 1.0f, 0.0f)
+#define CAM_SPEED 1.5f
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
@@ -36,6 +37,7 @@ class NibblerSDL : public ANibblerGui {
 		SDL_Event *		_event;
 		SDL_GLContext	_context;
 		uint64_t		_lastLoopMs;
+		float			_dtTime;
 
 		TextureManager		*_textureManager;
 		Shader				*_cubeShader;

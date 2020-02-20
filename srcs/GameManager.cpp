@@ -156,9 +156,6 @@ void	GameManager::run() {
 		if (_gameInfo.play == State::S_PAUSE && nibblerGui->input.direction != Direction::NO_MOVE)
 			_gameInfo.play = State::S_PLAY;
 
-		// logDebug("Game : " << *this);
-		// logDebug("moving direction " << nibblerGui->input.direction);
-
 		// on play mode
 		if (_gameInfo.play == State::S_PLAY) {
 			_move(nibblerGui->input.direction);

@@ -8,6 +8,7 @@ NibblerSDL::NibblerSDL() :
   _event(new SDL_Event()),
   _context(0),
   _lastLoopMs(0),
+  _dtTime(0),
   _textureManager(nullptr),
   _cubeShader(nullptr),
   _cam(nullptr),
@@ -65,7 +66,7 @@ NibblerSDL &NibblerSDL::operator=(NibblerSDL const &rhs) {
 
 void NibblerSDL::updateInput() {
 	uint64_t time = _getMs().count();
-	float dtTime = (time - _lastLoopMs) / 1000.0;
+	_dtTime = (time - _lastLoopMs) / 1000.0;
 	_lastLoopMs = time;
 
 	// reset inputs
@@ -95,22 +96,22 @@ void NibblerSDL::updateInput() {
 	// camera movement
 	bool isRun = keystates[SDL_SCANCODE_LSHIFT];
 	if (keystates[SDL_SCANCODE_W]) {
-		_cam->processKeyboard(CamMovement::Forward, dtTime, isRun);
+		_cam->processKeyboard(CamMovement::Forward, _dtTime, isRun);
 	}
 	if (keystates[SDL_SCANCODE_D]) {
-		_cam->processKeyboard(CamMovement::Right, dtTime, isRun);
+		_cam->processKeyboard(CamMovement::Right, _dtTime, isRun);
 	}
 	if (keystates[SDL_SCANCODE_S]) {
-		_cam->processKeyboard(CamMovement::Backward, dtTime, isRun);
+		_cam->processKeyboard(CamMovement::Backward, _dtTime, isRun);
 	}
 	if (keystates[SDL_SCANCODE_A]) {
-		_cam->processKeyboard(CamMovement::Left, dtTime, isRun);
+		_cam->processKeyboard(CamMovement::Left, _dtTime, isRun);
 	}
 	if (keystates[SDL_SCANCODE_Q]) {
-		_cam->processKeyboard(CamMovement::Down, dtTime, isRun);
+		_cam->processKeyboard(CamMovement::Down, _dtTime, isRun);
 	}
 	if (keystates[SDL_SCANCODE_E]) {
-		_cam->processKeyboard(CamMovement::Up, dtTime, isRun);
+		_cam->processKeyboard(CamMovement::Up, _dtTime, isRun);
 	}
 }
 

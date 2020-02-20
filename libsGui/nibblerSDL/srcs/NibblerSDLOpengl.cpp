@@ -199,18 +199,17 @@ bool NibblerSDL::draw() {
 	if (gameInfo->snake.size() > 0) {
 		glm::ivec2	head = gameInfo->snake.front();
 		if (_camDirAngle.find(gameInfo->direction) != _camDirAngle.end()) {
-			glm::vec4	pos = glm::vec4(CAM_POS_OFFSET, 0.0f);
+			glm::vec4	posOffset = glm::vec4(CAM_POS_OFFSET, 0.0f);
+			posOffset.z = -posOffset.z;  // invert z
 			glm::vec4	target = glm::vec4(CAM_TARG_OFFSET, 0.0f);
-			// calculate transforamtion matrix
-			glm::mat4	transformPos = glm::rotate(glm::mat4(1.0),
-				_camDirAngle.at(gameInfo->direction), WORD_UP);
-			// rotate pos according to the snake direction
-			pos = transformPos * pos;
-			target = transformPos * target;
-			pos.z = -pos.z;
-			target.z = -target.z;
+			target.z = -target.z;  // invert z
 
-			_cam->pos = glm::vec3(head.x, 0.0f, head.y) + glm::vec3(pos);
+			// calculate desired pos
+			glm::vec3	desiredPos = glm::vec3(head.x, 0.0f, head.y)
+				+ glm::vec3(posOffset);
+
+			// apply values
+			_cam->pos = desiredPos;
 			_cam->lookAt(glm::vec3(head.x, 0.0f, head.y) + glm::vec3(target));
 		}
 	}
