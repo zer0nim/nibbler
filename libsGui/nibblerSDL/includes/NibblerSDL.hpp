@@ -52,7 +52,7 @@ class NibblerSDL : public ANibblerGui {
 		glm::mat4			_projection;
 
 		static std::array<float, C_FACE_A_SIZE> const		_cubeFaces;
-		typedef void (*InputFuncPtr)(Input &input, GameInfo const *gameInfo);
+		typedef void (*InputFuncPtr)(Input &input);
 
 		static std::unordered_map<SDL_Keycode, InputFuncPtr> const	_inputsFuncs;
 		static std::unordered_map<Direction::Enum, float, EnumClassHash> const	_camDirAngle;
