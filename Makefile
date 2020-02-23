@@ -137,7 +137,7 @@ LIBS_FLAGS			=
 # flags for libs on OSX only
 LIBS_FLAGS_OSX		=
 # flags for libs on LINUX only
-LIBS_FLAGS_LINUX	=
+LIBS_FLAGS_LINUX	= -Wl,-rpath,.
 # includes dir for external libs
 LIBS_INC			= ~/.brew/include \
 					  $(LIBS_DIR) \
@@ -159,6 +159,8 @@ define CONFIGURE
 # Linux
 if [[ "$$OSTYPE" == "linux-gnu" ]]; then
 	echo "install linux dependencies"
+	sudo apt-get -y install libglm-dev;
+
 # Mac OSX
 elif [[ "$$OSTYPE" == "darwin"* ]]; then
 	echo "install osx dependencies"

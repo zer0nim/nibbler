@@ -9,11 +9,14 @@
 #define CAM_SPEED 1.5f
 
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
 #include <iostream>
 #include <array>
 #include <unordered_map>
+#include <chrono>
+#include <ctime>
+#include <map>
 
+#include "commonInclude.hpp"
 #include "ANibblerGui.hpp"
 #include "Shader.hpp"
 #include "Camera.hpp"

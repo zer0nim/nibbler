@@ -1,6 +1,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <time.h>
+#include <algorithm>
 
 #include "ANibblerGui.hpp"
 #include "GameManager.hpp"

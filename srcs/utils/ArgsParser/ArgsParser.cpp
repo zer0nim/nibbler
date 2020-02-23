@@ -404,7 +404,7 @@ std::array<BuilderFuncPtr, 13> const ArgsParser::_builders = {
 			 return new NumberArg<uint64_t>(argsParser, name, ArgType::UINT64, longName, shortName); },
 	[](ArgsParser *argsParser, std::string const &name, std::string const &longName, char shortName)
 		-> AInfoArg * {  // FLOAT
-			 return new NumberArg<float_t>(argsParser, name, ArgType::FLOAT, longName, shortName); },
+			 return new NumberArg<float>(argsParser, name, ArgType::FLOAT, longName, shortName); },
 	[](ArgsParser *argsParser, std::string const &name, std::string const &longName, char shortName)
 		-> AInfoArg * {  // DOUBLE
 			 return new NumberArg<double>(argsParser, name, ArgType::DOUBLE, longName, shortName); },

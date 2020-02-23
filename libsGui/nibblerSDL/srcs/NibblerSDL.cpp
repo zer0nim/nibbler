@@ -55,7 +55,8 @@ NibblerSDL::~NibblerSDL() {
     SDL_Quit();
 }
 
-NibblerSDL::NibblerSDL(NibblerSDL const &src) {
+NibblerSDL::NibblerSDL(NibblerSDL const &src)
+: ANibblerGui() {
 	*this = src;
 }
 
