@@ -7,6 +7,7 @@
 #include <string>
 #include <array>
 #include <type_traits>
+#include <limits>
 
 #include "Logging.hpp"
 

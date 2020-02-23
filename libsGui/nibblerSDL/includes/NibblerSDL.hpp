@@ -6,12 +6,13 @@
 #define C_FACE_A_SIZE 42
 
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
 #include <iostream>
 #include <array>
-
+#include <chrono>
+#include <ctime>
 #include <map>
 
+#include "commonInclude.hpp"
 #include "ANibblerGui.hpp"
 #include "Shader.hpp"
 #include "Camera.hpp"

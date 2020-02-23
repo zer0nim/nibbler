@@ -46,7 +46,8 @@ NibblerSFML::~NibblerSFML() {
 	_win.close();
 }
 
-NibblerSFML::NibblerSFML(NibblerSFML const &src) {
+NibblerSFML::NibblerSFML(NibblerSFML const &src)
+: ANibblerGui() {
 	*this = src;
 }
 

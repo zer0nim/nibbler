@@ -121,12 +121,12 @@ LIBS_HEAD		= glad/glad.h \
 				  stb_image.h \
 
 # all flags for libs
-LIBS_FLAGS			= -rpath ~/.brew/lib -L ~/.brew/lib -l SDL2 -l SDL2_image \
-					  -l SDL2_ttf -l SDL2_gfx -L ~/.brew/opt/freetype/lib -lfreetype
+LIBS_FLAGS			= -L ~/.brew/lib -l SDL2 \
+					  -L ~/.brew/opt/freetype/lib -lfreetype
 # flags for libs on OSX only
-LIBS_FLAGS_OSX		= -framework OpenGL
+LIBS_FLAGS_OSX		= -rpath ~/.brew/lib -framework OpenGL
 # flags for libs on LINUX only
-LIBS_FLAGS_LINUX	= -lGL -lGLU
+LIBS_FLAGS_LINUX	= -Wl,-rpath,/usr/lib/x86_64-linux-gnu -lGL -lGLU
 # includes dir for external libs
 LIBS_INC			= ~/.brew/include \
 					  .. \
@@ -145,17 +145,21 @@ define CONFIGURE
 # Linux
 if [[ "$$OSTYPE" == "linux-gnu" ]]; then
 	echo "install linux dependencies"
+	sudo apt-get -y install libglm-dev \
+	libfreetype6-dev libfontconfig1-dev \
+	libsdl2-dev;
 # Mac OSX
 elif [[ "$$OSTYPE" == "darwin"* ]]; then
-	echo "install osx dependencies"
-	brew install sdl2 sdl2_ttf sdl2_image SDL2_gfx
-	mkdir -p $(LIBS_DIR) $(LIBS_DIR)/glad $(LIBS_DIR)/KHR
-	# stb_image lib
-	wget -O $(LIBS_DIR)/glad/glad.h https://raw.githubusercontent.com/tnicolas42/libs/master/cpp/OpenGL/glad/glad/glad.h
-	wget -O $(LIBS_DIR)/glad/glad.c https://raw.githubusercontent.com/tnicolas42/libs/master/cpp/OpenGL/glad/glad/glad.c
-	wget -O $(LIBS_DIR)/KHR/khrplatform.h https://raw.githubusercontent.com/tnicolas42/libs/master/cpp/OpenGL/glad/KHR/khrplatform.h
-	wget -O $(LIBS_DIR)/stb_image.h https://raw.githubusercontent.com/nothings/stb/0224a44/stb_image.h
+	echo "install osx dependencies";
+	brew install sdl2;
 fi
+
+mkdir -p $(LIBS_DIR) $(LIBS_DIR)/glad $(LIBS_DIR)/KHR
+# stb_image lib
+wget -O $(LIBS_DIR)/glad/glad.h https://raw.githubusercontent.com/tnicolas42/libs/master/cpp/OpenGL/glad/glad/glad.h
+wget -O $(LIBS_DIR)/glad/glad.c https://raw.githubusercontent.com/tnicolas42/libs/master/cpp/OpenGL/glad/glad/glad.c
+wget -O $(LIBS_DIR)/KHR/khrplatform.h https://raw.githubusercontent.com/tnicolas42/libs/master/cpp/OpenGL/glad/KHR/khrplatform.h
+wget -O $(LIBS_DIR)/stb_image.h https://raw.githubusercontent.com/nothings/stb/0224a44/stb_image.h
 
 exit 0
 endef
@@ -283,14 +287,14 @@ $(NAME): $(OBJS_DIR) $(OBJS)
 $(OBJS_DIR)/%.o: $(LIBS_DIR)/%.c
 $(OBJS_DIR)/%.o: $(LIBS_DIR)/%.c $(DEP_DIR)/%.d
 	@printf $(YELLOW)"-> $<\n"$(NORMAL)
-	@$(CC) $(DEPFLAGS) $(CFLAGS) -c $< -o $@ $(INC)
+	@$(CC) $(DEPFLAGS) $(CFLAGS) -c -fPIC $< -o $@ $(INC)
 	@mv -f $(DEP_DIR)/$*.Td $(DEP_DIR)/$*.d
 
 
 $(OBJS_DIR)/%.o: $(SRCS_DIR)/%.cpp
 $(OBJS_DIR)/%.o: $(SRCS_DIR)/%.cpp $(DEP_DIR)/%.d
 	@printf $(YELLOW)"-> $<\n"$(NORMAL)
-	@$(CC) $(DEPFLAGS) $(CFLAGS) -c $< -o $@ $(INC)
+	@$(CC) $(DEPFLAGS) $(CFLAGS) -c -fPIC $< -o $@ $(INC)
 	@mv -f $(DEP_DIR)/$*.Td $(DEP_DIR)/$*.d
 
 $(OBJS_DIR):
