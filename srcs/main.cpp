@@ -6,8 +6,10 @@
 #include "Logging.hpp"
 #include "GameManager.hpp"
 #include "ArgsParser.hpp"
+#include "LanHost.hpp"
+#include "LanClient.hpp"
 
-bool	manageArgs(ArgsParser &ap, uint8_t &gui, GameInfo &gameInfo, bool &hostLan, bool &joinLan) {
+bool	manageArgs(ArgsParser &ap, uint8_t &gui, GameInfo &gameInfo, bool &hostGame, bool &joinGame) {
 	// -- process arguments ----------------------------------------------------
 	ap.setProgDescr("The purpose of this project is to create our version of the game Snake,\n"\
 	"with at least 3 different GUIs. These GUIs being shared libraries.");
@@ -42,12 +44,12 @@ bool	manageArgs(ArgsParser &ap, uint8_t &gui, GameInfo &gameInfo, bool &hostLan,
 		.setMinF(0.0f)
 		.setMaxF(100.0f)
 		.setDefaultF(10.5f);
-	// --host-lan
-	ap.addArgument("host-lan", ArgType::BOOL, "host-lan")
+	// --host-game
+	ap.addArgument("host-game", ArgType::BOOL, "host-game")
 		.setHelp("host a lan game")
 		.setStoreTrue();
-	// --join-lan
-	ap.addArgument("join-lan", ArgType::BOOL, "join-lan")
+	// --join-game
+	ap.addArgument("join-game", ArgType::BOOL, "join-game")
 		.setHelp("join a lan game")
 		.setStoreTrue();
 
@@ -73,9 +75,9 @@ bool	manageArgs(ArgsParser &ap, uint8_t &gui, GameInfo &gameInfo, bool &hostLan,
 	gameInfo.gameboard.y = gameInfo.gameboard.x;
 	// snakeSpeed
 	gameInfo.snakeSpeed = ap.get<float>("snakeSpeed");
-	// host-lan, join-lan
-	hostLan = ap.get<bool>("host-lan");
-	joinLan = ap.get<bool>("join-lan");
+	// host-game, join-game
+	hostGame = ap.get<bool>("host-game");
+	joinGame = ap.get<bool>("join-game");
 
 	logDebug("-- gameInfo ------------");
 	logDebug(" windowSize: " << glm::to_string(gameInfo.windowSize));
@@ -90,25 +92,54 @@ int	main(int ac, char * const *av) {
 	ArgsParser		ap(ac, av);
 	uint8_t			gui = 0;
 	GameInfo		gameInfo;
-	bool			hostLan = false;
-	bool			joinLan = false;
+	bool			hostGame = false;
+	bool			joinGame = false;
 	GameManager		game(gameInfo);
 
 	initLogs();  // init logs functions context, Err/Warn/Info...
 
 	// parse arguments
-	if (!manageArgs(ap, gui, gameInfo, hostLan, joinLan)) {
+	if (!manageArgs(ap, gui, gameInfo, hostGame, joinGame)) {
 		return EXIT_FAILURE;
 	}
 
-	if (hostLan) {
-		std::cout << "hostLan" << std::endl;
+	// host game
+	if (hostGame) {
+		std::cout << "host game" << std::endl;
+		LanHost	lHost;
+
+		try {
+			// make host visible by continuously broadcating message
+			lHost.broadcast();
+		}
+		catch(LanHost::LanHostException const &e) {
+			logErr(e.what());
+			return EXIT_FAILURE;
+		}
 	}
-	else if (joinLan) {
-		std::cout << "joinLan" << std::endl;
+	// join game
+	else if (joinGame) {
+		std::cout << "join game" << std::endl;
+		LanClient	lClient;
+
+		sockaddr_in	si_host;
+		memset(&si_host, 0, sizeof(si_host));  // zero out si_host
+
+		try {
+			// looking for host
+			lClient.searchHost(si_host);
+		}
+		catch(LanClient::LanClientException const &e) {
+			logErr(e.what());
+			return EXIT_FAILURE;
+		}
+
+		// change the port to NIB_GAME_PORT to establish a connection with the host
+		si_host.sin_port = htons(NIB_GAME_PORT);
 	}
+	// play solo
 	else {
-		std::cout << "solo" << std::endl;
+		std::cout << "play solo" << std::endl;
 	}
 
 	// // -- run the game ---------------------------------------------------------

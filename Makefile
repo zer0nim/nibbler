@@ -98,6 +98,8 @@ SRC =	main.cpp \
 		nibbler.cpp \
 		GameManager.cpp \
 		DynGuiManager.cpp \
+		LanHost.cpp \
+		LanClient.cpp \
 \
 		utils/Logging.cpp \
 		utils/Stats.cpp \
@@ -110,6 +112,8 @@ SRC =	main.cpp \
 HEAD =	nibbler.hpp \
 		GameManager.hpp \
 		DynGuiManager.hpp \
+		LanHost.hpp \
+		LanClient.hpp \
 		../libsGUI/ANibblerGui.hpp \
 \
 		utils/Logging.hpp \
