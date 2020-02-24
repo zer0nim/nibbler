@@ -7,15 +7,7 @@
 #include "GameManager.hpp"
 #include "ArgsParser.hpp"
 
-int	main(int ac, char * const *av) {
-	GameInfo		gameInfo;
-	GameManager		game(gameInfo);
-	uint8_t			gui = 0;
-	DynGuiManager	dynGuiManager;
-	ArgsParser		ap(ac, av);
-
-	initLogs();  // init logs functions context, Err/Warn/Info...
-
+bool	manageArgs(ArgsParser &ap, uint8_t &gui, GameInfo &gameInfo, bool &hostLan, bool &joinLan) {
 	// -- process arguments ----------------------------------------------------
 	ap.setProgDescr("The purpose of this project is to create our version of the game Snake,\n"\
 	"with at least 3 different GUIs. These GUIs being shared libraries.");
@@ -50,17 +42,25 @@ int	main(int ac, char * const *av) {
 		.setMinF(0.0f)
 		.setMaxF(100.0f)
 		.setDefaultF(10.5f);
+	// --host-lan
+	ap.addArgument("host-lan", ArgType::BOOL, "host-lan")
+		.setHelp("host a lan game")
+		.setStoreTrue();
+	// --join-lan
+	ap.addArgument("join-lan", ArgType::BOOL, "join-lan")
+		.setHelp("join a lan game")
+		.setStoreTrue();
 
 	// -- run the parser -------------------------------------------------------
 	try {
 		ap.parseArgs();
 	}
 	catch(ArgsParser::ArgsParserUsage const &e) {
-		return EXIT_SUCCESS;
+		return false;
 	}
 	catch(const std::exception& e) {
 		logErr(e.what());
-		return EXIT_FAILURE;
+		return false;
 	}
 
 	// -- retrieve values ------------------------------------------------------
@@ -73,6 +73,9 @@ int	main(int ac, char * const *av) {
 	gameInfo.gameboard.y = gameInfo.gameboard.x;
 	// snakeSpeed
 	gameInfo.snakeSpeed = ap.get<float>("snakeSpeed");
+	// host-lan, join-lan
+	hostLan = ap.get<bool>("host-lan");
+	joinLan = ap.get<bool>("join-lan");
 
 	logDebug("-- gameInfo ------------");
 	logDebug(" windowSize: " << glm::to_string(gameInfo.windowSize));
@@ -80,20 +83,47 @@ int	main(int ac, char * const *av) {
 	logDebug(" play: " << gameInfo.play);
 	logDebug(" snakeSpeed: " << gameInfo.snakeSpeed);
 	logDebug("-----------------------");
+	return true;
+}
 
-	// -- run the game ---------------------------------------------------------
-	try {
-		// init gameManager
-		if (!game.init(gui)) {
-			return EXIT_FAILURE;
-		}
-		// run the game
-		game.run();
-	}
-	catch(const std::exception& e) {
-		logErr(e.what());
+int	main(int ac, char * const *av) {
+	ArgsParser		ap(ac, av);
+	uint8_t			gui = 0;
+	GameInfo		gameInfo;
+	bool			hostLan = false;
+	bool			joinLan = false;
+	GameManager		game(gameInfo);
+
+	initLogs();  // init logs functions context, Err/Warn/Info...
+
+	// parse arguments
+	if (!manageArgs(ap, gui, gameInfo, hostLan, joinLan)) {
 		return EXIT_FAILURE;
 	}
+
+	if (hostLan) {
+		std::cout << "hostLan" << std::endl;
+	}
+	else if (joinLan) {
+		std::cout << "joinLan" << std::endl;
+	}
+	else {
+		std::cout << "solo" << std::endl;
+	}
+
+	// // -- run the game ---------------------------------------------------------
+	// try {
+	// 	// init gameManager
+	// 	if (!game.init(gui)) {
+	// 		return EXIT_FAILURE;
+	// 	}
+	// 	// run the game
+	// 	game.run();
+	// }
+	// catch(const std::exception& e) {
+	// 	logErr(e.what());
+	// 	return EXIT_FAILURE;
+	// }
 
 	return EXIT_SUCCESS;
 }
