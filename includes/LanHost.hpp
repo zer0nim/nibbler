@@ -7,6 +7,7 @@
 #define NIB_BROAD_PORT 6897
 #define NIB_GAME_PORT 6842
 
+#include <pthread.h>
 #include <arpa/inet.h>  // for inet_aton
 #include <sys/socket.h>  // for socket functions
 #include <netinet/in.h>  // for sockaddr_in
@@ -26,7 +27,7 @@ class LanHost {
 		LanHost(LanHost const &src);
 		LanHost &operator=(LanHost const &rhs);
 
-		void	broadcast() const;
+		void	hostGame() const;
 
 		// -- exceptions -------------------------------------------------------
 		class LanHostException : public std::runtime_error {
@@ -36,6 +37,10 @@ class LanHost {
 		};
 
 	private:
+		static void	*_hostGame(void *inLobbyPtr);
+		static void	*_broadcast(void *inLobbyPtr);
+
+		pthread_t	_gameThread;
 };
 
 #endif  // LANHOST_HPP_

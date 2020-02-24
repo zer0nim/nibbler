@@ -105,12 +105,11 @@ int	main(int ac, char * const *av) {
 
 	// host game
 	if (hostGame) {
-		std::cout << "host game" << std::endl;
 		LanHost	lHost;
 
 		try {
 			// make host visible by continuously broadcating message
-			lHost.broadcast();
+			lHost.hostGame();
 		}
 		catch(LanHost::LanHostException const &e) {
 			logErr(e.what());
@@ -119,7 +118,6 @@ int	main(int ac, char * const *av) {
 	}
 	// join game
 	else if (joinGame) {
-		std::cout << "join game" << std::endl;
 		LanClient	lClient;
 
 		sockaddr_in	si_host;
@@ -136,10 +134,6 @@ int	main(int ac, char * const *av) {
 
 		// change the port to NIB_GAME_PORT to establish a connection with the host
 		si_host.sin_port = htons(NIB_GAME_PORT);
-	}
-	// play solo
-	else {
-		std::cout << "play solo" << std::endl;
 	}
 
 	// // -- run the game ---------------------------------------------------------
