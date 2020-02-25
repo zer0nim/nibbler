@@ -14,6 +14,8 @@
 #define V_DOWN glm::ivec2(0, 1)
 #define V_LEFT glm::ivec2(-1, 0)
 
+#define EMPTY_GUI_ID -1
+
 #include <iostream>
 #include <stdexcept>
 #include <deque>
@@ -25,6 +27,16 @@
 #include "Logging.hpp"
 #include "DynGuiManager.hpp"
 #include "ANibblerGui.hpp"
+#include "LanHost.hpp"
+#include "LanClient.hpp"
+
+namespace LAN_MODE {
+	enum Enum {
+		SOLO,
+		HOST,
+		CLIENT,
+	};
+}
 
 class GameManager {
 private:
@@ -35,6 +47,10 @@ private:
 	DynGuiManager			_dynGuiManager;
 	GameInfo				&_gameInfo;
 	int						_eating;  // nb food eaten
+	LAN_MODE::Enum			_lanMode;
+
+	LanHost					*lHost;  // used to manage lan host
+	LanClient				*lClient;  // used to manage lan client
 
 	// Methods
 	bool						_move(Direction::Enum dir);
@@ -59,7 +75,7 @@ public:
 	glm::ivec2				getHead() const;
 
 	// Methods
-	bool					init(int8_t guiId = -1);
+	bool					init(int8_t guiId, LAN_MODE::Enum lanMode);
 	void					run();
 	void					restart();
 	bool					isEmpty(glm::ivec2 pos, bool head = false) const;

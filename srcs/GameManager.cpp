@@ -12,9 +12,12 @@ GameManager::GameManager(GameInfo &gameInfo)
 : _gameInfo(gameInfo) {
 	_gameInfo.direction = Direction::MOVE_UP;
 	_eating = 0;
+	_lanMode = LAN_MODE::SOLO;
 }
 
 GameManager::~GameManager() {
+	delete lHost;
+	delete lClient;
 }
 
 GameManager::GameManager(GameManager const &src):
@@ -28,6 +31,7 @@ GameManager &GameManager::operator=(GameManager const &rhs) {
 	if ( this != &rhs ) {
 		_gameInfo.direction = rhs._gameInfo.direction;
 		_eating = rhs._eating;
+		_lanMode = rhs._lanMode;
 	}
 	return *this;
 }
@@ -96,22 +100,30 @@ glm::ivec2	GameManager::getHead() const {
 
 // -- Methods ------------------------------------------------------------------
 
-bool	GameManager::init(int8_t guiId) {
-	_gameInfo.snake.push_back({1, 1});
-	_gameInfo.snake.push_back({1, 2});
-	_gameInfo.snake.push_back({1, 3});
-	_gameInfo.snake.push_back({1, 4});
-	_gameInfo.snake.push_back({1, 5});
-	_gameInfo.snake.push_back({1, 6});
-	_gameInfo.snake.push_back({1, 7});
-	_gameInfo.snake.push_back({1, 8});
+bool	GameManager::init(int8_t guiId, LAN_MODE::Enum lanMode) {
+	// if we play solo or we are host then init game
+	if (lanMode == LAN_MODE::SOLO || lanMode == LAN_MODE::HOST) {
+		// init snake
+		_gameInfo.snake.push_back({1, 1});
+		_gameInfo.snake.push_back({1, 2});
+		_gameInfo.snake.push_back({1, 3});
+		_gameInfo.snake.push_back({1, 4});
+		_gameInfo.snake.push_back({1, 5});
+		_gameInfo.snake.push_back({1, 6});
+		_gameInfo.snake.push_back({1, 7});
+		_gameInfo.snake.push_back({1, 8});
 
-	srand(time(NULL));
-
-	_generateFood();
+		// place initial food
+		srand(time(NULL));  // set random seed
+		_generateFood();
+	}
+	else {
+		// TODO(zer0nim): need to tell host to init player
+	}
 
 	// init gui if id is valid
-	if (guiId != -1) {
+	if (guiId != EMPTY_GUI_ID) {
+		_lanMode = lanMode;
 		_dynGuiManager.loadGui(guiId);
 		return _dynGuiManager.nibblerGui->init(_gameInfo);
 	}
@@ -123,7 +135,7 @@ void	GameManager::restart() {
 	_eating = 0;
 	_gameInfo.food = VOID_POS;
 	_gameInfo.snake.clear();
-	init();
+	init(EMPTY_GUI_ID, _lanMode);
 	_gameInfo.play = State::S_PAUSE;
 }
 

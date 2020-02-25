@@ -2,12 +2,13 @@
 
 LanHost::LanHost() {
 	// start a thread
-	if (pthread_create(&_gameThread, NULL, _hostGame, nullptr)) {
+	if (pthread_create(&_gameThread, nullptr, _hostGame, nullptr)) {
 		throw LanHostException("Fail to create host lan thread");
 	}
 }
 
 LanHost::~LanHost() {
+	pthread_join(_gameThread, nullptr);  // waiting for the thread to finish
 }
 
 LanHost::LanHost(LanHost const &src) {
@@ -24,7 +25,7 @@ void	LanHost::hostGame() const {
 
 	// start a thread to broadcast message to make host detectable
 	pthread_t threadT;
-	if (pthread_create(&threadT, NULL, _broadcast, reinterpret_cast<void *>(&inLobby))) {
+	if (pthread_create(&threadT, nullptr, _broadcast, reinterpret_cast<void *>(&inLobby))) {
 		throw LanHostException("Fail to create thread for broadcast");
 	}
 
@@ -35,7 +36,7 @@ void	LanHost::hostGame() const {
 	logInfo("[host] lobby quited");
 	inLobby = false;
 
-	pthread_join(threadT, NULL);  // waiting for the thread to finish
+	pthread_join(threadT, nullptr);  // waiting for the thread to finish
 }
 
 void	*LanHost::_hostGame(void *inLobbyPtr) {
@@ -156,7 +157,7 @@ void	*LanHost::_hostGame(void *inLobbyPtr) {
 						// listening socket before we loop back and call poll again
 						do {
 							// accept each incoming connection
-							newSd = accept(listenSd, NULL, NULL);
+							newSd = accept(listenSd, nullptr, nullptr);
 							// on accept() fail
 							if (newSd < 0) {
 								// if any other failure than EWOULDBLOCK occurs
@@ -257,11 +258,11 @@ void	*LanHost::_hostGame(void *inLobbyPtr) {
 	}
 	catch(LanHost::LanHostException const &e) {
 		logErr(e.what());
-		pthread_exit(NULL);
+		pthread_exit(nullptr);
 	}
 
 	// exit thread
-	pthread_exit(NULL);
+	pthread_exit(nullptr);
 }
 
 void	*LanHost::_broadcast(void *inLobbyPtr) {
@@ -317,11 +318,11 @@ void	*LanHost::_broadcast(void *inLobbyPtr) {
 	}
 	catch(LanHost::LanHostException const &e) {
 		logErr(e.what());
-		pthread_exit(NULL);
+		pthread_exit(nullptr);
 	}
 
 	// exit thread
-	pthread_exit(NULL);
+	pthread_exit(nullptr);
 }
 
 // -- exceptions ---------------------------------------------------------------

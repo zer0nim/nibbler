@@ -6,10 +6,8 @@
 #include "Logging.hpp"
 #include "GameManager.hpp"
 #include "ArgsParser.hpp"
-#include "LanHost.hpp"
-#include "LanClient.hpp"
 
-bool	manageArgs(ArgsParser &ap, uint8_t &gui, GameInfo &gameInfo, bool &hostGame, bool &joinGame) {
+bool	manageArgs(ArgsParser &ap, uint8_t &gui, GameInfo &gameInfo, LAN_MODE::Enum &lanMode) {
 	// -- process arguments ----------------------------------------------------
 	ap.setProgDescr("The purpose of this project is to create our version of the game Snake,\n"\
 	"with at least 3 different GUIs. These GUIs being shared libraries.");
@@ -76,8 +74,13 @@ bool	manageArgs(ArgsParser &ap, uint8_t &gui, GameInfo &gameInfo, bool &hostGame
 	// snakeSpeed
 	gameInfo.snakeSpeed = ap.get<float>("snakeSpeed");
 	// host-game, join-game
-	hostGame = ap.get<bool>("host-game");
-	joinGame = ap.get<bool>("join-game");
+	lanMode = LAN_MODE::SOLO;
+	if (ap.get<bool>("host-game")) {
+		lanMode = LAN_MODE::HOST;
+	}
+	else if (ap.get<bool>("join-game")) {
+		lanMode = LAN_MODE::CLIENT;
+	}
 
 	logDebug("-- gameInfo ------------");
 	logDebug(" windowSize: " << glm::to_string(gameInfo.windowSize));
@@ -92,58 +95,29 @@ int	main(int ac, char * const *av) {
 	ArgsParser		ap(ac, av);
 	uint8_t			gui = 0;
 	GameInfo		gameInfo;
-	bool			hostGame = false;
-	bool			joinGame = false;
+	LAN_MODE::Enum	lanMode;
 	GameManager		game(gameInfo);
 
 	initLogs();  // init logs functions context, Err/Warn/Info...
 
 	// parse arguments
-	if (!manageArgs(ap, gui, gameInfo, hostGame, joinGame)) {
+	if (!manageArgs(ap, gui, gameInfo, lanMode)) {
 		return EXIT_FAILURE;
 	}
-	std::cout << std::endl;
 
-	// host game
-	if (hostGame) {
-		LanHost	lHost;
-
-		try {
-			// make host visible by continuously broadcating message
-			lHost.hostGame();
-		}
-		catch(LanHost::LanHostException const &e) {
-			logErr(e.what());
+	// run the game
+	try {
+		// init gameManager
+		if (!game.init(gui, lanMode)) {
 			return EXIT_FAILURE;
 		}
+		// run the game
+		game.run();
 	}
-	// join game
-	else if (joinGame) {
-		LanClient	lClient;
-
-		try {
-			// looking for host and join him
-			lClient.joinGame();
-		}
-		catch(LanClient::LanClientException const &e) {
-			logErr(e.what());
-			return EXIT_FAILURE;
-		}
+	catch(const std::exception& e) {
+		logErr(e.what());
+		return EXIT_FAILURE;
 	}
-
-	// // -- run the game ---------------------------------------------------------
-	// try {
-	// 	// init gameManager
-	// 	if (!game.init(gui)) {
-	// 		return EXIT_FAILURE;
-	// 	}
-	// 	// run the game
-	// 	game.run();
-	// }
-	// catch(const std::exception& e) {
-	// 	logErr(e.what());
-	// 	return EXIT_FAILURE;
-	// }
 
 	return EXIT_SUCCESS;
 }
