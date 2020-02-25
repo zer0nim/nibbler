@@ -120,20 +120,14 @@ int	main(int ac, char * const *av) {
 	else if (joinGame) {
 		LanClient	lClient;
 
-		sockaddr_in	si_host;
-		memset(&si_host, 0, sizeof(si_host));  // zero out si_host
-
 		try {
-			// looking for host
-			lClient.searchHost(si_host);
+			// looking for host and join him
+			lClient.joinGame();
 		}
 		catch(LanClient::LanClientException const &e) {
 			logErr(e.what());
 			return EXIT_FAILURE;
 		}
-
-		// change the port to NIB_GAME_PORT to establish a connection with the host
-		si_host.sin_port = htons(NIB_GAME_PORT);
 	}
 
 	// // -- run the game ---------------------------------------------------------

@@ -41,7 +41,6 @@ void	LanHost::hostGame() const {
 
 void	*LanHost::_hostGame(void *inLobbyPtr) {
 	(void)inLobbyPtr;
-	std::cout << "-- hostGame --" << std::endl;
 
 	// create a socket (IPv4, TCP)
 	int listen_sd = socket(AF_INET, SOCK_STREAM, 0);
