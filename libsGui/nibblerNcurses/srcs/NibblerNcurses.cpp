@@ -1,4 +1,5 @@
 #include <new>
+#include <csignal>
 #include "NibblerNcurses.hpp"
 #include "Logging.hpp"
 
@@ -45,6 +46,8 @@ NibblerNcurses::NibblerNcurses() :
 	init_pair(2, COLOR_BLACK, COLOR_WHITE);
 	init_pair(3, COLOR_WHITE, COLOR_MAGENTA);
 	init_pair(4, COLOR_WHITE, COLOR_BLACK);
+
+	curs_set(0);  // no cursors on screen
 }
 
 NibblerNcurses::~NibblerNcurses() {
@@ -77,6 +80,8 @@ NibblerNcurses &NibblerNcurses::operator=(NibblerNcurses const &rhs) {
 bool NibblerNcurses::init(GameInfo &gameInfo) {
 	logInfo("loading Ncurses");
 
+	std::signal(SIGWINCH, resizeHandler);
+
 	this->gameInfo = &gameInfo;
 
 	getmaxyx(stdscr, _win.y, _win.x);
@@ -102,33 +107,50 @@ bool NibblerNcurses::init(GameInfo &gameInfo) {
 		throw NibblerNcursesException(e.what());
 	}
 
-	touchwin(stdscr);
-	for (auto &&it : _stack) {
-		it->touch();
-	}
-	doupdate();
-
+	_touchAll();
 	return true;
+}
+
+void			NibblerNcurses::resizeHandler(int sig) {
+	logFatal("resizeHandler");
+	(void)sig;
+	int nh, nw;
+	getmaxyx(stdscr, nh, nw);  /* get the new screen size */
 }
 
 void NibblerNcurses::updateInput() {
 	input.direction = Direction::NO_MOVE;
 	input.togglePause = false;
 
-	doupdate();
-
-	// int c = getch();
 	int c = _stack.size() ? wgetch(*_stack[0]) : getch();
-	// std::cout << "entry: (" << c << ")" << std::endl;
+
 	if (_inputKeyPressed.find(c) != _inputKeyPressed.end()) {
 		_inputKeyPressed[c](input);
 	}
 }
 
 bool NibblerNcurses::draw() {
-	wclear(*_stack[0]);
+	move(0, 0);
+	wnoutrefresh(stdscr);
+	for (auto &&it : _stack) {
+		it->draw();
+	}
+
+	_touchAll();
+	wnoutrefresh(*_stack[0]);		// display it
 
 	if (_stack.size()) {
+		// clean board after a Game Over
+		if (_state == State::S_GAMEOVER && gameInfo->play == State::S_PAUSE) {
+			for (int i = 0; i < gameInfo->gameboard.y; i++) {
+				for (int j = 0; j < (gameInfo->gameboard.x * 2); j++) {
+					mvwaddch(*_stack[0], i, j, ' ' | COLOR_PAIR(3));
+				}
+			}
+		}
+		// clean snake tail
+		mvwaddch(*_stack[0], _tail.y, 2 * _tail.x, ' ' | COLOR_PAIR(3));
+		mvwaddch(*_stack[0], _tail.y, 2 * _tail.x + 1, ' ' | COLOR_PAIR(3));
 		// print snake
 		for (auto &&snake : gameInfo->snake) {
 			char c = ' ';
@@ -140,21 +162,22 @@ bool NibblerNcurses::draw() {
 			mvwaddch(*_stack[0], snake.y, snake.x * 2, c | COLOR_PAIR(2));
 			mvwaddch(*_stack[0], snake.y, snake.x * 2 + 1, c | COLOR_PAIR(2));
 		}
+		_tail = gameInfo->snake.back();
 		// print food
 		mvwaddch(*_stack[0], gameInfo->food.y, 2 * gameInfo->food.x, ' ' | COLOR_PAIR(1));
 		mvwaddch(*_stack[0], gameInfo->food.y, 2 * gameInfo->food.x + 1, ' ' | COLOR_PAIR(1));
-
 
 		wmove(*_stack[0], gameInfo->gameboard.y, 0);
 
 		std::string str;
 		int length = gameInfo->gameboard.x * 2 - 1;
 		if (gameInfo->play == State::S_PAUSE)
-			str = _center("Pause", length);
+			str = _center("Pause | " + std::to_string(gameInfo->snake.size()), length);
 		else if (gameInfo->play == State::S_GAMEOVER)
-			str = _center("Game Over :(", length);
+			str = _center("Game Over :( | " + std::to_string(gameInfo->snake.size()), length);
 		else
-			str = std::string(length, ' ');
+			str = _center("score: " + std::to_string(gameInfo->snake.size()), length);
+
 		int		i = 0;
 		for (auto it = str.begin(); it != str.end(); ++it) {
 			mvwaddch(*_stack[0], gameInfo->gameboard.y, i, *it | COLOR_PAIR(4));
@@ -164,11 +187,9 @@ bool NibblerNcurses::draw() {
 		wmove(*_stack[0], gameInfo->gameboard.y, gameInfo->gameboard.x * 2 - 1);
 	}
 
-	for (auto &&it : _stack) {
-		it->draw();
-	}
+	doupdate();
 
-	wrefresh(*_stack[0]);
+	_state = gameInfo->play;
 
 	return true;
 }
@@ -179,6 +200,13 @@ std::string		NibblerNcurses::_center(std::string input, int width) {
 	int left = (width - input.length()) / 2;
 	int right = width - left - input.length();
 	return std::string(left, ' ') + input + std::string(right, ' ');
+}
+
+void NibblerNcurses::_touchAll() {
+	touchwin(stdscr);
+	for (auto &&it : _stack) {
+		it->touch();
+	}
 }
 
 // -- Exceptions errors --------------------------------------------------------
@@ -195,4 +223,9 @@ extern "C" {
 	ANibblerGui *makeNibblerNcurses() {
 		return new NibblerNcurses();
 	}
+
+	// void		*resizeHandler(int sig) {
+	// 	int nh, nw;
+	// 	getmaxyx(stdscr, nh, nw);  /* get the new screen size */
+	// }
 }

@@ -1,5 +1,6 @@
 #include "Logging.hpp"
 
+
 Logging		logging;
 
 Logging::Logging()
@@ -12,6 +13,8 @@ Logging::Logging()
 	setLogColor(LOGFATAL, std::string(LOG_COL_RED) + LOG_COL_BOLD);
 
 	setPrintFileLine(false);
+
+	_afile.open("log.txt", std::ofstream::out | std::ofstream::app);
 }
 
 Logging::Logging(Logging const &src) {
@@ -19,6 +22,7 @@ Logging::Logging(Logging const &src) {
 }
 
 Logging::~Logging() {
+	_afile.close();
 }
 
 Logging & Logging::operator=(Logging const &rhs) {
@@ -62,7 +66,7 @@ void	Logging::log(eLoglevel level, std::string message, std::string file, int li
 	ss << message;
 	ss << LOG_COL_EOC << std::endl;
 
-	std::cout << ss.str();
+	_afile << ss.str();
 }
 
 std::string const &	Logging::getColor(eLoglevel loglevel) const { return _colors[loglevel]; }

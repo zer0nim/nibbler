@@ -20,6 +20,8 @@ class NibblerNcurses : public ANibblerGui {
 		virtual void	updateInput();
 		virtual bool	draw();
 
+		static void		resizeHandler(int sig);
+
 		// Exceptions
 		class NibblerNcursesException : public std::runtime_error {
 		public:
@@ -35,7 +37,11 @@ class NibblerNcurses : public ANibblerGui {
 		typedef std::vector<Window *> stack_type;
 		stack_type				_stack;
 		glm::ivec2				_win;
+		glm::ivec2				_tail;
+		State::Enum				_state;
 
 		// Methods
 		std::string		_center(std::string input, int width);
+		void			_touchAll();
+		void			_drawAll();
 };

@@ -9,12 +9,11 @@ _lines(lines), _cols(cols), _y(y), _x(x), _color_pair(color_pair) {
 	// make a window just to make the border
 	_border = newwin(lines, cols, y, x);
 	wcolor_set(_border, color_pair, NULL);  // use color defined
-	wattron(_border, A_BOLD);  // bold chars
-	box(_border, 0, 0);  // draw the border, inside win
-	wnoutrefresh(_border);  // display it
+	wattron(_border, A_BOLD); 	// bold chars
+	box(_border, 0, 0);			// draw the border, inside win
+	wnoutrefresh(_border);		// display it
 
-	// make a window for the text, using a derived window
-	// _data = derwin(_border, lines-2, cols-2, y+1, x+1);
+	// make an inside window
 	_data = newwin(lines-2, cols-2, y+1, x+1);
 	wcolor_set(_data, color_pair, NULL);  // use color defined
 	wbkgdset(_data, ' ' | A_BOLD | COLOR_PAIR(color_pair));

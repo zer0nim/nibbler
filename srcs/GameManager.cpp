@@ -198,6 +198,8 @@ void	GameManager::run() {
 	}
 }
 
+// -- Private Methods ----------------------------------------------------------
+
 bool	GameManager::_move(Direction::Enum dir) {
 	glm::ivec2 head = getHead();
 

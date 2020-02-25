@@ -61,6 +61,7 @@ class Logging {
 		eLoglevel			getLoglevel() const;
 
 	private:
+		std::ofstream	_afile;
 		std::string		_colors[NBLOG];
 		bool			_printFileLine[NBLOG];
 		eLoglevel		_loglevel;
