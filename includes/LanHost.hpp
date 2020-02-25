@@ -6,8 +6,12 @@
 #define RECOGNITION_MSG_L 12
 #define NIB_BROAD_PORT 6897
 #define NIB_GAME_PORT 6842
+#define POLL_CLIENT_SIZE 32
 
 #include <pthread.h>
+#include <poll.h>
+#include <errno.h>
+#include <sys/ioctl.h>  // for ioctl
 #include <arpa/inet.h>  // for inet_aton
 #include <sys/socket.h>  // for socket functions
 #include <netinet/in.h>  // for sockaddr_in
