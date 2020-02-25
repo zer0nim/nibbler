@@ -21,7 +21,7 @@ class LanClient {
 
 	private:
 		void	_searchHost(sockaddr_in &si_host) const;
-		void	_connectToHost(sockaddr_in &si_host) const;
+		void	_connectToHost(struct in_addr sinAddr) const;
 };
 
 #endif  // LANCLIENT_HPP_

@@ -23,12 +23,11 @@ void	LanClient::joinGame() const {
 	// looking for host
 	_searchHost(si_host);
 
-	// change the port to NIB_GAME_PORT to establish a connection with the host
-	si_host.sin_port = htons(NIB_GAME_PORT);
-	_connectToHost(si_host);
+	// connect to host with its address
+	_connectToHost(si_host.sin_addr);
 }
 
-void	LanClient::_connectToHost(sockaddr_in &si_host) const {
+void	LanClient::_connectToHost(struct in_addr sinAddr) const {
 	// create a socket (IPv4, TCP)
 	int sock = socket(AF_INET, SOCK_STREAM, 0);
 	if (sock == -1) {
@@ -44,63 +43,59 @@ void	LanClient::_connectToHost(sockaddr_in &si_host) const {
 			"setsockopt(SO_REUSEADDR) failed, errno: " + std::to_string(errno)).c_str());
 	}
 
-	// set nonblocking socket, all child sockets will also be nonblocking since
-	// they will inherit that state from the listening socket
-	int nonblockingEnabled = 1;
-	if (ioctl(sock, FIONBIO, &nonblockingEnabled) < 0) {
-		close(sock);
-		throw LanClientException("ioctl() failed");
-	}
+	// // set nonblocking socket, all child sockets will also be nonblocking since
+	// // they will inherit that state from the listening socket
+	// int nonblockingEnabled = 1;
+	// if (ioctl(sock, FIONBIO, &nonblockingEnabled) < 0) {
+	// 	close(sock);
+	// 	throw LanClientException(std::string(
+	// 		"ioctl() failed, errno: " + std::to_string(errno)).c_str());
+	// }
 
-	// assigns the address specified by addr to the socket
-	if (bind(sock, (struct sockaddr*)&si_host, sizeof(si_host)) < 0) {
-		close(sock);
-		throw LanClientException(std::string(
-			"failed to bind to port " + std::to_string(NIB_GAME_PORT) + ", errno: "
-			+ std::to_string(errno)).c_str());
-	}
+	// set sockaddr_in params:
+	//    listen to :NIB_GAME_PORT on any address
+	sockaddr_in si_host;
+	memset(&si_host, 0, sizeof(si_host));  // zero out si_host
+	si_host.sin_family = AF_INET;
+	si_host.sin_port = htons(NIB_GAME_PORT);
+	si_host.sin_addr = sinAddr;
 
-	std::cout << "start listening" << std::endl;
-	// start listening. Hold at most 32 connections in the queue
-	if (listen(sock, POLL_CLIENT_SIZE) < 0) {
-		close(sock);
-		throw LanClientException(std::string(
-			"failed to listen on socket, errno: " + std::to_string(errno)).c_str());
+	// try to connect to the server
+	if (connect(sock, (struct sockaddr *)&si_host, sizeof(si_host)) < 0) {
+		if (errno != EINPROGRESS) {
+			throw LanClientException(std::string(
+				"connection failed, errno: " + std::to_string(errno)).c_str());
+		}
 	}
+	logInfo("connection success, wait for server response")
 
-	std::cout << "grab a connection from the queue" << std::endl;
-	// grab a connection from the queue
-	auto addrlen = sizeof(si_host);
-	int connection = accept(sock, reinterpret_cast<struct sockaddr *>(&si_host),
-		reinterpret_cast<socklen_t *>(&addrlen));
-	if (connection < 0) {
-		throw LanClientException(std::string(
-			"failed to grab connection, errno: " + std::to_string(errno)).c_str());
-	}
-
-	std::cout << "read from the connection" << std::endl;
-	// read from the connection
-	char buffer[100];
-	ssize_t	bytesRead = read(connection, buffer, 100);
+	// wait for server response
+	char	buff[1024] = {0};
+	ssize_t	bytesRead = read(sock, buff, 1024);
 	if (bytesRead == -1) {
 		throw LanClientException(std::string(
 			"failed to read message, errno: " + std::to_string(errno)).c_str());
 	}
-	buffer[bytesRead] = '\0';
-	std::cout << "the message was: " << buffer << std::endl;
+	buff[bytesRead] = '\0';
+	std::cout << "receive: " << buff << std::endl;
 
-	// send a message to the connection
-	std::string response = "good talking to you\n";
-	send(connection, response.c_str(), response.size(), 0);
+	// answer with hello message
+	std::string	msg = "thank's, hello from client";
+	if (send(sock, msg.c_str(), msg.length(), 0) < 0) {
+		throw LanClientException(std::string("send() failed, errno: " +
+			std::to_string(errno)).c_str());
+	}
+
+	sleep(3);  // sleep 3s before closing the connection
 
 	// close the connections
-	close(connection);
+	close(sock);
 }
 
 void	LanClient::_searchHost(sockaddr_in &si_host) const {
 	sockaddr_in si_me;
 
-	std::cout << "-- searchHost --" << std::endl;
+	logInfo("searching host...");
 	// create a socket (IPv4, UDP)
 	int sock = socket(AF_INET, SOCK_DGRAM, 0);
 	if (sock == -1) {
@@ -153,7 +148,7 @@ void	LanClient::_searchHost(sockaddr_in &si_host) const {
 		// if message == RECOGNITION_MSG, we have found an host :)
 		if (strncmp(buff, RECOGNITION_MSG, RECOGNITION_MSG_L) == 0) {
 			hostFounded = true;
-			std::cout << "host founded" << std::endl;
+			logInfo("host detected");
 		}
 	}
 

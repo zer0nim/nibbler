@@ -102,6 +102,7 @@ int	main(int ac, char * const *av) {
 	if (!manageArgs(ap, gui, gameInfo, hostGame, joinGame)) {
 		return EXIT_FAILURE;
 	}
+	std::cout << std::endl;
 
 	// host game
 	if (hostGame) {
