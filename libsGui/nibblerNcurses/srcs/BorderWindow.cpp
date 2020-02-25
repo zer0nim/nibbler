@@ -2,9 +2,8 @@
 
 // -- Constructors -------------------------------------------------------------
 
-BorderWindow::BorderWindow(int lines, int cols, int y, int x, int color_pair,
-int hotkey)
-: Window(hotkey),
+BorderWindow::BorderWindow(int lines, int cols, int y, int x, int color_pair)
+: IWindow(),
 _lines(lines), _cols(cols), _y(y), _x(x), _color_pair(color_pair) {
 	// make a window just to make the border
 	_border = newwin(lines, cols, y, x);
@@ -30,7 +29,7 @@ BorderWindow::~BorderWindow() {
 	delwin(_border);
 }
 
-BorderWindow::BorderWindow(BorderWindow const &src) : Window(src._hotkey) {
+BorderWindow::BorderWindow(BorderWindow const &src) {
 	*this = src;
 }
 
@@ -38,7 +37,6 @@ BorderWindow::BorderWindow(BorderWindow const &src) : Window(src._hotkey) {
 
 BorderWindow &BorderWindow::operator=(BorderWindow const &rhs) {
 	if ( this != &rhs ) {
-		Window::operator=(rhs);
 		_border = rhs._border;
 		_data = rhs._data;
 		_lines = rhs._lines;

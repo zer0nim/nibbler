@@ -5,11 +5,15 @@
 #include <map>
 #include <vector>
 #include "ANibblerGui.hpp"
-#include "Window.hpp"
+#include "IWindow.hpp"
 #include "BorderWindow.hpp"
 
 class NibblerNcurses : public ANibblerGui {
 	public:
+		// Members
+		bool			drawable;
+
+		// Constructors
 		NibblerNcurses();
 		virtual ~NibblerNcurses();
 		NibblerNcurses(NibblerNcurses const &src);
@@ -19,8 +23,7 @@ class NibblerNcurses : public ANibblerGui {
 		virtual bool	init(GameInfo &gameInfo);
 		virtual void	updateInput();
 		virtual bool	draw();
-
-		static void		resizeHandler(int sig);
+		void			resize();
 
 		// Exceptions
 		class NibblerNcursesException : public std::runtime_error {
@@ -31,12 +34,11 @@ class NibblerNcurses : public ANibblerGui {
 
 	private:
 		// Members
-		typedef void(*inputFuncPtr)(Input &);
+		typedef void(*inputFuncPtr)(Input &, NibblerNcurses &);
 		static	std::map<int , inputFuncPtr>	_inputKeyPressed;
 
-		typedef std::vector<Window *> stack_type;
-		stack_type				_stack;
-		glm::ivec2				_win;
+		IWindow					*_win;
+		glm::ivec2				_win_size;
 		glm::ivec2				_tail;
 		State::Enum				_state;
 

@@ -1,9 +1,9 @@
 #pragma once
 
 #include <curses.h>
-#include "Window.hpp"
+#include "IWindow.hpp"
 
-class BorderWindow : public Window {
+class BorderWindow : public IWindow {
 private:
 	BorderWindow();
 
@@ -16,8 +16,7 @@ protected:
 
 public:
 	// Constructors
-	explicit BorderWindow(int lines, int cols, int y, int x, int color_pair,
-		int hotkey);
+	explicit BorderWindow(int lines, int cols, int y, int x, int color_pair);
 	~BorderWindow();
 	BorderWindow(BorderWindow const &src);
 
