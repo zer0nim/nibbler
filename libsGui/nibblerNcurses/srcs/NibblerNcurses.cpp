@@ -1,5 +1,9 @@
 #include <new>
 #include <csignal>
+
+#include <glm/glm.hpp>
+#include "glm/gtx/string_cast.hpp"
+
 #include "NibblerNcurses.hpp"
 #include "Logging.hpp"
 

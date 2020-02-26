@@ -38,7 +38,7 @@ NibblerSFML::NibblerSFML() :
 	_block = {10, 10};
 	_margin = {5, 5};
 	_padding = {5, 5};
-	_isActive = true;
+	//// _isActive = true;
 }
 
 NibblerSFML::~NibblerSFML() {
@@ -70,7 +70,7 @@ bool NibblerSFML::init(GameInfo &gameInfo) {
 
 	int size = std::min(gameInfo.windowSize.x, gameInfo.windowSize.y);
 
-	_win.create(sf::VideoMode(size, size), TITLE, sf::Style::None, settings);
+	_win.create(sf::VideoMode(size, size), TITLE, sf::Style::Default, settings);
 
 	this->gameInfo = &gameInfo;
 
@@ -104,12 +104,12 @@ void NibblerSFML::updateInput() {
 			case sf::Event::LostFocus:
 				if (gameInfo->play == State::S_PLAY)
 					input.togglePause = true;
-				_isActive = false;
+				//// _isActive = false;
 				break;
-			// window gain focus
-			case sf::Event::GainedFocus:
-				_isActive = true;
-				break;
+			//// // window gain focus
+			//// case sf::Event::GainedFocus:
+			//// 	_isActive = true;
+			//// 	break;
 			// key pressed
 			case sf::Event::KeyPressed:
 				if (_inputKeyPressed.find(_event.key.code) != _inputKeyPressed.end())
@@ -119,21 +119,21 @@ void NibblerSFML::updateInput() {
 		}
 	}
 
-	if (_isActive && sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
-		if (_isMoving == true) {
-			sf::Vector2i position = sf::Mouse::getPosition();
-			_win.setPosition(position - _relativePos);
-		} else {
-			sf::Vector2i position = sf::Mouse::getPosition(_win);
-			if (position.x >= 0 && position.x <= static_cast<int>(_win.getSize().x)
-				&& position.y >= 0 && position.y <= static_cast<int>(_win.getSize().y)) {
-				_isMoving = true;
-				_relativePos = position;
-			}
-		}
-	} else {
-		_isMoving = false;
-	}
+	//// if (_isActive && sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+	//// 	if (_isMoving == true) {
+	//// 		sf::Vector2i position = sf::Mouse::getPosition();
+	//// 		_win.setPosition(position - _isActive);
+	//// 	} else {
+	//// 		sf::Vector2i position = sf::Mouse::getPosition(_win);
+	//// 		if (position.x >= 0 && position.x <= static_cast<int>(_win.getSize().x)
+	//// 			&& position.y >= 0 && position.y <= static_cast<int>(_win.getSize().y)) {
+	//// 			_isMoving = true;
+	//// 			_relativePos = position;
+	//// 		}
+	//// 	}
+	//// } else {
+	//// 	_isMoving = false;
+	//// }
 }
 
 bool NibblerSFML::draw() {
