@@ -104,6 +104,7 @@ int	main(int ac, char * const *av) {
 	if (!manageArgs(ap, gui, gameInfo, lanMode)) {
 		return EXIT_FAILURE;
 	}
+	std::cout << std::endl;
 
 	// run the game
 	try {
@@ -111,6 +112,7 @@ int	main(int ac, char * const *av) {
 		if (!game.init(gui, lanMode)) {
 			return EXIT_FAILURE;
 		}
+		logInfo("let's run the game");
 		// run the game
 		game.run();
 	}

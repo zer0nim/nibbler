@@ -26,21 +26,22 @@ void	LanHost::hostGame() {
 
 	// start the game thread
 	if (pthread_create(&_gameThread, nullptr, _hostGame, nullptr)) {
-		throw LanHostException("Fail to create host lan thread");
+		throw LanHostException("failed to create host game thread");
 	}
 	_gameThreadIsRunning = true;
 
 	// start a thread to broadcast message to make host detectable
 	pthread_t lobbyThread;
 	if (pthread_create(&lobbyThread, nullptr, _broadcast, reinterpret_cast<void *>(&inLobby))) {
-		throw LanHostException("Fail to create thread for broadcast");
+		throw LanHostException("failed to create broadcast thread");
 	}
 
-	logInfo("[host] waiting for client... (hit enter to stop searching)");
+	logInfo("[lobby] waiting for client...");
+	logInfo("[lobby] (hit enter to close the lobby)");
 
 	// quit lobby on enter
 	std::cin.ignore();
-	logInfo("[host] lobby quited");
+	logInfo("[lobby] lobby closed, starting the game...");
 	inLobby = false;
 
 	pthread_join(lobbyThread, nullptr);  // waiting for the thread to finish
@@ -90,7 +91,7 @@ void	*LanHost::_hostGame(void *arg) {
 				+ std::to_string(errno)).c_str());
 		}
 
-		logInfo("[host] listening...");
+		// logDebug("[host] listening...");
 		// start listening. Hold at most 32 connections in the queue
 		if (listen(listenSd, POLL_CLIENT_SIZE) < 0) {
 			close(listenSd);
@@ -123,8 +124,7 @@ void	*LanHost::_hostGame(void *arg) {
 		// wait for incoming connects/data on any of the connected sockets
 		while (runServer) {
 			// call poll with timeout on no response
-			logInfo("[host] Waiting on poll()...")
-			logInfo("nbFd: " << nbFd);
+			// logDebug("[host] Waiting on poll()...")
 			if ((ret = poll(fds, nbFd, timeout)) < 0) {
 				logErr("[host] poll() failed");
 				break;
@@ -152,13 +152,13 @@ void	*LanHost::_hostGame(void *arg) {
 						}
 						// on connection fd error close the connection
 						logWarn("[host] client: " << fds[i].fd <<
-							" unexpected event, closing the connection");
+							", unexpected event, closing the connection");
 						closeConn = true;
 					}
 
 					// listening socket is readable
 					if (fds[i].fd == listenSd) {
-						logInfo("[host] listening socket is readable");
+						// logDebug("[host] listening socket is readable");
 
 						// accept all incoming connections that are queued up on the
 						// listening socket before we loop back and call poll again
@@ -169,14 +169,14 @@ void	*LanHost::_hostGame(void *arg) {
 							if (newSd < 0) {
 								// if any other failure than EWOULDBLOCK occurs
 								if (errno != EWOULDBLOCK) {
-									logErr("accept() failed");
+									logErr("[host] accept() failed");
 									runServer = false;
 								}
 								break;
 							}
 
 							// add the new incoming connection to the pollfd structure
-							logInfo("[host] client: " << newSd << " joined");
+							logInfo("[host] client: " << newSd << ", joined");
 							fds[nbFd].fd = newSd;
 							fds[nbFd].events = POLLIN;
 							++nbFd;
@@ -184,7 +184,7 @@ void	*LanHost::_hostGame(void *arg) {
 							// send welcome msg to the client
 							std::string	msg = "welcome to my server, have fun :)";
 							if (send(newSd, msg.c_str(), msg.length(), 0) < 0) {
-								logErr("send() failed, errno: " <<
+								logErr("[host] send() failed, errno: " <<
 									std::to_string(errno));
 								break;
 							}
@@ -194,7 +194,7 @@ void	*LanHost::_hostGame(void *arg) {
 					}
 					// not a listening socket, therefore an existing connection must be readable
 					else {
-						logInfo("[host] client: " << fds[i].fd << " fd is readable");
+						// logDebug("[host] client: " << fds[i].fd << " fd is readable");
 						// reset closeConn flag if the revents is valid
 						if (fds[i].revents == POLLIN) {
 							closeConn = false;
@@ -208,7 +208,7 @@ void	*LanHost::_hostGame(void *arg) {
 							if (ret < 0) {
 								// if any other failure than EWOULDBLOCK/EAGAIN/ECONNRESET occurs
 								if (errno != EWOULDBLOCK && errno != EAGAIN && errno != ECONNRESET) {
-									logErr(std::string("recv() failed, errno: " +
+									logErr(std::string("[host] recv() failed, errno: " +
 										std::to_string(errno)).c_str());
 									closeConn = true;
 								}
@@ -217,7 +217,7 @@ void	*LanHost::_hostGame(void *arg) {
 
 							// connection has been closed by the client
 							if (ret == 0) {
-								printf("  Connection closed\n");
+								logErr("[host] connection closed");
 								closeConn = true;
 								break;
 							}
@@ -225,12 +225,13 @@ void	*LanHost::_hostGame(void *arg) {
 							// data was received
 							int len = ret;
 							buff[len] = '\0';
-							logInfo("[host] " << len << " bytes received: \"" << buff << '"');
+							logInfo("[host] client: " << fds[i].fd << ", received "
+								<< len << " bytes: \"" << buff << '"');
 						}
 
 						// on closeConn, we need to clean up this active connection
 						if (closeConn) {
-							logInfo("[host] client: " << fds[i].fd << " successfully disconected");
+							logInfo("[host] client: " << fds[i].fd << ", successfully disconected");
 							close(fds[i].fd);
 							fds[i].fd = -1;
 							compressArray = true;
@@ -311,7 +312,7 @@ void	*LanHost::_broadcast(void *inLobbyPtr) {
 		inet_aton(ip.c_str(), reinterpret_cast<struct in_addr *>(&si.sin_addr.s_addr));
 
 		while (*inLobby) {
-			logInfo("[broadcast]");
+			// logDebug("[broadcast]");
 			// broadcast msg
 			if (msgLen != sendto(sock, msg.c_str(), msgLen, 0,
 				reinterpret_cast<struct sockaddr *>(&si), sizeof(si))) {

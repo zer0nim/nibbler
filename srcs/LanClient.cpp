@@ -34,7 +34,7 @@ void	LanClient::joinGame() {
 
 	// start the game thread
 	if (pthread_create(&_gameThread, nullptr, _clientGame, nullptr)) {
-		throw LanClientException("Fail to create host lan thread");
+		throw LanClientException("failed to create client game thread");
 	}
 	_gameThreadIsRunning = true;
 }
@@ -45,7 +45,7 @@ void	*LanClient::_clientGame(void *arg) {
 	// main will not catch exceptions thrown from other threads
 	try {
 		while (true) {
-			logInfo("client");
+			// TODO(zer0nim): send gui input to host and receive actions
 			sleep(3);
 		}
 	}
@@ -89,7 +89,7 @@ void	LanClient::_connectToHost(struct in_addr sinAddr) const {
 				"connection failed, errno: " + std::to_string(errno)).c_str());
 		}
 	}
-	logInfo("connection success, wait for server response")
+	logInfo("[client] successfully connected to host: " << sock)
 
 	// wait for server response
 	char	buff[1024] = {0};
@@ -99,7 +99,7 @@ void	LanClient::_connectToHost(struct in_addr sinAddr) const {
 			"failed to read message, errno: " + std::to_string(errno)).c_str());
 	}
 	buff[bytesRead] = '\0';
-	std::cout << "receive: " << buff << std::endl;
+	logInfo("[client] receive message from host: \"" << buff << '"' << sock)
 
 	// answer with hello message
 	std::string	msg = "thank's, hello from client";
@@ -117,7 +117,7 @@ void	LanClient::_connectToHost(struct in_addr sinAddr) const {
 void	LanClient::_searchHost(sockaddr_in &si_host) const {
 	sockaddr_in si_me;
 
-	logInfo("searching host...");
+	logInfo("[client] searching host...");
 	// create a socket (IPv4, UDP)
 	int sock = socket(AF_INET, SOCK_DGRAM, 0);
 	if (sock == -1) {
@@ -148,7 +148,7 @@ void	LanClient::_searchHost(sockaddr_in &si_host) const {
 	// assigns the address specified by addr to the socket
 	if (bind(sock, (struct sockaddr*)&si_me, sizeof(sockaddr)) < 0) {
 		throw LanClientException(std::string(
-			"Failed to bind to port " + std::to_string(NIB_BROAD_PORT) + ", errno: "
+			"failed to bind to port: " + std::to_string(NIB_BROAD_PORT) + ", errno: "
 				+ std::to_string(errno)).c_str());
 	}
 
@@ -170,7 +170,7 @@ void	LanClient::_searchHost(sockaddr_in &si_host) const {
 		// if message == RECOGNITION_MSG, we have found an host :)
 		if (strncmp(buff, RECOGNITION_MSG, RECOGNITION_MSG_L) == 0) {
 			hostFounded = true;
-			logInfo("host detected");
+			logInfo("[client] host detected");
 		}
 	}
 
