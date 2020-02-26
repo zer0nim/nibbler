@@ -8,7 +8,9 @@ NibblerSDL::NibblerSDL() :
   _event(new SDL_Event()),
   _context(0),
   _lastLoopMs(0),
+  _dtTime(0),
   _textureManager(nullptr),
+  _textManager(nullptr),
   _cubeShader(nullptr),
   _cam(nullptr),
   _textRender(nullptr),
@@ -41,6 +43,7 @@ NibblerSDL::~NibblerSDL() {
 
 	delete _event;
 	delete _textureManager;
+	delete _textManager;
 	delete _cubeShader;
 	delete _cam;
 	delete _textRender;
@@ -52,7 +55,8 @@ NibblerSDL::~NibblerSDL() {
     SDL_Quit();
 }
 
-NibblerSDL::NibblerSDL(NibblerSDL const &src) {
+NibblerSDL::NibblerSDL(NibblerSDL const &src)
+: ANibblerGui() {
 	*this = src;
 }
 
@@ -65,7 +69,7 @@ NibblerSDL &NibblerSDL::operator=(NibblerSDL const &rhs) {
 
 void NibblerSDL::updateInput() {
 	uint64_t time = _getMs().count();
-	float dtTime = (time - _lastLoopMs) / 1000.0;
+	_dtTime = (time - _lastLoopMs) / 1000.0;
 	_lastLoopMs = time;
 
 	// reset inputs
@@ -83,39 +87,11 @@ void NibblerSDL::updateInput() {
 			_inputsFuncs.find(_event->key.keysym.sym) != _inputsFuncs.end()) {
 			_inputsFuncs.at(_event->key.keysym.sym)(input);
 		}
-
-		// mouse motion
-		if (_event->type == SDL_MOUSEMOTION) {
-			_cam->processMouseMovement(_event->motion.xrel, -_event->motion.yrel);
-		}
-	}
-
-	// get currently pressed keys
-	const Uint8 * keystates = SDL_GetKeyboardState(NULL);
-	// camera movement
-	bool isRun = keystates[SDL_SCANCODE_LSHIFT];
-	if (keystates[SDL_SCANCODE_W]) {
-		_cam->processKeyboard(CamMovement::Forward, dtTime, isRun);
-	}
-	if (keystates[SDL_SCANCODE_D]) {
-		_cam->processKeyboard(CamMovement::Right, dtTime, isRun);
-	}
-	if (keystates[SDL_SCANCODE_S]) {
-		_cam->processKeyboard(CamMovement::Backward, dtTime, isRun);
-	}
-	if (keystates[SDL_SCANCODE_A]) {
-		_cam->processKeyboard(CamMovement::Left, dtTime, isRun);
-	}
-	if (keystates[SDL_SCANCODE_Q]) {
-		_cam->processKeyboard(CamMovement::Down, dtTime, isRun);
-	}
-	if (keystates[SDL_SCANCODE_E]) {
-		_cam->processKeyboard(CamMovement::Up, dtTime, isRun);
 	}
 }
 
 // -- statics const ------------------------------------------------------------
-std::map<SDL_Keycode, NibblerSDL::InputFuncPtr> const	NibblerSDL::_inputsFuncs {
+std::unordered_map<SDL_Keycode, NibblerSDL::InputFuncPtr> const	NibblerSDL::_inputsFuncs {
 	{SDLK_ESCAPE, [](ANibblerGui::Input &input) {
 		input.quit = true; }},
 	{SDLK_SPACE, [](ANibblerGui::Input &input) {

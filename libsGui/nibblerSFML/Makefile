@@ -101,11 +101,11 @@ LIBS_SRC_CPP	=
 LIBS_HEAD		=
 
 # all flags for libs
-LIBS_FLAGS			= -rpath ~/.brew/lib -L ~/.brew/lib -l sfml-graphics -l sfml-window -l sfml-system
+LIBS_FLAGS			= -L ~/.brew/lib -l sfml-graphics -l sfml-window -l sfml-system
 # flags for libs on OSX only
-LIBS_FLAGS_OSX		=
+LIBS_FLAGS_OSX		= -rpath ~/.brew/lib
 # flags for libs on LINUX only
-LIBS_FLAGS_LINUX	=
+LIBS_FLAGS_LINUX	= -Wl,-rpath,/usr/lib/x86_64-linux-gnu
 # includes dir for external libs
 LIBS_INC			= ~/.brew/include \
 					  .. \
@@ -119,11 +119,13 @@ define CONFIGURE
 
 # Linux
 if [[ "$$OSTYPE" == "linux-gnu" ]]; then
-	echo "install linux dependencies"
+	echo "install linux dependencies";
+	sudo apt-get -y install libglm-dev \
+	libsfml-dev;
 # Mac OSX
 elif [[ "$$OSTYPE" == "darwin"* ]]; then
-	echo "install osx dependencies"
-	brew install sfml
+	echo "install osx dependencies";
+	brew install sfml;
 fi
 
 exit 0
@@ -252,14 +254,14 @@ $(NAME): $(OBJS_DIR) $(OBJS)
 $(OBJS_DIR)/%.o: $(LIBS_DIR)/%.c
 $(OBJS_DIR)/%.o: $(LIBS_DIR)/%.c $(DEP_DIR)/%.d
 	@printf $(YELLOW)"-> $<\n"$(NORMAL)
-	@$(CC) $(DEPFLAGS) $(CFLAGS) -c $< -o $@ $(INC)
+	@$(CC) $(DEPFLAGS) $(CFLAGS) -c -fPIC $< -o $@ $(INC)
 	@mv -f $(DEP_DIR)/$*.Td $(DEP_DIR)/$*.d
 
 
 $(OBJS_DIR)/%.o: $(SRCS_DIR)/%.cpp
 $(OBJS_DIR)/%.o: $(SRCS_DIR)/%.cpp $(DEP_DIR)/%.d
 	@printf $(YELLOW)"-> $<\n"$(NORMAL)
-	@$(CC) $(DEPFLAGS) $(CFLAGS) -c $< -o $@ $(INC)
+	@$(CC) $(DEPFLAGS) $(CFLAGS) -c -fPIC $< -o $@ $(INC)
 	@mv -f $(DEP_DIR)/$*.Td $(DEP_DIR)/$*.d
 
 $(OBJS_DIR):

@@ -50,7 +50,7 @@ class Camera {
 		virtual void processKeyboard(CamMovement direction, CAMERA_FLOAT dtTime, bool isRun = false);
 		virtual void processMouseMovement(CAMERA_FLOAT xOffset, CAMERA_FLOAT yOffset, bool constrainPitch = true);
 		virtual void processMouseScroll(CAMERA_FLOAT yOffset);
-		virtual void lookAt(glm::vec3 target);
+		virtual void lookAt(CAMERA_VEC3 target);
 		virtual void resetPosition();
 
 		/*

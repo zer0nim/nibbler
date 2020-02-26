@@ -34,7 +34,6 @@ private:
 	// Members
 	DynGuiManager			_dynGuiManager;
 	GameInfo				&_gameInfo;
-	Direction::Enum			_direction;
 	int						_eating;  // nb food eaten
 
 	// Methods

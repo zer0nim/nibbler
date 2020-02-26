@@ -1,6 +1,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <time.h>
+#include <algorithm>
 
 #include "ANibblerGui.hpp"
 #include "GameManager.hpp"
@@ -9,7 +10,7 @@
 
 GameManager::GameManager(GameInfo &gameInfo)
 : _gameInfo(gameInfo) {
-	_direction = Direction::MOVE_UP;
+	_gameInfo.direction = Direction::MOVE_UP;
 	_eating = 0;
 }
 
@@ -25,7 +26,7 @@ GameManager::GameManager(GameManager const &src):
 
 GameManager &GameManager::operator=(GameManager const &rhs) {
 	if ( this != &rhs ) {
-		_direction = rhs._direction;
+		_gameInfo.direction = rhs._gameInfo.direction;
 		_eating = rhs._eating;
 	}
 	return *this;
@@ -118,7 +119,7 @@ bool	GameManager::init(int8_t guiId) {
 }
 
 void	GameManager::restart() {
-	_direction = Direction::MOVE_UP;
+	_gameInfo.direction = Direction::MOVE_UP;
 	_eating = 0;
 	_gameInfo.food = VOID_POS;
 	_gameInfo.snake.clear();
@@ -155,9 +156,6 @@ void	GameManager::run() {
 
 		if (_gameInfo.play == State::S_PAUSE && nibblerGui->input.direction != Direction::NO_MOVE)
 			_gameInfo.play = State::S_PLAY;
-
-		// logDebug("Game : " << *this);
-		// logDebug("moving direction " << nibblerGui->input.direction);
 
 		// on play mode
 		if (_gameInfo.play == State::S_PLAY) {
@@ -204,7 +202,7 @@ bool	GameManager::_move(Direction::Enum dir) {
 	glm::ivec2 head = getHead();
 
 	dir = _acceptedDirection(dir);
-	_direction = dir;
+	_gameInfo.direction = dir;
 
 	switch (dir) {
 		case Direction::MOVE_UP:
@@ -240,23 +238,23 @@ bool	GameManager::_move(Direction::Enum dir) {
 Direction::Enum	GameManager::_acceptedDirection(Direction::Enum dir) {
 	switch (dir) {
 	case Direction::MOVE_UP:
-		if (_direction == Direction::MOVE_DOWN)
-			return _direction;
+		if (_gameInfo.direction == Direction::MOVE_DOWN)
+			return _gameInfo.direction;
 		return dir;
 	case Direction::MOVE_RIGHT:
-		if (_direction == Direction::MOVE_LEFT)
-			return _direction;
+		if (_gameInfo.direction == Direction::MOVE_LEFT)
+			return _gameInfo.direction;
 		return dir;
 	case Direction::MOVE_DOWN:
-		if (_direction == Direction::MOVE_UP)
-			return _direction;
+		if (_gameInfo.direction == Direction::MOVE_UP)
+			return _gameInfo.direction;
 		return dir;
 	case Direction::MOVE_LEFT:
-		if (_direction == Direction::MOVE_RIGHT)
-			return _direction;
+		if (_gameInfo.direction == Direction::MOVE_RIGHT)
+			return _gameInfo.direction;
 		return dir;
 	default:
-		return _direction;
+		return _gameInfo.direction;
 		break;
 	}
 }

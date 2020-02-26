@@ -9,6 +9,7 @@
 #include <iostream>
 #include <deque>
 
+#define GLM_ENABLE_EXPERIMENTAL
 #include <glm/glm.hpp>
 #include "glm/gtx/string_cast.hpp"
 
@@ -26,6 +27,14 @@ namespace Direction {
 	};
 }
 
+// to use enum as map key: std::map< EnumType, Whatever, EnumClassHash>
+struct EnumClassHash {
+	template<typename T>
+	std::size_t operator()(T t) const {
+		return static_cast<std::size_t>(t);
+	}
+};
+
 namespace State {
 	enum Enum {
 		S_PLAY,
@@ -41,6 +50,7 @@ struct GameInfo {
 	State::Enum				play;
 	std::deque<glm::ivec2>	snake;
 	float					snakeSpeed;
+	Direction::Enum			direction;
 
 	GameInfo();
 };
@@ -71,7 +81,8 @@ class ANibblerGui {
 		Input input;
 
 	protected:
-		GameInfo *gameInfo;
+		// read only gameInfo updated by gameManager
+		GameInfo const *gameInfo;
 };
 
 typedef ANibblerGui *(*nibblerGuiCreator)();
