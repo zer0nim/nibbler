@@ -10,17 +10,15 @@
 
 #include <pthread.h>
 #include <poll.h>
-#include <sys/poll.h>
 #include <errno.h>
-#include <sys/ioctl.h>  // for ioctl
-#include <arpa/inet.h>  // for inet_aton
-#include <sys/socket.h>  // for socket functions
+#include <sys/ioctl.h>
+#include <arpa/inet.h>
+#include <sys/socket.h>
 #include <netinet/in.h>  // for sockaddr_in
 #include <fcntl.h>  // for O_NONBLOCK
-#include <unistd.h>  // for read
+#include <unistd.h>
 #include <cstring>
-#include <cstdlib>  // for exit() and EXIT_FAILURE
-#include <iostream>  // for cout
+#include <iostream>
 #include <string>
 #include <stdexcept>
 
