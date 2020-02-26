@@ -24,6 +24,12 @@
 
 
 #include "Logging.hpp"
+#include "ANibblerGui.hpp"
+
+struct HostInfo {
+	GameInfo const	*gameInfo;
+	Input const		*inputs;
+};
 
 class LanHost {
 	public:

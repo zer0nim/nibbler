@@ -92,23 +92,23 @@ void NibblerSDL::updateInput() {
 
 // -- statics const ------------------------------------------------------------
 std::unordered_map<SDL_Keycode, NibblerSDL::InputFuncPtr> const	NibblerSDL::_inputsFuncs {
-	{SDLK_ESCAPE, [](ANibblerGui::Input &input) {
+	{SDLK_ESCAPE, [](Input &input) {
 		input.quit = true; }},
-	{SDLK_SPACE, [](ANibblerGui::Input &input) {
+	{SDLK_SPACE, [](Input &input) {
 		input.togglePause = true; }},
-	{SDLK_UP, [](ANibblerGui::Input &input) {
+	{SDLK_UP, [](Input &input) {
 		input.direction = Direction::MOVE_UP; }},
-	{SDLK_RIGHT, [](ANibblerGui::Input &input) {
+	{SDLK_RIGHT, [](Input &input) {
 		input.direction = Direction::MOVE_RIGHT; }},
-	{SDLK_DOWN, [](ANibblerGui::Input &input) {
+	{SDLK_DOWN, [](Input &input) {
 		input.direction = Direction::MOVE_DOWN; }},
-	{SDLK_LEFT, [](ANibblerGui::Input &input) {
+	{SDLK_LEFT, [](Input &input) {
 		input.direction = Direction::MOVE_LEFT; }},
-	{SDLK_1, [](ANibblerGui::Input &input) {
+	{SDLK_1, [](Input &input) {
 		input.loadGuiID = 0; }},
-	{SDLK_2, [](ANibblerGui::Input &input) {
+	{SDLK_2, [](Input &input) {
 		input.loadGuiID = 1; }},
-	{SDLK_3, [](ANibblerGui::Input &input) {
+	{SDLK_3, [](Input &input) {
 		input.loadGuiID = 2; }},
 };
 

@@ -55,6 +55,18 @@ struct GameInfo {
 	GameInfo();
 };
 
+struct Input {
+	bool			quit;
+	bool			togglePause;
+
+	Direction::Enum	direction;
+	uint8_t			loadGuiID;
+
+	Input();
+	Input(Input const &src);
+	Input &operator=(Input const &rhs);
+};
+
 class ANibblerGui {
 	public:
 		ANibblerGui();
@@ -65,18 +77,6 @@ class ANibblerGui {
 		virtual	bool	init(GameInfo &gameInfo) = 0;
 		virtual void	updateInput() = 0;
 		virtual	bool	draw() = 0;
-
-		struct Input {
-			bool			quit;
-			bool			togglePause;
-
-			Direction::Enum	direction;
-			uint8_t			loadGuiID;
-
-			Input();
-			Input(Input const &src);
-			Input &operator=(Input const &rhs);
-		};
 
 		Input input;
 

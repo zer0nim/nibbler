@@ -20,15 +20,15 @@ ANibblerGui &ANibblerGui::operator=(ANibblerGui const &rhs) {
 
 // -- Input --------------------------------------------------------------------
 
-ANibblerGui::Input::Input()
+Input::Input()
 : quit(false), direction(Direction::MOVE_UP), loadGuiID(NO_GUI_LOADED) {
 }
 
-ANibblerGui::Input::Input(ANibblerGui::Input const &src) {
+Input::Input(Input const &src) {
 	*this = src;
 }
 
-ANibblerGui::Input &ANibblerGui::Input::operator=(ANibblerGui::Input const &rhs) {
+Input &Input::operator=(Input const &rhs) {
 	if (this != &rhs) {
 		direction = rhs.direction;
 		loadGuiID = rhs.loadGuiID;
