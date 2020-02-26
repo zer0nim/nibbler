@@ -10,7 +10,7 @@ class LanClient {
 		LanClient(LanClient const &src);
 		LanClient &operator=(LanClient const &rhs);
 
-		void	joinGame() const;
+		void	joinGame();
 
 		// -- exceptions -------------------------------------------------------
 		class LanClientException : public std::runtime_error {
@@ -20,8 +20,12 @@ class LanClient {
 		};
 
 	private:
-		void	_searchHost(sockaddr_in &si_host) const;
-		void	_connectToHost(struct in_addr sinAddr) const;
+		void		_searchHost(sockaddr_in &si_host) const;
+		void		_connectToHost(struct in_addr sinAddr) const;
+		static void	*_clientGame(void *arg);
+
+		static pthread_t	_gameThread;
+		bool				_gameThreadIsRunning;
 };
 
 #endif  // LANCLIENT_HPP_

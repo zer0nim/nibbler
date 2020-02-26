@@ -49,8 +49,8 @@ private:
 	int						_eating;  // nb food eaten
 	LAN_MODE::Enum			_lanMode;
 
-	LanHost					*lHost;  // used to manage lan host
-	LanClient				*lClient;  // used to manage lan client
+	LanHost					_lHost;  // used to manage lan host
+	LanClient				_lClient;  // used to manage lan client
 
 	// Methods
 	bool						_move(Direction::Enum dir);
@@ -58,6 +58,7 @@ private:
 	Direction::Enum				_acceptedDirection(Direction::Enum dir);
 	void						_generateFood();
 	bool						_checkContact();
+	void						_initGame();
 
 public:
 	// Constructors

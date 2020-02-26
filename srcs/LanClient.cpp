@@ -1,9 +1,15 @@
 #include "LanClient.hpp"
 
-LanClient::LanClient() {
+LanClient::LanClient()
+: _gameThreadIsRunning(false) {
 }
 
 LanClient::~LanClient() {
+	if (_gameThreadIsRunning) {
+		// waiting for the thread to finish
+		pthread_join(_gameThread, nullptr);
+		_gameThreadIsRunning = false;
+	}
 }
 
 LanClient::LanClient(LanClient const &src) {
@@ -16,7 +22,7 @@ LanClient &LanClient::operator=(LanClient const &rhs) {
 }
 
 // looking for host and join him
-void	LanClient::joinGame() const {
+void	LanClient::joinGame() {
 	sockaddr_in	si_host;
 	memset(&si_host, 0, sizeof(si_host));  // zero out si_host
 
@@ -25,6 +31,31 @@ void	LanClient::joinGame() const {
 
 	// connect to host with its address
 	_connectToHost(si_host.sin_addr);
+
+	// start the game thread
+	if (pthread_create(&_gameThread, nullptr, _clientGame, nullptr)) {
+		throw LanClientException("Fail to create host lan thread");
+	}
+	_gameThreadIsRunning = true;
+}
+
+void	*LanClient::_clientGame(void *arg) {
+	(void)arg;
+
+	// main will not catch exceptions thrown from other threads
+	try {
+		while (true) {
+			logInfo("client");
+			sleep(3);
+		}
+	}
+	catch(LanClient::LanClientException const &e) {
+		logErr(e.what());
+		pthread_exit(nullptr);
+	}
+
+	// exit thread
+	pthread_exit(nullptr);
 }
 
 void	LanClient::_connectToHost(struct in_addr sinAddr) const {
@@ -42,15 +73,6 @@ void	LanClient::_connectToHost(struct in_addr sinAddr) const {
 		throw LanClientException(std::string(
 			"setsockopt(SO_REUSEADDR) failed, errno: " + std::to_string(errno)).c_str());
 	}
-
-	// // set nonblocking socket, all child sockets will also be nonblocking since
-	// // they will inherit that state from the listening socket
-	// int nonblockingEnabled = 1;
-	// if (ioctl(sock, FIONBIO, &nonblockingEnabled) < 0) {
-	// 	close(sock);
-	// 	throw LanClientException(std::string(
-	// 		"ioctl() failed, errno: " + std::to_string(errno)).c_str());
-	// }
 
 	// set sockaddr_in params:
 	//    listen to :NIB_GAME_PORT on any address
@@ -162,3 +184,6 @@ LanClient::LanClientException::LanClientException()
 
 LanClient::LanClientException::LanClientException(const char* what_arg)
 : std::runtime_error(std::string(std::string("[LanClientError] ") + what_arg).c_str()) {}
+
+// -- statics initialisation ---------------------------------------------------
+pthread_t	LanClient::_gameThread = pthread_t();

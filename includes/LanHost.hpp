@@ -34,7 +34,7 @@ class LanHost {
 		LanHost(LanHost const &src);
 		LanHost &operator=(LanHost const &rhs);
 
-		void	hostGame() const;
+		void	hostGame();
 
 		// -- exceptions -------------------------------------------------------
 		class LanHostException : public std::runtime_error {
@@ -44,10 +44,11 @@ class LanHost {
 		};
 
 	private:
-		static void	*_hostGame(void *inLobbyPtr);
+		static void	*_hostGame(void *arg);
 		static void	*_broadcast(void *inLobbyPtr);
 
-		pthread_t	_gameThread;
+		static pthread_t	_gameThread;
+		bool				_gameThreadIsRunning;
 };
 
 #endif  // LANHOST_HPP_

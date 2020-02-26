@@ -1,14 +1,15 @@
 #include "LanHost.hpp"
 
-LanHost::LanHost() {
-	// start a thread
-	if (pthread_create(&_gameThread, nullptr, _hostGame, nullptr)) {
-		throw LanHostException("Fail to create host lan thread");
-	}
+LanHost::LanHost()
+: _gameThreadIsRunning(false) {
 }
 
 LanHost::~LanHost() {
-	pthread_join(_gameThread, nullptr);  // waiting for the thread to finish
+	if (_gameThreadIsRunning) {
+		// waiting for the thread to finish
+		pthread_join(_gameThread, nullptr);
+		_gameThreadIsRunning = false;
+	}
 }
 
 LanHost::LanHost(LanHost const &src) {
@@ -20,12 +21,18 @@ LanHost &LanHost::operator=(LanHost const &rhs) {
 	return *this;
 }
 
-void	LanHost::hostGame() const {
+void	LanHost::hostGame() {
 	bool inLobby = true;
 
+	// start the game thread
+	if (pthread_create(&_gameThread, nullptr, _hostGame, nullptr)) {
+		throw LanHostException("Fail to create host lan thread");
+	}
+	_gameThreadIsRunning = true;
+
 	// start a thread to broadcast message to make host detectable
-	pthread_t threadT;
-	if (pthread_create(&threadT, nullptr, _broadcast, reinterpret_cast<void *>(&inLobby))) {
+	pthread_t lobbyThread;
+	if (pthread_create(&lobbyThread, nullptr, _broadcast, reinterpret_cast<void *>(&inLobby))) {
 		throw LanHostException("Fail to create thread for broadcast");
 	}
 
@@ -36,11 +43,11 @@ void	LanHost::hostGame() const {
 	logInfo("[host] lobby quited");
 	inLobby = false;
 
-	pthread_join(threadT, nullptr);  // waiting for the thread to finish
+	pthread_join(lobbyThread, nullptr);  // waiting for the thread to finish
 }
 
-void	*LanHost::_hostGame(void *inLobbyPtr) {
-	(void)inLobbyPtr;
+void	*LanHost::_hostGame(void *arg) {
+	(void)arg;
 
 	// main will not catch exceptions thrown from other threads
 	try {
@@ -331,3 +338,6 @@ LanHost::LanHostException::LanHostException()
 
 LanHost::LanHostException::LanHostException(const char* what_arg)
 : std::runtime_error(std::string(std::string("[LanHostError] ") + what_arg).c_str()) {}
+
+// -- statics initialisation ---------------------------------------------------
+pthread_t	LanHost::_gameThread = pthread_t();

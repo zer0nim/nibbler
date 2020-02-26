@@ -16,8 +16,6 @@ GameManager::GameManager(GameInfo &gameInfo)
 }
 
 GameManager::~GameManager() {
-	delete lHost;
-	delete lClient;
 }
 
 GameManager::GameManager(GameManager const &src):
@@ -100,29 +98,54 @@ glm::ivec2	GameManager::getHead() const {
 
 // -- Methods ------------------------------------------------------------------
 
+void	GameManager::_initGame() {
+	// init snake
+	_gameInfo.snake.push_back({1, 1});
+	_gameInfo.snake.push_back({1, 2});
+	_gameInfo.snake.push_back({1, 3});
+	_gameInfo.snake.push_back({1, 4});
+	_gameInfo.snake.push_back({1, 5});
+	_gameInfo.snake.push_back({1, 6});
+	_gameInfo.snake.push_back({1, 7});
+	_gameInfo.snake.push_back({1, 8});
+
+	// place initial food
+	srand(time(NULL));  // set random seed
+	_generateFood();
+}
+
+
 bool	GameManager::init(int8_t guiId, LAN_MODE::Enum lanMode) {
-	// if we play solo or we are host then init game
+	// if we play solo or we are host then init the game
 	if (lanMode == LAN_MODE::SOLO || lanMode == LAN_MODE::HOST) {
-		// init snake
-		_gameInfo.snake.push_back({1, 1});
-		_gameInfo.snake.push_back({1, 2});
-		_gameInfo.snake.push_back({1, 3});
-		_gameInfo.snake.push_back({1, 4});
-		_gameInfo.snake.push_back({1, 5});
-		_gameInfo.snake.push_back({1, 6});
-		_gameInfo.snake.push_back({1, 7});
-		_gameInfo.snake.push_back({1, 8});
-
-		// place initial food
-		srand(time(NULL));  // set random seed
-		_generateFood();
-	}
-	else {
-		// TODO(zer0nim): need to tell host to init player
+		_initGame();
 	}
 
-	// init gui if id is valid
+	// if guiId is valid, init gui and multiplayer server
 	if (guiId != EMPTY_GUI_ID) {
+		// -- managing lan -----------------------------------------------------
+		// host game
+		if (lanMode == LAN_MODE::HOST) {
+			try {
+				_lHost.hostGame();
+			}
+			catch(LanHost::LanHostException const &e) {
+				logErr(e.what());
+				return EXIT_FAILURE;
+			}
+		}
+		// join game
+		else if (lanMode == LAN_MODE::CLIENT) {
+			try {
+				_lClient.joinGame();
+			}
+			catch(LanClient::LanClientException const &e) {
+				logErr(e.what());
+				return EXIT_FAILURE;
+			}
+		}
+
+		// -- init gui ---------------------------------------------------------
 		_lanMode = lanMode;
 		_dynGuiManager.loadGui(guiId);
 		return _dynGuiManager.nibblerGui->init(_gameInfo);
@@ -135,7 +158,7 @@ void	GameManager::restart() {
 	_eating = 0;
 	_gameInfo.food = VOID_POS;
 	_gameInfo.snake.clear();
-	init(EMPTY_GUI_ID, _lanMode);
+	_initGame();  // reset snake and food
 	_gameInfo.play = State::S_PAUSE;
 }
 
