@@ -100,6 +100,7 @@ SRC =	main.cpp \
 		DynGuiManager.cpp \
 		LanHost.cpp \
 		LanClient.cpp \
+		GameInfo.pb.cpp \
 \
 		utils/Logging.cpp \
 		utils/Stats.cpp \
@@ -114,6 +115,7 @@ HEAD =	nibbler.hpp \
 		DynGuiManager.hpp \
 		LanHost.hpp \
 		LanClient.hpp \
+		GameInfo.pb.hpp \
 		../libsGUI/ANibblerGui.hpp \
 \
 		utils/Logging.hpp \
@@ -123,6 +125,16 @@ HEAD =	nibbler.hpp \
 		utils/ArgsParser/AInfoArg.hpp \
 		utils/ArgsParser/TNumberArg.hpp \
 
+################################################################################
+# lint configuration
+
+# to remove some includes from lint
+NOLINT_HEAD =	GameInfo.pb.hpp
+LINT_HEAD = $(filter-out $(NOLINT_HEAD), $(HEAD))
+
+# to remove some srcs from lint
+NOLINT_SRC =	GameInfo.pb.cpp
+LINT_SRC = $(filter-out $(NOLINT_SRC), $(SRC))
 
 ################################################################################
 # libs configuration
@@ -137,9 +149,10 @@ LIBS_SRC_CPP	=
 LIBS_HEAD		=
 
 # all flags for libs
-LIBS_FLAGS			=
+LIBS_FLAGS =	-l protobuf
 # flags for libs on OSX only
-LIBS_FLAGS_OSX		=
+LIBS_FLAGS_OSX =	-L ~/.brew/lib
+
 # flags for libs on LINUX only
 LIBS_FLAGS_LINUX	= -Wl,-rpath,.
 # includes dir for external libs
@@ -163,13 +176,28 @@ define CONFIGURE
 # Linux
 if [[ "$$OSTYPE" == "linux-gnu" ]]; then
 	echo "install linux dependencies"
+	mkdir -p $(LIBS_DIR)
+	# glm
 	sudo apt-get -y install libglm-dev;
+	# protobuf
+	sudo apt-get -y install autoconf automake libtool curl make g++ unzip
+	git clone https://github.com/protocolbuffers/protobuf.git $(LIBS_DIR)/protobuf
+	cd $(LIBS_DIR)/protobuf
+	git submodule update --init --recursive
+	./autogen.sh
+	./configure
+     make
+     make check
+     sudo make install
+     sudo ldconfig # refresh shared library cache.
 
 # Mac OSX
 elif [[ "$$OSTYPE" == "darwin"* ]]; then
 	echo "install osx dependencies"
 	# glm
 	brew install glm
+	# protobuf
+	brew install protobuf
 fi
 
 exit 0
@@ -432,7 +460,7 @@ lint:
 	@if [ "$(LINTER)" = "" ]; then\
 		printf $(RED)$(BOLD)"Error:"$(NORMAL)" env var CPPLINT is not set\n"; \
 	else \
-		$(LINTER) $(LINTER_RULES) $(addprefix $(INC_DIR)/, $(HEAD)) $(addprefix $(SRCS_DIR)/, $(SRC)); \
+		$(LINTER) $(LINTER_RULES) $(addprefix $(INC_DIR)/, $(LINT_HEAD)) $(addprefix $(SRCS_DIR)/, $(LINT_SRC)); \
     fi
 	@printf $(BLUE)$(BOLD)"--------------------\n"$(NORMAL)
 

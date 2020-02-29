@@ -6,6 +6,7 @@
 #include "Logging.hpp"
 #include "GameManager.hpp"
 #include "ArgsParser.hpp"
+#include "GameInfo.pb.hpp"
 
 bool	manageArgs(ArgsParser &ap, uint8_t &gui, GameInfo &gameInfo, LAN_MODE::Enum &lanMode) {
 	// -- process arguments ----------------------------------------------------
@@ -87,8 +88,47 @@ bool	manageArgs(ArgsParser &ap, uint8_t &gui, GameInfo &gameInfo, LAN_MODE::Enum
 	logDebug(" gameboard: " << glm::to_string(gameInfo.gameboard));
 	logDebug(" play: " << gameInfo.play);
 	logDebug(" snakeSpeed: " << gameInfo.snakeSpeed);
-	logDebug("-----------------------");
+	logDebug("-----------------------\n");
 	return true;
+}
+
+void	testProtoBuf() {
+	GOOGLE_PROTOBUF_VERIFY_VERSION;
+
+	logDebug("test Protobuf");
+
+	// -- create and fill protobuf GameInfo ------------------------------------
+	logDebug("create and fill protobuf GameInfo");
+	gameInfoProto::GameInfo	gameInfo;
+	// set food
+	gameInfo.mutable_food()->set_x(42);
+	gameInfo.mutable_food()->set_y(23);
+	// set play
+	gameInfo.set_play(gameInfoProto::State::S_PAUSE);
+	// set snake
+	auto body = gameInfo.mutable_snake()->mutable_body();
+	uint32_t	i = 0;
+	for (gameInfoProto::IVec2 &pos : *body) {
+		pos.set_x(i);
+		pos.set_y(i + 10);
+		++i;
+	}
+	// set snakeSpeed
+	gameInfo.set_snakespeed(5.6);
+	// set direction
+	gameInfo.set_direction(gameInfoProto::Direction::MOVE_LEFT);
+
+	// -- serialize it to serGameInfo ------------------------------------------
+	logDebug("serialize it to serGameInfo");
+	std::string const serGameInfo = gameInfo.SerializeAsString();
+
+	// -- try to deserialize and retrieve values -------------------------------
+	logDebug("try to deserialize and retrieve values");
+	gameInfoProto::GameInfo	desGameInfo;
+	desGameInfo.ParseFromString(serGameInfo);
+	logDebug("food: {" << desGameInfo.food().x() << ", " << desGameInfo.food().y() << "}");
+	logDebug("snakespeed: " << desGameInfo.snakespeed());
+	logDebug("...");
 }
 
 int	main(int ac, char * const *av) {
@@ -104,22 +144,23 @@ int	main(int ac, char * const *av) {
 	if (!manageArgs(ap, gui, gameInfo, lanMode)) {
 		return EXIT_FAILURE;
 	}
-	std::cout << std::endl;
 
-	// run the game
-	try {
-		// init gameManager
-		if (!game.init(gui, lanMode)) {
-			return EXIT_FAILURE;
-		}
-		logInfo("let's run the game");
-		// run the game
-		game.run();
-	}
-	catch(const std::exception& e) {
-		logErr(e.what());
-		return EXIT_FAILURE;
-	}
+	testProtoBuf();
+
+	// // run the game
+	// try {
+	// 	// init gameManager
+	// 	if (!game.init(gui, lanMode)) {
+	// 		return EXIT_FAILURE;
+	// 	}
+	// 	logInfo("let's run the game");
+	// 	// run the game
+	// 	game.run();
+	// }
+	// catch(const std::exception& e) {
+	// 	logErr(e.what());
+	// 	return EXIT_FAILURE;
+	// }
 
 	return EXIT_SUCCESS;
 }
