@@ -29,25 +29,74 @@ void	LanClient::joinGame() {
 	// looking for host
 	_searchHost(si_host);
 
-	// connect to host with its address
-	_connectToHost(si_host.sin_addr);
+	_sinAddr = si_host.sin_addr;
 
 	// start the game thread
-	if (pthread_create(&_gameThread, nullptr, _clientGame, nullptr)) {
+	if (pthread_create(&_gameThread, nullptr, _clientGame, reinterpret_cast<void *>(&_sinAddr))) {
 		throw LanClientException("failed to create client game thread");
 	}
 	_gameThreadIsRunning = true;
 }
 
+// take a struct `in_addr *` as argument
 void	*LanClient::_clientGame(void *arg) {
-	(void)arg;
+	struct in_addr *sinAddr = reinterpret_cast<struct in_addr *>(arg);
 
 	// main will not catch exceptions thrown from other threads
 	try {
-		while (true) {
-			// TODO(zer0nim): send gui input to host and receive actions
-			sleep(3);
+		// create a socket (IPv4, TCP)
+		int sock = socket(AF_INET, SOCK_STREAM, 0);
+		if (sock == -1) {
+			throw LanClientException(std::string(
+				"failed to create socket, errno: " + std::to_string(errno)).c_str());
 		}
+
+		// allow to connect even if the port is busy (in the TIME_WAIT state)
+		int reuseAddrEnabled = 1;
+		if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &reuseAddrEnabled, sizeof(int)) < 0) {
+			close(sock);
+			throw LanClientException(std::string(
+				"setsockopt(SO_REUSEADDR) failed, errno: " + std::to_string(errno)).c_str());
+		}
+
+		// set sockaddr_in params:
+		//    listen to :NIB_GAME_PORT on any address
+		sockaddr_in si_host;
+		memset(&si_host, 0, sizeof(si_host));  // zero out si_host
+		si_host.sin_family = AF_INET;
+		si_host.sin_port = htons(NIB_GAME_PORT);
+		si_host.sin_addr = *sinAddr;
+
+		// try to connect to the server
+		if (connect(sock, (struct sockaddr *)&si_host, sizeof(si_host)) < 0) {
+			if (errno != EINPROGRESS) {
+				throw LanClientException(std::string(
+					"connection failed, errno: " + std::to_string(errno)).c_str());
+			}
+		}
+		logInfo("[client] successfully connected to host: " << sock)
+
+		// wait for server response
+		char	buff[1024] = {0};
+		ssize_t	bytesRead = read(sock, buff, 1024);
+		if (bytesRead == -1) {
+			throw LanClientException(std::string(
+				"failed to read message, errno: " + std::to_string(errno)).c_str());
+		}
+		buff[bytesRead] = '\0';
+		logInfo("[client] receive message from host: \"" << buff << '"' << sock)
+
+		// answer with hello message
+		std::string	msg = "thank's, hello from client";
+		if (send(sock, msg.c_str(), msg.length(), 0) < 0) {
+			throw LanClientException(std::string("send() failed, errno: " +
+				std::to_string(errno)).c_str());
+		}
+
+		sleep(3);  // sleep 3s before closing the connection
+
+		// close the connections
+		close(sock);
 	}
 	catch(LanClient::LanClientException const &e) {
 		logErr(e.what());
@@ -56,62 +105,6 @@ void	*LanClient::_clientGame(void *arg) {
 
 	// exit thread
 	pthread_exit(nullptr);
-}
-
-void	LanClient::_connectToHost(struct in_addr sinAddr) const {
-	// create a socket (IPv4, TCP)
-	int sock = socket(AF_INET, SOCK_STREAM, 0);
-	if (sock == -1) {
-		throw LanClientException(std::string(
-			"failed to create socket, errno: " + std::to_string(errno)).c_str());
-	}
-
-	// allow to connect even if the port is busy (in the TIME_WAIT state)
-	int reuseAddrEnabled = 1;
-	if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &reuseAddrEnabled, sizeof(int)) < 0) {
-		close(sock);
-		throw LanClientException(std::string(
-			"setsockopt(SO_REUSEADDR) failed, errno: " + std::to_string(errno)).c_str());
-	}
-
-	// set sockaddr_in params:
-	//    listen to :NIB_GAME_PORT on any address
-	sockaddr_in si_host;
-	memset(&si_host, 0, sizeof(si_host));  // zero out si_host
-	si_host.sin_family = AF_INET;
-	si_host.sin_port = htons(NIB_GAME_PORT);
-	si_host.sin_addr = sinAddr;
-
-	// try to connect to the server
-	if (connect(sock, (struct sockaddr *)&si_host, sizeof(si_host)) < 0) {
-		if (errno != EINPROGRESS) {
-			throw LanClientException(std::string(
-				"connection failed, errno: " + std::to_string(errno)).c_str());
-		}
-	}
-	logInfo("[client] successfully connected to host: " << sock)
-
-	// wait for server response
-	char	buff[1024] = {0};
-	ssize_t	bytesRead = read(sock, buff, 1024);
-	if (bytesRead == -1) {
-		throw LanClientException(std::string(
-			"failed to read message, errno: " + std::to_string(errno)).c_str());
-	}
-	buff[bytesRead] = '\0';
-	logInfo("[client] receive message from host: \"" << buff << '"' << sock)
-
-	// answer with hello message
-	std::string	msg = "thank's, hello from client";
-	if (send(sock, msg.c_str(), msg.length(), 0) < 0) {
-		throw LanClientException(std::string("send() failed, errno: " +
-			std::to_string(errno)).c_str());
-	}
-
-	sleep(3);  // sleep 3s before closing the connection
-
-	// close the connections
-	close(sock);
 }
 
 void	LanClient::_searchHost(sockaddr_in &si_host) const {

@@ -145,22 +145,22 @@ int	main(int ac, char * const *av) {
 		return EXIT_FAILURE;
 	}
 
-	testProtoBuf();
+	// testProtoBuf();
 
-	// // run the game
-	// try {
-	// 	// init gameManager
-	// 	if (!game.init(gui, lanMode)) {
-	// 		return EXIT_FAILURE;
-	// 	}
-	// 	logInfo("let's run the game");
-	// 	// run the game
-	// 	game.run();
-	// }
-	// catch(const std::exception& e) {
-	// 	logErr(e.what());
-	// 	return EXIT_FAILURE;
-	// }
+	// run the game
+	try {
+		// init gameManager
+		if (!game.init(gui, lanMode)) {
+			return EXIT_FAILURE;
+		}
+		logInfo("let's run the game");
+		// run the game
+		game.run();
+	}
+	catch(const std::exception& e) {
+		logErr(e.what());
+		return EXIT_FAILURE;
+	}
 
 	return EXIT_SUCCESS;
 }

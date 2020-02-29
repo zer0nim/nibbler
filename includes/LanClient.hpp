@@ -22,10 +22,12 @@ class LanClient {
 	private:
 		void		_searchHost(sockaddr_in &si_host) const;
 		void		_connectToHost(struct in_addr sinAddr) const;
+		// take a struct `in_addr *` as argument
 		static void	*_clientGame(void *arg);
 
 		static pthread_t	_gameThread;
 		bool				_gameThreadIsRunning;
+		struct in_addr		_sinAddr;
 };
 
 #endif  // LANCLIENT_HPP_
