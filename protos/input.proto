@@ -1,0 +1,25 @@
+// Protobuf is used to send Input struct between socket
+
+// struct Input {
+// 		bool			togglePause;
+// 		Direction::Enum	direction;
+// 		uint8_t			loadGuiID;
+// };
+
+syntax = "proto3";
+
+package inputProto;  // namespace
+
+enum	Direction {
+	NO_MOVE = 0;
+	MOVE_UP = 1;
+	MOVE_RIGHT = 2;
+	MOVE_DOWN = 3;
+	MOVE_LEFT = 4;
+}
+
+message	Input {
+	bool		togglePause = 1;
+	Direction	direction = 2;
+	uint32		loadGuiID = 3;
+}

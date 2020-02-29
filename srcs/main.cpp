@@ -7,6 +7,7 @@
 #include "GameManager.hpp"
 #include "ArgsParser.hpp"
 #include "GameInfo.pb.hpp"
+#include "Input.pb.hpp"
 
 bool	manageArgs(ArgsParser &ap, uint8_t &gui, GameInfo &gameInfo, LAN_MODE::Enum &lanMode) {
 	// -- process arguments ----------------------------------------------------
@@ -129,6 +130,13 @@ void	testProtoBuf() {
 	logDebug("food: {" << desGameInfo.food().x() << ", " << desGameInfo.food().y() << "}");
 	logDebug("snakespeed: " << desGameInfo.snakespeed());
 	logDebug("...");
+
+	// -- test protobuf Input --------------------------------------------------
+	inputProto::Input	input;
+	input.set_direction(inputProto::Direction::MOVE_LEFT);
+	input.set_togglepause(true);
+	input.set_loadguiid(2);
+	logDebug("input guiid: " << input.loadguiid());
 }
 
 int	main(int ac, char * const *av) {

@@ -641,7 +641,7 @@ inline ::PROTOBUF_NAMESPACE_ID::uint32 IVec2::x() const {
   return _internal_x();
 }
 inline void IVec2::_internal_set_x(::PROTOBUF_NAMESPACE_ID::uint32 value) {
-  
+
   x_ = value;
 }
 inline void IVec2::set_x(::PROTOBUF_NAMESPACE_ID::uint32 value) {
@@ -661,7 +661,7 @@ inline ::PROTOBUF_NAMESPACE_ID::uint32 IVec2::y() const {
   return _internal_y();
 }
 inline void IVec2::_internal_set_y(::PROTOBUF_NAMESPACE_ID::uint32 value) {
-  
+
   y_ = value;
 }
 inline void IVec2::set_y(::PROTOBUF_NAMESPACE_ID::uint32 value) {
@@ -740,13 +740,13 @@ inline const ::gameInfoProto::IVec2& GameInfo::food() const {
 }
 inline ::gameInfoProto::IVec2* GameInfo::release_food() {
   // @@protoc_insertion_point(field_release:gameInfoProto.GameInfo.food)
-  
+
   ::gameInfoProto::IVec2* temp = food_;
   food_ = nullptr;
   return temp;
 }
 inline ::gameInfoProto::IVec2* GameInfo::_internal_mutable_food() {
-  
+
   if (food_ == nullptr) {
     auto* p = CreateMaybeMessage<::gameInfoProto::IVec2>(GetArenaNoVirtual());
     food_ = p;
@@ -768,9 +768,9 @@ inline void GameInfo::set_allocated_food(::gameInfoProto::IVec2* food) {
       food = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
           message_arena, food, submessage_arena);
     }
-    
+
   } else {
-    
+
   }
   food_ = food;
   // @@protoc_insertion_point(field_set_allocated:gameInfoProto.GameInfo.food)
@@ -788,7 +788,7 @@ inline ::gameInfoProto::State GameInfo::play() const {
   return _internal_play();
 }
 inline void GameInfo::_internal_set_play(::gameInfoProto::State value) {
-  
+
   play_ = value;
 }
 inline void GameInfo::set_play(::gameInfoProto::State value) {
@@ -820,13 +820,13 @@ inline const ::gameInfoProto::Snake& GameInfo::snake() const {
 }
 inline ::gameInfoProto::Snake* GameInfo::release_snake() {
   // @@protoc_insertion_point(field_release:gameInfoProto.GameInfo.snake)
-  
+
   ::gameInfoProto::Snake* temp = snake_;
   snake_ = nullptr;
   return temp;
 }
 inline ::gameInfoProto::Snake* GameInfo::_internal_mutable_snake() {
-  
+
   if (snake_ == nullptr) {
     auto* p = CreateMaybeMessage<::gameInfoProto::Snake>(GetArenaNoVirtual());
     snake_ = p;
@@ -848,9 +848,9 @@ inline void GameInfo::set_allocated_snake(::gameInfoProto::Snake* snake) {
       snake = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
           message_arena, snake, submessage_arena);
     }
-    
+
   } else {
-    
+
   }
   snake_ = snake;
   // @@protoc_insertion_point(field_set_allocated:gameInfoProto.GameInfo.snake)
@@ -907,7 +907,7 @@ inline float GameInfo::snakespeed() const {
   return _internal_snakespeed();
 }
 inline void GameInfo::_internal_set_snakespeed(float value) {
-  
+
   snakespeed_ = value;
 }
 inline void GameInfo::set_snakespeed(float value) {
@@ -927,7 +927,7 @@ inline ::gameInfoProto::Direction GameInfo::direction() const {
   return _internal_direction();
 }
 inline void GameInfo::_internal_set_direction(::gameInfoProto::Direction value) {
-  
+
   direction_ = value;
 }
 inline void GameInfo::set_direction(::gameInfoProto::Direction value) {
@@ -947,7 +947,7 @@ inline bool GameInfo::quitted() const {
   return _internal_quitted();
 }
 inline void GameInfo::_internal_set_quitted(bool value) {
-  
+
   quitted_ = value;
 }
 inline void GameInfo::set_quitted(bool value) {

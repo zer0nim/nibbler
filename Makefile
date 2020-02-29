@@ -101,6 +101,7 @@ SRC =	main.cpp \
 		LanHost.cpp \
 		LanClient.cpp \
 		GameInfo.pb.cpp \
+		Input.pb.cpp \
 \
 		utils/Logging.cpp \
 		utils/Stats.cpp \
@@ -116,6 +117,7 @@ HEAD =	nibbler.hpp \
 		LanHost.hpp \
 		LanClient.hpp \
 		GameInfo.pb.hpp \
+		Input.pb.hpp \
 		../libsGUI/ANibblerGui.hpp \
 \
 		utils/Logging.hpp \
@@ -129,11 +131,13 @@ HEAD =	nibbler.hpp \
 # lint configuration
 
 # to remove some includes from lint
-NOLINT_HEAD =	GameInfo.pb.hpp
+NOLINT_HEAD =	GameInfo.pb.hpp \
+				Input.pb.hpp
 LINT_HEAD = $(filter-out $(NOLINT_HEAD), $(HEAD))
 
 # to remove some srcs from lint
-NOLINT_SRC =	GameInfo.pb.cpp
+NOLINT_SRC =	GameInfo.pb.cpp \
+				Input.pb.cpp
 LINT_SRC = $(filter-out $(NOLINT_SRC), $(SRC))
 
 ################################################################################
