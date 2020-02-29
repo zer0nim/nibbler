@@ -517,6 +517,7 @@ class GameInfo :
     kPlayFieldNumber = 2,
     kSnakeSpeedFieldNumber = 5,
     kDirectionFieldNumber = 6,
+    kQuittedFieldNumber = 7,
   };
   // repeated .gameInfoProto.Snake snakeOp = 4;
   int snakeop_size() const;
@@ -593,6 +594,15 @@ class GameInfo :
   void _internal_set_direction(::gameInfoProto::Direction value);
   public:
 
+  // bool quitted = 7;
+  void clear_quitted();
+  bool quitted() const;
+  void set_quitted(bool value);
+  private:
+  bool _internal_quitted() const;
+  void _internal_set_quitted(bool value);
+  public:
+
   // @@protoc_insertion_point(class_scope:gameInfoProto.GameInfo)
  private:
   class _Internal;
@@ -604,6 +614,7 @@ class GameInfo :
   int play_;
   float snakespeed_;
   int direction_;
+  bool quitted_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_gameInfo_2eproto;
 };
@@ -922,6 +933,26 @@ inline void GameInfo::_internal_set_direction(::gameInfoProto::Direction value) 
 inline void GameInfo::set_direction(::gameInfoProto::Direction value) {
   _internal_set_direction(value);
   // @@protoc_insertion_point(field_set:gameInfoProto.GameInfo.direction)
+}
+
+// bool quitted = 7;
+inline void GameInfo::clear_quitted() {
+  quitted_ = false;
+}
+inline bool GameInfo::_internal_quitted() const {
+  return quitted_;
+}
+inline bool GameInfo::quitted() const {
+  // @@protoc_insertion_point(field_get:gameInfoProto.GameInfo.quitted)
+  return _internal_quitted();
+}
+inline void GameInfo::_internal_set_quitted(bool value) {
+  
+  quitted_ = value;
+}
+inline void GameInfo::set_quitted(bool value) {
+  _internal_set_quitted(value);
+  // @@protoc_insertion_point(field_set:gameInfoProto.GameInfo.quitted)
 }
 
 #ifdef __GNUC__

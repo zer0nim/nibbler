@@ -1,12 +1,13 @@
 // Protobuf is used to send GameInfo struct between socket
 
 // struct GameInfo {
-// 	glm::ivec2							food;
-// 	State::Enum							play;
-// 	std::deque<glm::ivec2>				snake;
-// 	std::deque<std::deque<glm::ivec2>>	snakeOp;
-// 	float								snakeSpeed;
-// 	Direction::Enum						direction;
+// 		glm::ivec2							food;
+// 		State::Enum							play;
+// 		std::deque<glm::ivec2>				snake;
+// 		std::deque<std::deque<glm::ivec2>>	snakeOp;
+// 		float								snakeSpeed;
+// 		Direction::Enum						direction;
+// 		bool								quitted;
 // };
 
 syntax = "proto3";
@@ -43,4 +44,5 @@ message	GameInfo {
 	repeated Snake	snakeOp = 4;
 	float			snakeSpeed = 5;
 	Direction		direction = 6;
+	bool			quitted = 7;
 }

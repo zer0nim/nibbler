@@ -104,6 +104,7 @@ const ::PROTOBUF_NAMESPACE_ID::uint32 TableStruct_gameInfo_2eproto::offsets[] PR
   PROTOBUF_FIELD_OFFSET(::gameInfoProto::GameInfo, snakeop_),
   PROTOBUF_FIELD_OFFSET(::gameInfoProto::GameInfo, snakespeed_),
   PROTOBUF_FIELD_OFFSET(::gameInfoProto::GameInfo, direction_),
+  PROTOBUF_FIELD_OFFSET(::gameInfoProto::GameInfo, quitted_),
 };
 static const ::PROTOBUF_NAMESPACE_ID::internal::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
   { 0, -1, sizeof(::gameInfoProto::IVec2)},
@@ -120,16 +121,17 @@ static ::PROTOBUF_NAMESPACE_ID::Message const * const file_default_instances[] =
 const char descriptor_table_protodef_gameInfo_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
   "\n\016gameInfo.proto\022\rgameInfoProto\"\035\n\005IVec2"
   "\022\t\n\001x\030\001 \001(\r\022\t\n\001y\030\002 \001(\r\"+\n\005Snake\022\"\n\004body\030"
-  "\001 \003(\0132\024.gameInfoProto.IVec2\"\337\001\n\010GameInfo"
+  "\001 \003(\0132\024.gameInfoProto.IVec2\"\360\001\n\010GameInfo"
   "\022\"\n\004food\030\001 \001(\0132\024.gameInfoProto.IVec2\022\"\n\004"
   "play\030\002 \001(\0162\024.gameInfoProto.State\022#\n\005snak"
   "e\030\003 \001(\0132\024.gameInfoProto.Snake\022%\n\007snakeOp"
   "\030\004 \003(\0132\024.gameInfoProto.Snake\022\022\n\nsnakeSpe"
   "ed\030\005 \001(\002\022+\n\tdirection\030\006 \001(\0162\030.gameInfoPr"
-  "oto.Direction*0\n\005State\022\n\n\006S_PLAY\020\000\022\013\n\007S_"
-  "PAUSE\020\001\022\016\n\nS_GAMEOVER\020\002*S\n\tDirection\022\013\n\007"
-  "NO_MOVE\020\000\022\013\n\007MOVE_UP\020\001\022\016\n\nMOVE_RIGHT\020\002\022\r"
-  "\n\tMOVE_DOWN\020\003\022\r\n\tMOVE_LEFT\020\004b\006proto3"
+  "oto.Direction\022\017\n\007quitted\030\007 \001(\010*0\n\005State\022"
+  "\n\n\006S_PLAY\020\000\022\013\n\007S_PAUSE\020\001\022\016\n\nS_GAMEOVER\020\002"
+  "*S\n\tDirection\022\013\n\007NO_MOVE\020\000\022\013\n\007MOVE_UP\020\001\022"
+  "\016\n\nMOVE_RIGHT\020\002\022\r\n\tMOVE_DOWN\020\003\022\r\n\tMOVE_L"
+  "EFT\020\004b\006proto3"
   ;
 static const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable*const descriptor_table_gameInfo_2eproto_deps[1] = {
 };
@@ -141,7 +143,7 @@ static ::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase*const descriptor_table_gam
 static ::PROTOBUF_NAMESPACE_ID::internal::once_flag descriptor_table_gameInfo_2eproto_once;
 static bool descriptor_table_gameInfo_2eproto_initialized = false;
 const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_gameInfo_2eproto = {
-  &descriptor_table_gameInfo_2eproto_initialized, descriptor_table_protodef_gameInfo_2eproto, "gameInfo.proto", 476,
+  &descriptor_table_gameInfo_2eproto_initialized, descriptor_table_protodef_gameInfo_2eproto, "gameInfo.proto", 493,
   &descriptor_table_gameInfo_2eproto_once, descriptor_table_gameInfo_2eproto_sccs, descriptor_table_gameInfo_2eproto_deps, 3, 0,
   schemas, file_default_instances, TableStruct_gameInfo_2eproto::offsets,
   file_level_metadata_gameInfo_2eproto, 3, file_level_enum_descriptors_gameInfo_2eproto, file_level_service_descriptors_gameInfo_2eproto,
@@ -633,16 +635,16 @@ GameInfo::GameInfo(const GameInfo& from)
     snake_ = nullptr;
   }
   ::memcpy(&play_, &from.play_,
-    static_cast<size_t>(reinterpret_cast<char*>(&direction_) -
-    reinterpret_cast<char*>(&play_)) + sizeof(direction_));
+    static_cast<size_t>(reinterpret_cast<char*>(&quitted_) -
+    reinterpret_cast<char*>(&play_)) + sizeof(quitted_));
   // @@protoc_insertion_point(copy_constructor:gameInfoProto.GameInfo)
 }
 
 void GameInfo::SharedCtor() {
   ::PROTOBUF_NAMESPACE_ID::internal::InitSCC(&scc_info_GameInfo_gameInfo_2eproto.base);
   ::memset(&food_, 0, static_cast<size_t>(
-      reinterpret_cast<char*>(&direction_) -
-      reinterpret_cast<char*>(&food_)) + sizeof(direction_));
+      reinterpret_cast<char*>(&quitted_) -
+      reinterpret_cast<char*>(&food_)) + sizeof(quitted_));
 }
 
 GameInfo::~GameInfo() {
@@ -680,8 +682,8 @@ void GameInfo::Clear() {
   }
   snake_ = nullptr;
   ::memset(&play_, 0, static_cast<size_t>(
-      reinterpret_cast<char*>(&direction_) -
-      reinterpret_cast<char*>(&play_)) + sizeof(direction_));
+      reinterpret_cast<char*>(&quitted_) -
+      reinterpret_cast<char*>(&play_)) + sizeof(quitted_));
   _internal_metadata_.Clear();
 }
 
@@ -739,6 +741,13 @@ const char* GameInfo::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::i
           ::PROTOBUF_NAMESPACE_ID::uint64 val = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint(&ptr);
           CHK_(ptr);
           _internal_set_direction(static_cast<::gameInfoProto::Direction>(val));
+        } else goto handle_unusual;
+        continue;
+      // bool quitted = 7;
+      case 7:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 56)) {
+          quitted_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint(&ptr);
+          CHK_(ptr);
         } else goto handle_unusual;
         continue;
       default: {
@@ -811,6 +820,12 @@ failure:
       6, this->_internal_direction(), target);
   }
 
+  // bool quitted = 7;
+  if (this->quitted() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteBoolToArray(7, this->_internal_quitted(), target);
+  }
+
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields(), target, stream);
@@ -865,6 +880,11 @@ size_t GameInfo::ByteSizeLong() const {
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::EnumSize(this->_internal_direction());
   }
 
+  // bool quitted = 7;
+  if (this->quitted() != 0) {
+    total_size += 1 + 1;
+  }
+
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     return ::PROTOBUF_NAMESPACE_ID::internal::ComputeUnknownFieldsSize(
         _internal_metadata_, total_size, &_cached_size_);
@@ -912,6 +932,9 @@ void GameInfo::MergeFrom(const GameInfo& from) {
   if (from.direction() != 0) {
     _internal_set_direction(from._internal_direction());
   }
+  if (from.quitted() != 0) {
+    _internal_set_quitted(from._internal_quitted());
+  }
 }
 
 void GameInfo::CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
@@ -941,6 +964,7 @@ void GameInfo::InternalSwap(GameInfo* other) {
   swap(play_, other->play_);
   swap(snakespeed_, other->snakespeed_);
   swap(direction_, other->direction_);
+  swap(quitted_, other->quitted_);
 }
 
 ::PROTOBUF_NAMESPACE_ID::Metadata GameInfo::GetMetadata() const {
