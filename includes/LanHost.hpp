@@ -22,6 +22,8 @@
 #include <string>
 #include <stdexcept>
 #include <vector>
+#include <mutex>
+#include <atomic>
 
 #include "Logging.hpp"
 #include "ANibblerGui.hpp"
@@ -41,7 +43,9 @@ class LanHost {
 		void	hostGame();
 		bool	getInLobby() const;
 
-		std::vector<std::string>	msgs;
+		std::vector<std::string>	clientsInput;  // clients input
+		std::mutex					mutexClientsInput;
+		std::atomic<bool>			inputsReceived;
 
 		// -- exceptions -------------------------------------------------------
 		class LanHostException : public std::runtime_error {

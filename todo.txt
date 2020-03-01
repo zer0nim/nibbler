@@ -1,0 +1,34 @@
+// need to accept message only after lobby quitted
+// don't wait for input the first time the game is launched
+
+// -- host ---------------------------------------------------------------------
+gameLoop {
+	// 1 - wait while all clients have not filled there input string
+	{
+		while (notTimeOut && !msgsFilled) {
+			// check timeout
+		}
+	}
+
+	// 2 - update GameInfo acording to actions
+	// 3 - send gameInfo to all clients
+}
+
+gameThread {
+	while ; {
+		// if new message then add it to the client vector<string> msg
+		// if gameLoop whant to send a message send it
+			// ? how he know that ?
+		// if client disconect or error stop the game
+	}
+}
+
+// -- client -------------------------------------------------------------------
+gameLoop {
+	// 1 - send input to host
+	// 2 - wait to receive GameInfo from host
+}
+
+
+// stop.store(true);
+// if (stop.load())

@@ -1,7 +1,10 @@
+#include <algorithm>
+
 #include "LanHost.hpp"
 
 LanHost::LanHost()
-: _gameThreadIsRunning(false),
+: inputsReceived(false),
+  _gameThreadIsRunning(false),
   _inLobby(true) {
 }
 
@@ -179,7 +182,10 @@ void	*LanHost::_hostGame(void *lanHostInstance) {
 							fds[nbFd].fd = newSd;
 							fds[nbFd].events = POLLIN;
 							++nbFd;
-							lanHostI->msgs.push_back("");  // add new message slot
+							 {
+								std::lock_guard<std::mutex> guard(lanHostI->mutexClientsInput);
+								lanHostI->clientsInput.push_back("");  // add new message slot
+							}
 
 							// send welcome msg to the client
 							std::string	msg = "welcome to my server, have fun :)";
@@ -227,7 +233,18 @@ void	*LanHost::_hostGame(void *lanHostInstance) {
 								logInfo("[host] client: " << fds[i].fd << ", received "
 									<< len << " bytes: \"" << buff << '"');
 
-								lanHostI->msgs[i - 1] = std::string(buff);
+								 {
+									std::lock_guard<std::mutex> guard(lanHostI->mutexClientsInput);
+									lanHostI->clientsInput[i - 1] = std::string(buff);
+									if (std::none_of(lanHostI->clientsInput.begin(), lanHostI->clientsInput.end(),
+										[](std::string const &str) { return str.empty(); })) {
+										std::cout << "ready !!! :)" << std::endl;
+										lanHostI->inputsReceived.store(true);
+									}
+									else {
+										std::cout << "not ready" << std::endl;
+									}
+								}
 							}
 						}
 
