@@ -21,7 +21,7 @@
 #include <iostream>
 #include <string>
 #include <stdexcept>
-
+#include <vector>
 
 #include "Logging.hpp"
 #include "ANibblerGui.hpp"
@@ -39,6 +39,9 @@ class LanHost {
 		LanHost &operator=(LanHost const &rhs);
 
 		void	hostGame();
+		bool	getInLobby() const;
+
+		std::vector<std::string>	msgs;
 
 		// -- exceptions -------------------------------------------------------
 		class LanHostException : public std::runtime_error {
@@ -48,11 +51,12 @@ class LanHost {
 		};
 
 	private:
-		static void	*_hostGame(void *arg);
+		static void	*_hostGame(void *lanHostInstance);
 		static void	*_broadcast(void *inLobbyPtr);
 
-		static pthread_t	_gameThread;
-		bool				_gameThreadIsRunning;
+		static pthread_t			_gameThread;
+		bool						_gameThreadIsRunning;
+		bool						_inLobby;
 };
 
 #endif  // LANHOST_HPP_

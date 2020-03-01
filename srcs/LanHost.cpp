@@ -1,7 +1,8 @@
 #include "LanHost.hpp"
 
 LanHost::LanHost()
-: _gameThreadIsRunning(false) {
+: _gameThreadIsRunning(false),
+  _inLobby(true) {
 }
 
 LanHost::~LanHost() {
@@ -22,17 +23,15 @@ LanHost &LanHost::operator=(LanHost const &rhs) {
 }
 
 void	LanHost::hostGame() {
-	bool inLobby = true;
-
 	// start the game thread
-	if (pthread_create(&_gameThread, nullptr, _hostGame, nullptr)) {
+	if (pthread_create(&_gameThread, nullptr, _hostGame, reinterpret_cast<void *>(this))) {
 		throw LanHostException("failed to create host game thread");
 	}
 	_gameThreadIsRunning = true;
 
 	// start a thread to broadcast message to make host detectable
 	pthread_t lobbyThread;
-	if (pthread_create(&lobbyThread, nullptr, _broadcast, reinterpret_cast<void *>(&inLobby))) {
+	if (pthread_create(&lobbyThread, nullptr, _broadcast, reinterpret_cast<void *>(&_inLobby))) {
 		throw LanHostException("failed to create broadcast thread");
 	}
 
@@ -42,13 +41,13 @@ void	LanHost::hostGame() {
 	// quit lobby on enter
 	std::cin.ignore();
 	logInfo("[lobby] lobby closed, starting the game...");
-	inLobby = false;
+	_inLobby = false;
 
 	pthread_join(lobbyThread, nullptr);  // waiting for the thread to finish
 }
 
-void	*LanHost::_hostGame(void *arg) {
-	(void)arg;
+void	*LanHost::_hostGame(void *lanHostInstance) {
+	LanHost	*lanHostI = reinterpret_cast<LanHost *>(lanHostInstance);
 
 	// main will not catch exceptions thrown from other threads
 	try {
@@ -100,13 +99,13 @@ void	*LanHost::_hostGame(void *arg) {
 		}
 
 		// -- manage multiples clients -----------------------------------------
-		int ret = 1;  // contain functions return code
+		int		ret = 1;  // contain functions return code
 		nfds_t	nbFd = 1;
-		int	currentSize = 0;
-		bool compressArray = false;
-		bool runServer = true;
-		int	newSd = -1;
-		int	closeConn;
+		int		currentSize = 0;
+		bool	compressArray = false;
+		bool	runServer = true;
+		int		newSd = -1;
+		bool	closeConn = false;
 		char	buff[80];  // read msg buff
 
 		// init the pollfd structure
@@ -151,13 +150,13 @@ void	*LanHost::_hostGame(void *arg) {
 							break;
 						}
 						// on connection fd error close the connection
-						logWarn("[host] client: " << fds[i].fd <<
-							", unexpected event, closing the connection");
+						logWarn("[host] client: " << fds[i].fd << ", connection closed");
 						closeConn = true;
 					}
 
-					// listening socket is readable
-					if (fds[i].fd == listenSd) {
+					// listening socket is readable (new client joined)
+					// only accept new client in the lobby
+					if (fds[i].fd == listenSd && lanHostI->getInLobby()) {
 						// logDebug("[host] listening socket is readable");
 
 						// accept all incoming connections that are queued up on the
@@ -180,6 +179,7 @@ void	*LanHost::_hostGame(void *arg) {
 							fds[nbFd].fd = newSd;
 							fds[nbFd].events = POLLIN;
 							++nbFd;
+							lanHostI->msgs.push_back("");  // add new message slot
 
 							// send welcome msg to the client
 							std::string	msg = "welcome to my server, have fun :)";
@@ -188,12 +188,12 @@ void	*LanHost::_hostGame(void *arg) {
 									std::to_string(errno));
 								break;
 							}
-
 						// loop back up and accept another incoming connection
 						} while (newSd != -1);
 					}
 					// not a listening socket, therefore an existing connection must be readable
-					else {
+					// (received message from client)
+					else if (fds[i].fd != listenSd) {
 						// logDebug("[host] client: " << fds[i].fd << " fd is readable");
 						// reset closeConn flag if the revents is valid
 						if (fds[i].revents == POLLIN) {
@@ -217,16 +217,18 @@ void	*LanHost::_hostGame(void *arg) {
 
 							// connection has been closed by the client
 							if (ret == 0) {
-								logErr("[host] connection closed");
+								logWarn("[host] client: " << fds[i].fd << ", connection closed");
 								closeConn = true;
-								break;
 							}
+							else {
+								// data was received
+								int len = ret;
+								buff[len] = '\0';
+								logInfo("[host] client: " << fds[i].fd << ", received "
+									<< len << " bytes: \"" << buff << '"');
 
-							// data was received
-							int len = ret;
-							buff[len] = '\0';
-							logInfo("[host] client: " << fds[i].fd << ", received "
-								<< len << " bytes: \"" << buff << '"');
+								lanHostI->msgs[i - 1] = std::string(buff);
+							}
 						}
 
 						// on closeConn, we need to clean up this active connection
@@ -332,6 +334,9 @@ void	*LanHost::_broadcast(void *inLobbyPtr) {
 	// exit thread
 	pthread_exit(nullptr);
 }
+
+// -- getters ------------------------------------------------------------------
+bool	LanHost::getInLobby() const { return _inLobby; }
 
 // -- exceptions ---------------------------------------------------------------
 LanHost::LanHostException::LanHostException()
