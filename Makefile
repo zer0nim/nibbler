@@ -153,12 +153,12 @@ LIBS_SRC_CPP	=
 LIBS_HEAD		=
 
 # all flags for libs
-LIBS_FLAGS =	-l protobuf
+LIBS_FLAGS =	-L /usr/local/lib -l protobuf
 # flags for libs on OSX only
 LIBS_FLAGS_OSX =	-L ~/.brew/lib
 
 # flags for libs on LINUX only
-LIBS_FLAGS_LINUX	= -Wl,-rpath,.
+LIBS_FLAGS_LINUX	= -pthread -Wl,-rpath,.
 # includes dir for external libs
 LIBS_INC			= ~/.brew/include \
 					  $(LIBS_DIR) \

@@ -266,7 +266,7 @@ inline bool Input::togglepause() const {
   return _internal_togglepause();
 }
 inline void Input::_internal_set_togglepause(bool value) {
-  
+
   togglepause_ = value;
 }
 inline void Input::set_togglepause(bool value) {
@@ -286,7 +286,7 @@ inline ::inputProto::Direction Input::direction() const {
   return _internal_direction();
 }
 inline void Input::_internal_set_direction(::inputProto::Direction value) {
-  
+
   direction_ = value;
 }
 inline void Input::set_direction(::inputProto::Direction value) {
@@ -306,7 +306,7 @@ inline ::PROTOBUF_NAMESPACE_ID::uint32 Input::loadguiid() const {
   return _internal_loadguiid();
 }
 inline void Input::_internal_set_loadguiid(::PROTOBUF_NAMESPACE_ID::uint32 value) {
-  
+
   loadguiid_ = value;
 }
 inline void Input::set_loadguiid(::PROTOBUF_NAMESPACE_ID::uint32 value) {
