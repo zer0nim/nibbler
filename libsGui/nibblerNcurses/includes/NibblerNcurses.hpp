@@ -6,7 +6,7 @@
 #include <vector>
 #include "ANibblerGui.hpp"
 #include "IWindow.hpp"
-#include "BorderWindow.hpp"
+#include "Window.hpp"
 
 class NibblerNcurses : public ANibblerGui {
 	public:

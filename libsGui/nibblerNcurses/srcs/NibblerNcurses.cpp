@@ -215,7 +215,7 @@ void	NibblerNcurses::resize() {
 		if (_win)
 			delete _win;
 
-		_win = new BorderWindow(_win_size.y, _win_size.x, 0, 0, 1);
+		_win = new Window(_win_size.y, _win_size.x, 0, 0, 1);
 		nodelay(*_win, TRUE);		// to have a non blocking getch.
 
 		_touchAll();
@@ -242,7 +242,7 @@ void	NibblerNcurses::resize() {
 		drawable = true;
 		if (_win)
 			delete _win;
-		_win = new BorderWindow(
+		_win = new Window(
 			expected_game.y,
 			expected_game.x,
 			_win_size.y / 2 - expected_game.y / 2,

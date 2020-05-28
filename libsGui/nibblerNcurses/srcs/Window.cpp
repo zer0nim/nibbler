@@ -1,9 +1,9 @@
-#include "BorderWindow.hpp"
+#include "Window.hpp"
 
 // -- Constructors -------------------------------------------------------------
 
 /**
- * @brief Construct a new BorderWindow::BorderWindow object
+ * @brief Construct a new Window::Window object
  *
  * @param lines
  * @param cols
@@ -11,7 +11,7 @@
  * @param x
  * @param color_pair
  */
-BorderWindow::BorderWindow(int lines, int cols, int y, int x, int color_pair)
+Window::Window(int lines, int cols, int y, int x, int color_pair)
 : IWindow(),
 _lines(lines), _cols(cols), _y(y), _x(x), _color_pair(color_pair) {
 	// make a window just to make the border
@@ -33,18 +33,18 @@ _lines(lines), _cols(cols), _y(y), _x(x), _color_pair(color_pair) {
 	keypad(_data, TRUE);		// interpret function keys for us
 }
 
-BorderWindow::~BorderWindow() {
+Window::~Window() {
 	delwin(_data);
 	delwin(_border);
 }
 
-BorderWindow::BorderWindow(BorderWindow const &src) {
+Window::Window(Window const &src) {
 	*this = src;
 }
 
 // -- Operators ----------------------------------------------------------------
 
-BorderWindow &BorderWindow::operator=(BorderWindow const &rhs) {
+Window &Window::operator=(Window const &rhs) {
 	if ( this != &rhs ) {
 		_border = rhs._border;
 		_data = rhs._data;
@@ -57,24 +57,24 @@ BorderWindow &BorderWindow::operator=(BorderWindow const &rhs) {
 	return *this;
 }
 
-BorderWindow::operator WINDOW* () {
+Window::operator WINDOW* () {
 	// pass back the data window, since that the usual one for IO
 	return _data;
 }
 
 // -- Methods ------------------------------------------------------------------
 
-void	BorderWindow::draw() {
+void	Window::draw() {
 	wnoutrefresh(_border);
 	wnoutrefresh(_data);
 }
 
-void	BorderWindow::touch() {
+void	Window::touch() {
 	touchwin(_border);
 	touchwin(_data);
 }
 
-void	BorderWindow::input(int key) {
+void	Window::input(int key) {
 	waddch(_data, key);
 }
 

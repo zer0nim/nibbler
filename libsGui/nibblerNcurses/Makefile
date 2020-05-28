@@ -80,14 +80,14 @@ DEBUG_DIR	= $(DEP_DIR)
 # SRCS_DIR/SRC
 SRC =	NibblerNcurses.cpp \
 		Logging.cpp \
-		BorderWindow.cpp \
+		Window.cpp \
 		../../ANibblerGui.cpp
 
 # INC_DIR/HEAD
 HEAD =	NibblerNcurses.hpp \
 		Logging.hpp \
 		IWindow.hpp \
-		BorderWindow.hpp \
+		Window.hpp \
 		../../ANibblerGui.hpp
 
 

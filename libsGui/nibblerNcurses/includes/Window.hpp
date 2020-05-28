@@ -3,9 +3,9 @@
 #include <curses.h>
 #include "IWindow.hpp"
 
-class BorderWindow : public IWindow {
+class Window : public IWindow {
 private:
-	BorderWindow();
+	Window();
 
 protected:
 	// Members
@@ -19,12 +19,12 @@ protected:
 
 public:
 	// Constructors
-	explicit BorderWindow(int lines, int cols, int y, int x, int color_pair);
-	~BorderWindow();
-	BorderWindow(BorderWindow const &src);
+	explicit Window(int lines, int cols, int y, int x, int color_pair);
+	~Window();
+	Window(Window const &src);
 
 	// Operators
-	BorderWindow &operator=(BorderWindow const &rhs);
+	Window &operator=(Window const &rhs);
 	operator WINDOW* ();
 
 	// Methods
