@@ -29,6 +29,10 @@ std::map<int , NibblerNcurses::inputFuncPtr>	NibblerNcurses::_inputKeyPressed = 
 
 NibblerNcurses::NibblerNcurses() :
   ANibblerGui() {
+	_win = nullptr;
+	_win_size = {0, 0};
+	_tail = {0, 0};
+
 	// init logging
 	#if DEBUG
 		logging.setLoglevel(LOGDEBUG);
