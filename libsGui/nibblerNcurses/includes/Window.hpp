@@ -31,5 +31,4 @@ public:
 	void draw();
 	void touch();
 	void input(int key);
-	// void move_relative(int yoff, int xoff);
 };

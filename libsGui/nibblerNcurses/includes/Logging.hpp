@@ -61,10 +61,10 @@ class Logging {
 		eLoglevel			getLoglevel() const;
 
 	private:
-		std::ofstream	_afile;
-		std::string		_colors[NBLOG];
-		bool			_printFileLine[NBLOG];
-		eLoglevel		_loglevel;
+		std::ofstream	_afile;  ///< The output of the log
+		std::string		_colors[NBLOG];  ///< The colors of the logs
+		bool			_printFileLine[NBLOG];  ///< The cases we want to print file and lines
+		eLoglevel		_loglevel;  ///< Types of level logs
 };
 
 extern Logging		logging;

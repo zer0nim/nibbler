@@ -5,11 +5,11 @@
 /**
  * @brief Construct a new Window::Window object
  *
- * @param lines
- * @param cols
- * @param y
- * @param x
- * @param color_pair
+ * @param lines Window height
+ * @param cols Window width
+ * @param y Window position height
+ * @param x Window position width
+ * @param color_pair Window color
  */
 Window::Window(int lines, int cols, int y, int x, int color_pair)
 : IWindow(),
@@ -33,17 +33,31 @@ _lines(lines), _cols(cols), _y(y), _x(x), _color_pair(color_pair) {
 	keypad(_data, TRUE);		// interpret function keys for us
 }
 
+/**
+ * @brief Destroy the Window::Window object
+ */
 Window::~Window() {
 	delwin(_data);
 	delwin(_border);
 }
 
+/**
+ * @brief Construct a new Window::Window object
+ *
+ * @param src object to copy
+ */
 Window::Window(Window const &src) {
 	*this = src;
 }
 
 // -- Operators ----------------------------------------------------------------
 
+/**
+ * @brief Copy the object
+ *
+ * @param rhs The object to copy
+ * @return Window& A reference to the copied object
+ */
 Window &Window::operator=(Window const &rhs) {
 	if ( this != &rhs ) {
 		_border = rhs._border;
@@ -57,6 +71,11 @@ Window &Window::operator=(Window const &rhs) {
 	return *this;
 }
 
+/**
+ * @brief Overload operator WINDOW
+ *
+ * @return WINDOW* window which draw the game
+ */
 Window::operator WINDOW* () {
 	// pass back the data window, since that the usual one for IO
 	return _data;
@@ -64,16 +83,27 @@ Window::operator WINDOW* () {
 
 // -- Methods ------------------------------------------------------------------
 
+/**
+ * @brief Draw method. Called each frames
+ */
 void	Window::draw() {
 	wnoutrefresh(_border);
 	wnoutrefresh(_data);
 }
 
+/**
+ * @brief Touch method
+ */
 void	Window::touch() {
 	touchwin(_border);
 	touchwin(_data);
 }
 
+/**
+ * @brief Input method
+ *
+ * @param key
+ */
 void	Window::input(int key) {
 	waddch(_data, key);
 }

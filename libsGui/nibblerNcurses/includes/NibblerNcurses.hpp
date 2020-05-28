@@ -11,7 +11,7 @@
 class NibblerNcurses : public ANibblerGui {
 	public:
 		// Members
-		bool			drawable;
+		bool			drawable;  ///< Says if the game can be drew
 
 		// Constructors
 		NibblerNcurses();
