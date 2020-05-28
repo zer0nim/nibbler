@@ -27,6 +27,9 @@ std::map<int , NibblerNcurses::inputFuncPtr>	NibblerNcurses::_inputKeyPressed = 
 
 // -- Constructors -------------------------------------------------------------
 
+/**
+ * @brief Construct a new NibblerNcurses::NibblerNcurses object
+ */
 NibblerNcurses::NibblerNcurses() :
   ANibblerGui() {
 	_win = nullptr;
@@ -60,6 +63,9 @@ NibblerNcurses::NibblerNcurses() :
 	curs_set(0);  // no cursors on screen
 }
 
+/**
+ * @brief Destroy the NibblerNcurses::NibblerNcurses object
+ */
 NibblerNcurses::~NibblerNcurses() {
 	endwin();
 	logInfo("exit Ncurses");
@@ -67,21 +73,42 @@ NibblerNcurses::~NibblerNcurses() {
 		delete _win;
 }
 
+/**
+ * @brief Construct a new NibblerNcurses::NibblerNcurses object
+ *
+ * @param src object to copy
+ */
 NibblerNcurses::NibblerNcurses(NibblerNcurses const &src) {
 	*this = src;
 }
 
 // -- Operators ----------------------------------------------------------------
 
+/**
+ * @brief Copy this object
+ *
+ * @param rhs The object to copy
+ * @return NibblerNcurses& A reference to the copied object
+ */
 NibblerNcurses &NibblerNcurses::operator=(NibblerNcurses const &rhs) {
 	if (this != &rhs) {
 		_win = rhs._win;
+		_win_size = rhs._win_size;
+		_tail = rhs._tail;
+		_state = rhs._state;
 	}
 	return *this;
 }
 
 // -- Public Methods -----------------------------------------------------------
 
+/**
+ * @brief Init the library
+ *
+ * @param gameInfo reference th gameInfo object
+ * @return true if the init succeed
+ * @return false
+ */
 bool NibblerNcurses::init(GameInfo &gameInfo) {
 	logInfo("loading Ncurses");
 
@@ -91,6 +118,9 @@ bool NibblerNcurses::init(GameInfo &gameInfo) {
 	return true;
 }
 
+/**
+ * @brief Method to update the input pressed
+ */
 void NibblerNcurses::updateInput() {
 	input.direction = Direction::NO_MOVE;
 	input.togglePause = false;
@@ -102,6 +132,12 @@ void NibblerNcurses::updateInput() {
 	}
 }
 
+/**
+ * @brief Draw is called each frame
+ *
+ * @return true if succeed
+ * @return false if failure
+ */
 bool NibblerNcurses::draw() {
 	move(0, 0);
 
@@ -161,6 +197,9 @@ bool NibblerNcurses::draw() {
 	return true;
 }
 
+/**
+ * @brief Called when window is resized
+ */
 void	NibblerNcurses::resize() {
 	logInfo("resize Ncurses");
 	getmaxyx(stdscr, _win_size.y, _win_size.x);
@@ -216,17 +255,30 @@ void	NibblerNcurses::resize() {
 
 // -- Private Methods ----------------------------------------------------------
 
+/**
+ * @brief Center a string in a defined width
+ *
+ * @param input the string to center
+ * @param width the final width
+ * @return std::string the centered string
+ */
 std::string		NibblerNcurses::_center(std::string input, int width) {
 	int left = (width - input.length()) / 2;
 	int right = width - left - input.length();
 	return std::string(left, ' ') + input + std::string(right, ' ');
 }
 
+/**
+ * @brief Touch all windows
+ */
 void NibblerNcurses::_touchAll() {
 	touchwin(stdscr);
 	_win->touch();
 }
 
+/**
+ * @brief Draw all windows
+ */
 void NibblerNcurses::_drawAll() {
 	wnoutrefresh(stdscr);
 	_win->draw();
@@ -242,7 +294,15 @@ NibblerNcurses::NibblerNcursesException::NibblerNcursesException(const char* wha
 
 // -- Library external access functions ----------------------------------------
 
+/**
+ * @brief Function of the lib that can be externally called
+ */
 extern "C" {
+	/**
+	 * @brief Allow to create a new NibblerNcurses object
+	 *
+	 * @return ANibblerGui* new object created
+	 */
 	ANibblerGui *makeNibblerNcurses() {
 		return new NibblerNcurses();
 	}

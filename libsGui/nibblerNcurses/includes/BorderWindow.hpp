@@ -9,10 +9,13 @@ private:
 
 protected:
 	// Members
-	WINDOW *_border, *_data;
-	int _lines, _cols;
-	int _y, _x;
-	int _color_pair;
+	WINDOW *_border;  ///< window to make the border
+	WINDOW *_data;  ///< window to draw the game
+	int _lines;  ///< lines of the terminal window
+	int _cols;  ///< columns of the terminal window
+	int _y;  ///< Height position of the window
+	int _x;  ///< Width postion of the window
+	int _color_pair;  ///< Color of the window (color are defined in NibblerNcurses constructor)
 
 public:
 	// Constructors

@@ -35,12 +35,12 @@ class NibblerNcurses : public ANibblerGui {
 	private:
 		// Members
 		typedef void(*inputFuncPtr)(Input &, NibblerNcurses &);
-		static	std::map<int , inputFuncPtr>	_inputKeyPressed;
+		static	std::map<int , inputFuncPtr>	_inputKeyPressed;  ///< map on key pressed
 
-		IWindow					*_win;
-		glm::ivec2				_win_size;
-		glm::ivec2				_tail;
-		State::Enum				_state;
+		IWindow					*_win;  ///< window object
+		glm::ivec2				_win_size;  ///< window size
+		glm::ivec2				_tail;  ///< position of the tail of the snake
+		State::Enum				_state;  ///< state of the game
 
 		// Methods
 		std::string		_center(std::string input, int width);

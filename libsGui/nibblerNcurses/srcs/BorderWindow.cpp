@@ -2,6 +2,15 @@
 
 // -- Constructors -------------------------------------------------------------
 
+/**
+ * @brief Construct a new BorderWindow::BorderWindow object
+ *
+ * @param lines
+ * @param cols
+ * @param y
+ * @param x
+ * @param color_pair
+ */
 BorderWindow::BorderWindow(int lines, int cols, int y, int x, int color_pair)
 : IWindow(),
 _lines(lines), _cols(cols), _y(y), _x(x), _color_pair(color_pair) {
