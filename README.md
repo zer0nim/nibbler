@@ -5,7 +5,16 @@ _A snake implementation with multiples graphical interfaces_
 ## About
 
 > The purpose of this project is to create our version of the game Snake, with at least 3 different GUIs. These GUIs being shared libraries.
-  
+
+### NCURSES
+![ncurses](/imgs/ncurses.png "ncurses")
+
+### SFML
+![sfml](/imgs/sfml.png "sfml")
+
+### SDL
+![sdl](/imgs/sdl.png "sdl")
+
 ## Installation
 
 Clone the project.
