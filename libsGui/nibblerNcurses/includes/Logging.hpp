@@ -27,6 +27,9 @@
 #define LOG_COL_ITALIC	"\e[3m"
 #define LOG_COL_ULINE		"\e[4m"
 
+/**
+ * @brief All type of level's log
+ */
 enum	eLoglevel {
 	LOGDEBUG, LOGINFO, LOGSUCCESS, LOGWARN, LOGERROR, LOGFATAL, NBLOG
 };
@@ -42,6 +45,9 @@ enum	eLoglevel {
 #define logErrExit(x) log_(LOGERROR, x)
 #define logFatalExit(x) log_(LOGFATAL, x)
 
+/**
+ * @brief Logging object
+ */
 class Logging {
 	public:
 		Logging();

@@ -8,6 +8,9 @@
 #include "IWindow.hpp"
 #include "Window.hpp"
 
+/**
+ * @brief NibblerNcurses object
+ */
 class NibblerNcurses : public ANibblerGui {
 	public:
 		// Members
@@ -35,7 +38,7 @@ class NibblerNcurses : public ANibblerGui {
 	private:
 		// Members
 		typedef void(*inputFuncPtr)(Input &, NibblerNcurses &);
-		static	std::map<int , inputFuncPtr>	_inputKeyPressed;  ///< map on key pressed
+		static	std::map<int , inputFuncPtr>	_inputKeyPressed;  ///< map of key pressed
 
 		IWindow					*_win;  ///< window object
 		glm::ivec2				_win_size;  ///< window size

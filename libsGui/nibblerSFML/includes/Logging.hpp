@@ -27,6 +27,9 @@
 #define LOG_COL_ITALIC	"\e[3m"
 #define LOG_COL_ULINE		"\e[4m"
 
+/**
+ * @brief All type of level's log
+ */
 enum	eLoglevel {
 	LOGDEBUG, LOGINFO, LOGSUCCESS, LOGWARN, LOGERROR, LOGFATAL, NBLOG
 };
@@ -42,6 +45,9 @@ enum	eLoglevel {
 #define logErrExit(x) log_(LOGERROR, x)
 #define logFatalExit(x) log_(LOGFATAL, x)
 
+/**
+ * @brief Logging object
+ */
 class Logging {
 	public:
 		Logging();
@@ -61,9 +67,9 @@ class Logging {
 		eLoglevel			getLoglevel() const;
 
 	private:
-		std::string		_colors[NBLOG];
-		bool			_printFileLine[NBLOG];
-		eLoglevel		_loglevel;
+		std::string		_colors[NBLOG];  ///< The colors of the logs
+		bool			_printFileLine[NBLOG];  ///< The cases we want to print file and lines
+		eLoglevel		_loglevel;  ///< Types of level logs
 };
 
 extern Logging		logging;
