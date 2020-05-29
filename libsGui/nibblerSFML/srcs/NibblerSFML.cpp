@@ -19,6 +19,9 @@ std::map<sf::Keyboard::Key , NibblerSFML::inputFuncPtr>	NibblerSFML::_inputKeyPr
 
 // -- Constructors -------------------------------------------------------------
 
+/**
+ * @brief Construct a new NibblerSFML::NibblerSFML object
+ */
 NibblerSFML::NibblerSFML() :
   ANibblerGui(),
   _win() {
@@ -38,14 +41,21 @@ NibblerSFML::NibblerSFML() :
 	_block = {10, 10};
 	_margin = {5, 5};
 	_padding = {5, 5};
-	//// _isActive = true;
 }
 
+/**
+ * @brief Destroy the NibblerSFML::NibblerSFML object
+ */
 NibblerSFML::~NibblerSFML() {
 	logInfo("exit SFML");
 	_win.close();
 }
 
+/**
+ * @brief Construct a new NibblerSFML::NibblerSFML object
+ *
+ * @param src object to copy
+ */
 NibblerSFML::NibblerSFML(NibblerSFML const &src)
 : ANibblerGui() {
 	*this = src;
@@ -53,6 +63,12 @@ NibblerSFML::NibblerSFML(NibblerSFML const &src)
 
 // -- Operators ----------------------------------------------------------------
 
+/**
+ * @brief Copy this object. (SHOULD NOT be called. Log an error.)
+ *
+ * @param rhs The object to copy
+ * @return NibblerSFML& A reference to the copied object
+ */
 NibblerSFML &NibblerSFML::operator=(NibblerSFML const &rhs) {
 	if (this != &rhs) {
 		logErr("unable to copy NibblerSFML");
@@ -62,6 +78,13 @@ NibblerSFML &NibblerSFML::operator=(NibblerSFML const &rhs) {
 
 // -- Public Methods -----------------------------------------------------------
 
+/**
+ * @brief Init the library
+ *
+ * @param gameInfo reference th gameInfo object
+ * @return true if the init succeed
+ * @return false
+ */
 bool NibblerSFML::init(GameInfo &gameInfo) {
 	logInfo("loading SFML");
 
@@ -91,6 +114,9 @@ bool NibblerSFML::init(GameInfo &gameInfo) {
 	return true;
 }
 
+/**
+ * @brief Method to update the input pressed
+ */
 void NibblerSFML::updateInput() {
 	input.direction = Direction::NO_MOVE;
 	input.togglePause = false;
@@ -104,12 +130,7 @@ void NibblerSFML::updateInput() {
 			case sf::Event::LostFocus:
 				if (gameInfo->play == State::S_PLAY)
 					input.togglePause = true;
-				//// _isActive = false;
 				break;
-			//// // window gain focus
-			//// case sf::Event::GainedFocus:
-			//// 	_isActive = true;
-			//// 	break;
 			// key pressed
 			case sf::Event::KeyPressed:
 				if (_inputKeyPressed.find(_event.key.code) != _inputKeyPressed.end())
@@ -118,24 +139,14 @@ void NibblerSFML::updateInput() {
 				break;
 		}
 	}
-
-	//// if (_isActive && sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
-	//// 	if (_isMoving == true) {
-	//// 		sf::Vector2i position = sf::Mouse::getPosition();
-	//// 		_win.setPosition(position - _isActive);
-	//// 	} else {
-	//// 		sf::Vector2i position = sf::Mouse::getPosition(_win);
-	//// 		if (position.x >= 0 && position.x <= static_cast<int>(_win.getSize().x)
-	//// 			&& position.y >= 0 && position.y <= static_cast<int>(_win.getSize().y)) {
-	//// 			_isMoving = true;
-	//// 			_relativePos = position;
-	//// 		}
-	//// 	}
-	//// } else {
-	//// 	_isMoving = false;
-	//// }
 }
 
+/**
+ * @brief Draw is called each frame
+ *
+ * @return true if succeed
+ * @return false if failure
+ */
 bool NibblerSFML::draw() {
 	_win.clear();
 
@@ -173,6 +184,9 @@ bool NibblerSFML::draw() {
 
 // -- Private Methods ----------------------------------------------------------
 
+/**
+ * @brief Print the game board
+ */
 void	NibblerSFML::_printBoard() {
 	float		size_board = gameInfo->gameboard.x * gameInfo->gameboard.y;
 	sf::Color	color[2] = {
@@ -206,6 +220,9 @@ void	NibblerSFML::_printBoard() {
 	}
 }
 
+/**
+ * @brief print the snake
+ */
 void	NibblerSFML::_printSnake() {
 	sf::RectangleShape rect(sf::Vector2f(_block.x, _block.y));
 
@@ -218,6 +235,9 @@ void	NibblerSFML::_printSnake() {
 	}
 }
 
+/**
+ * @brief Print the food
+ */
 void	NibblerSFML::_printFood() {
 	sf::RectangleShape rect(sf::Vector2f(_block.x, _block.y));
 
@@ -227,6 +247,12 @@ void	NibblerSFML::_printFood() {
 	_win.draw(rect);
 }
 
+/**
+ * @brief Print the string
+ *
+ * @param line_nb The position of the line
+ * @param line The string to print
+ */
 void	NibblerSFML::_printLine(int line_nb, std::string line) {
 	float		width = MARGED_X(gameInfo->gameboard);
 	sf::Text	text;
@@ -240,6 +266,12 @@ void	NibblerSFML::_printLine(int line_nb, std::string line) {
 	_win.draw(text);
 }
 
+/**
+ * @brief Print a string as a state
+ *
+ * @param str The string to print
+ * @param color The color of the background
+ */
 void	NibblerSFML::_printState(std::string str, sf::Color color) {
 	float		width = GAMESIZE_X;
 	float		height = GAMESIZE_Y;
@@ -269,7 +301,15 @@ NibblerSFML::NibblerSFMLException::NibblerSFMLException(const char* what_arg)
 
 // -- Library external access functions ----------------------------------------
 
+/**
+ * @brief Function of the lib that can be externally called
+ */
 extern "C" {
+	/**
+	 * @brief Allow to create a new NibblerSFML object
+	 *
+	 * @return ANibblerGui* new object created
+	 */
 	ANibblerGui *makeNibblerSFML() {
 		return new NibblerSFML();
 	}
