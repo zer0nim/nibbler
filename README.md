@@ -1,7 +1,7 @@
 # nibbler
 
-_A snake implementation with multiples graphical interfaces
-_
+_A snake implementation with multiples graphical interfaces_
+
 ## About
 
 > The purpose of this project is to create our version of the game Snake, with at least 3 different GUIs. These GUIs being shared libraries.
