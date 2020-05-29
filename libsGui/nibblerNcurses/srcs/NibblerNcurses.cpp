@@ -176,11 +176,11 @@ bool NibblerNcurses::draw() {
 		std::string str;
 		int length = gameInfo->gameboard.x * 2 - 1;
 		if (gameInfo->play == State::S_PAUSE)
-			str = _center("Pause | " + std::to_string(gameInfo->snake.size()), length);
+			str = _center("Pause | " + std::to_string(gameInfo->score), length);
 		else if (gameInfo->play == State::S_GAMEOVER)
-			str = _center("Game Over :( | " + std::to_string(gameInfo->snake.size()), length);
+			str = _center("Game Over :( | " + std::to_string(gameInfo->score), length);
 		else
-			str = _center("score: " + std::to_string(gameInfo->snake.size()), length);
+			str = _center("score: " + std::to_string(gameInfo->score), length);
 
 		int		i = 0;
 		for (auto it = str.begin(); it != str.end(); ++it) {

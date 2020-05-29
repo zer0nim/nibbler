@@ -106,6 +106,8 @@ bool	GameManager::init(int8_t guiId) {
 	_gameInfo.snake.push_back({1, 7});
 	_gameInfo.snake.push_back({2, 7});
 
+	_gameInfo.score = 0;
+
 	srand(time(NULL));
 
 	_generateFood();
@@ -278,6 +280,7 @@ bool GameManager::_checkContact() {
 
 	if (head == _gameInfo.food) {
 		_eating += 1;
+		_gameInfo.score += 1;
 		_generateFood();
 		return true;
 	} else {

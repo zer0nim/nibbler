@@ -165,7 +165,7 @@ bool NibblerSFML::draw() {
 	_printBoard();
 
 	_printLine(0, "Nibbler");
-	_printLine(1, "score: " + std::to_string(gameInfo->snake.size()));
+	_printLine(1, "score: " + std::to_string(gameInfo->score));
 
 	_printSnake();
 	_printFood();
