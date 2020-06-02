@@ -1,8 +1,10 @@
 #include <new>
 #include <csignal>
 
+// glm
+#define GLM_ENABLE_EXPERIMENTAL
 #include <glm/glm.hpp>
-#include "glm/gtx/string_cast.hpp"
+#include <glm/gtx/string_cast.hpp>  // to print vect/mat with glm::to_string
 
 #include "NibblerNcurses.hpp"
 #include "Logging.hpp"
@@ -78,7 +80,9 @@ NibblerNcurses::~NibblerNcurses() {
  *
  * @param src object to copy
  */
-NibblerNcurses::NibblerNcurses(NibblerNcurses const &src) {
+NibblerNcurses::NibblerNcurses(NibblerNcurses const &src)
+: ANibblerGui() {
+	logWarn("NibblerNcurses copy operator called !!!");
 	*this = src;
 }
 

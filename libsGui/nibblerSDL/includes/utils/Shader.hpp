@@ -7,13 +7,12 @@
 
 #include "commonInclude.hpp"
 
-/*
-	Shader class used to manage shader compilation
-	It also adds some tools to set uniform and activate shader easier
-
-	Warning! before instantiating a Shader object you need to create the opengl contex
-	with glfwCreateWindow
-*/
+/**
+ * @brief Shader class used to manage shader compilation
+ *
+ * It also adds some tools to set uniform and activate shader easier
+ * Warning! before instantiating a Shader object you need to create the opengl contex with glfwCreateWindow
+ */
 class Shader {
 	public:
 		Shader(std::string const vsPath, std::string const fsPath, std::string const gsPath = "");
@@ -51,27 +50,55 @@ class Shader {
 		void	setMat4(const std::string &name, const glm::mat4 &mat) const;
 		void	setMat4Double(const std::string &name, const glm::dmat4 &mat) const;
 
+		/**
+		 * @brief Shader exception
+		 */
 		class ShaderError : public std::exception {
 			public:
+				/**
+				 * @brief Function auto called on errors
+				 *
+				 * @return const char* Error message
+				 */
 				virtual const char* what() const throw() = 0;
 		};
+		/**
+		 * @brief Shader compilation exception
+		 */
 		class ShaderCompileException : public ShaderError {
 			public:
+				/**
+				 * @brief Function auto called on errors
+				 *
+				 * @return const char* Error message
+				 */
 				virtual const char* what() const throw() {
 					return ("Shader failed to compile!");
 				}
 		};
+		/**
+		 * @brief Shader linking exception
+		 */
 		class ShaderLinkingException : public ShaderError {
 			public:
+				/**
+				 * @brief Function auto called on errors
+				 *
+				 * @return const char* Error message
+				 */
 				virtual const char* what() const throw() {
 					return ("Shader program failed to link!");
 				}
 		};
 
-		uint32_t	id;
+		uint32_t	id;  /**< shader ID */
 
 	private:
 		void	checkCompileErrors(uint32_t shader, std::string type);
+
+		std::string	_vsPath;
+		std::string	_gsPath;
+		std::string	_fsPath;
 };
 
 #endif  // SHADER_HPP_

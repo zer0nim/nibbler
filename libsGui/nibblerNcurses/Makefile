@@ -123,6 +123,8 @@ define CONFIGURE
 # Linux
 if [[ "$$OSTYPE" == "linux-gnu" ]]; then
 	echo "install linux dependencies"
+	# ncurses
+	sudo apt-get install libncurses5-dev
 # Mac OSX
 elif [[ "$$OSTYPE" == "darwin"* ]]; then
 	echo "install osx dependencies"
@@ -254,14 +256,14 @@ $(NAME): $(OBJS_DIR) $(OBJS)
 $(OBJS_DIR)/%.o: $(LIBS_DIR)/%.c
 $(OBJS_DIR)/%.o: $(LIBS_DIR)/%.c $(DEP_DIR)/%.d
 	@printf $(YELLOW)"-> $<\n"$(NORMAL)
-	@$(CC) $(DEPFLAGS) $(CFLAGS) -c $< -o $@ $(INC)
+	@$(CC) $(DEPFLAGS) $(CFLAGS) -c -fPIC $< -o $@ $(INC)
 	@mv -f $(DEP_DIR)/$*.Td $(DEP_DIR)/$*.d
 
 
 $(OBJS_DIR)/%.o: $(SRCS_DIR)/%.cpp
 $(OBJS_DIR)/%.o: $(SRCS_DIR)/%.cpp $(DEP_DIR)/%.d
 	@printf $(YELLOW)"-> $<\n"$(NORMAL)
-	@$(CC) $(DEPFLAGS) $(CFLAGS) -c $< -o $@ $(INC)
+	@$(CC) $(DEPFLAGS) $(CFLAGS) -c -fPIC $< -o $@ $(INC)
 	@mv -f $(DEP_DIR)/$*.Td $(DEP_DIR)/$*.d
 
 $(OBJS_DIR):
