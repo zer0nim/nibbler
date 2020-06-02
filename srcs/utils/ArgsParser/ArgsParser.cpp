@@ -41,19 +41,19 @@ void	ArgsParser::usage(bool longUsage) const {
 	for (auto &&argInfos : _argsInfos) {
 		// print positional arguments
 		if (argInfos->getRequired()) {
-			std::cout << " " COLOR_ULINE << argInfos->getName() << COLOR_EOC;
+			std::cout << " " LOG_COL_ULINE << argInfos->getName() << LOG_COL_EOC;
 		}
 		// print optional arguments
 		if (!argInfos->getRequired()) {
 			if (argInfos->getShortName() == A_NO_NAME) {
-				std::cout << " [" COLOR_BOLD "--" << argInfos->getLongName() << COLOR_EOC;
+				std::cout << " [" LOG_COL_BOLD "--" << argInfos->getLongName() << LOG_COL_EOC;
 			}
 			else {
-				std::cout << " [" COLOR_BOLD "-" << argInfos->getShortName() << COLOR_EOC;
+				std::cout << " [" LOG_COL_BOLD "-" << argInfos->getShortName() << LOG_COL_EOC;
 			}
 
 			if (argInfos->needArgument()) {
-				std::cout << " " COLOR_ULINE << argInfos->getName() << COLOR_ULINE_R;
+				std::cout << " " LOG_COL_ULINE << argInfos->getName() << LOG_COL_ULINE_R;
 			}
 
 			std::cout << "]";
@@ -68,10 +68,10 @@ void	ArgsParser::usage(bool longUsage) const {
 
 		// print positional args help
 		if (nbPositional > 0) {
-			std::cout << COLOR_ULINE "\npositional arguments" COLOR_ULINE_R;
+			std::cout << LOG_COL_ULINE "\npositional arguments" LOG_COL_ULINE_R;
 			for (auto &&argInfos : _argsInfos) {
 				if (argInfos->getRequired()) {
-					std::cout << "\n  " COLOR_ULINE << argInfos->getName() << COLOR_EOC ":  " << \
+					std::cout << "\n  " LOG_COL_ULINE << argInfos->getName() << LOG_COL_EOC ":  " << \
 					argInfos->getHelp() << std::endl;
 					std::cout << "  " << *argInfos << std::endl;
 				}
@@ -80,20 +80,20 @@ void	ArgsParser::usage(bool longUsage) const {
 
 		// print optional args help
 		if (_argsInfos.size() - nbPositional > 0) {
-			std::cout << COLOR_ULINE "\noptional arguments" COLOR_ULINE_R;
+			std::cout << LOG_COL_ULINE "\noptional arguments" LOG_COL_ULINE_R;
 			for (auto &&argInfos : _argsInfos) {
 				if (!argInfos->getRequired()) {
-					std::cout << "\n  " COLOR_ULINE << argInfos->getName() << COLOR_EOC ":  ";
+					std::cout << "\n  " LOG_COL_ULINE << argInfos->getName() << LOG_COL_EOC ":  ";
 
 					// if the short name is available
 					if (argInfos->getShortName() != A_NO_NAME) {
-						std::cout << COLOR_BOLD "-" << argInfos->getShortName() << COLOR_EOC;
+						std::cout << LOG_COL_BOLD "-" << argInfos->getShortName() << LOG_COL_EOC;
 						if (!argInfos->getLongName().empty()) {
 							std::cout << ", ";
 						}
 					}
 					if (!argInfos->getLongName().empty()) {
-						std::cout << COLOR_BOLD "--" << argInfos->getLongName() << COLOR_EOC;
+						std::cout << LOG_COL_BOLD "--" << argInfos->getLongName() << LOG_COL_EOC;
 					}
 					std::cout << "  " << argInfos->getHelp() << "\n  " << *argInfos << std::endl;
 				}
@@ -102,7 +102,7 @@ void	ArgsParser::usage(bool longUsage) const {
 
 		// print program description
 		if (!_progDescr.empty()) {
-			std::cout << COLOR_ULINE "\ndescription" COLOR_ULINE_R << std::endl;
+			std::cout << LOG_COL_ULINE "\ndescription" LOG_COL_ULINE_R << std::endl;
 			std::cout << "  " << _progDescr << std::endl;
 		}
 	}

@@ -8,7 +8,8 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include "glm/gtx/string_cast.hpp"  // to print vect/mat with glm::to_string
+#include <glm/gtx/string_cast.hpp>  // to print vect/mat with glm::to_string
+#include <glm/gtx/quaternion.hpp>
 
 // to use glm::vec as map key
 namespace glm {

@@ -30,7 +30,7 @@ bool	manageArgs(ArgsParser &ap, uint8_t &gui, GameInfo &gameInfo, LAN_MODE::Enum
 	// -g --gui
 	ap.addArgument("gui", ArgType::UINT8, 'g', "gui")
 		.setHelp("change the starting gui id")
-		.setMaxU(1)
+		.setMaxU(NB_GUI - 1)
 		.setDefaultU(0);
 	// -b --boardSize
 	ap.addArgument("gameboard", ArgType::UINT32, 'b', "gameboard")

@@ -13,11 +13,11 @@
 
 class ArgsParser;  // to avoid circular dependency
 
-// COLOR_GREEN
+// LOG_COL_GREEN
 #define COLOR_TYPE "\x1B[32m"
-// COLOR_CYAN
+// LOG_COL_CYAN
 #define COLOR_L_VAL "\x1B[36m"
-// COLOR_MAGENTA
+// LOG_COL_MAGENTA
 #define COLOR_R_VAL "\x1B[35m"
 
 namespace ArgType {

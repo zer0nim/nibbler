@@ -79,9 +79,9 @@ std::string	GameManager::getBoard() const {
 		for (int i = 0; i < _gameInfo.gameboard.x; i++) {
 			if (!isEmpty(glm::ivec2(i, j))) {
 				if (_gameInfo.food == glm::ivec2(i, j))
-					result += COLOR_GREEN "o" COLOR_EOC;
+					result += LOG_COL_GREEN "o" LOG_COL_EOC;
 				else if (getHead() == glm::ivec2(i, j))
-					result += COLOR_RED "x" COLOR_EOC;
+					result += LOG_COL_RED "x" LOG_COL_EOC;
 				else
 					result += "x";
 			} else
@@ -107,7 +107,9 @@ void	GameManager::_initGame() {
 	_gameInfo.snake.push_back({1, 5});
 	_gameInfo.snake.push_back({1, 6});
 	_gameInfo.snake.push_back({1, 7});
-	_gameInfo.snake.push_back({1, 8});
+	_gameInfo.snake.push_back({2, 7});
+
+	_gameInfo.score = 0;
 
 	// place initial food
 	srand(time(NULL));  // set random seed
@@ -231,6 +233,8 @@ void	GameManager::run() {
 	}
 }
 
+// -- Private Methods ----------------------------------------------------------
+
 bool	GameManager::_move(Direction::Enum dir) {
 	glm::ivec2 head = getHead();
 
@@ -253,10 +257,7 @@ bool	GameManager::_move(Direction::Enum dir) {
 		default:
 			return false;
 	}
-	// std::cout << "[head :" << glm::to_string(head);
-	head.x = (head.x + _gameInfo.gameboard.x) % _gameInfo.gameboard.x;
-	head.y = (head.y + _gameInfo.gameboard.y) % _gameInfo.gameboard.y;
-	// std::cout << ", normalized: " << glm::to_string(head) << "]" << std::endl;
+
 	_gameInfo.snake.push_front(head);
 	if (_eating <= 0) {
 		_gameInfo.snake.pop_back();
@@ -304,11 +305,17 @@ bool	GameManager::isEmpty(glm::ivec2 pos, bool head) const {
 bool GameManager::_checkContact() {
 	glm::ivec2 head = getHead();
 
+	if (head.x < 0 || head.y < 0 || head.x >= _gameInfo.gameboard.x || head.y >= _gameInfo.gameboard.y) {
+		_gameInfo.play = State::S_GAMEOVER;
+		return false;
+	}
+
 	if (isEmpty(head, true))
 		return true;
 
 	if (head == _gameInfo.food) {
-		_eating += 9;
+		_eating += 1;
+		_gameInfo.score += 1;
 		_generateFood();
 		return true;
 	} else {

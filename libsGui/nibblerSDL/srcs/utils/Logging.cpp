@@ -4,12 +4,12 @@ Logging		logging;
 
 Logging::Logging()
 : _loglevel(LOGDEBUG) {
-	setLogColor(LOGDEBUG, COLOR_WHITE);
-	setLogColor(LOGINFO, COLOR_WHITE);
-	setLogColor(LOGSUCCESS, std::string(COLOR_GREEN) + COLOR_BOLD);
-	setLogColor(LOGWARN, std::string(COLOR_YELLOW) + COLOR_BOLD);
-	setLogColor(LOGERROR, std::string(COLOR_RED) + COLOR_BOLD);
-	setLogColor(LOGFATAL, std::string(COLOR_RED) + COLOR_BOLD);
+	setLogColor(LOGDEBUG, LOG_COL_WHITE);
+	setLogColor(LOGINFO, LOG_COL_WHITE);
+	setLogColor(LOGSUCCESS, std::string(LOG_COL_GREEN) + LOG_COL_BOLD);
+	setLogColor(LOGWARN, std::string(LOG_COL_YELLOW) + LOG_COL_BOLD);
+	setLogColor(LOGERROR, std::string(LOG_COL_RED) + LOG_COL_BOLD);
+	setLogColor(LOGFATAL, std::string(LOG_COL_RED) + LOG_COL_BOLD);
 
 	setPrintFileLine(false);
 }
@@ -60,7 +60,7 @@ void	Logging::log(eLoglevel level, std::string message, std::string file, int li
 		ss << "[" << file << " " << line << "]";
 	ss << ": ";
 	ss << message;
-	ss << COLOR_EOC << std::endl;
+	ss << LOG_COL_EOC << std::endl;
 
 	std::cout << ss.str();
 }

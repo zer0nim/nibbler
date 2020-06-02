@@ -41,3 +41,4 @@ libsGui/nibblerSDL/libs/*
 libsGui/nibblerSFML/libs/*
 libsGui/nibblerOpenGL/libs/*
 nibbler
+log.txt

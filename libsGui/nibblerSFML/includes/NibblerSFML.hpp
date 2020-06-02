@@ -11,6 +11,9 @@
 #define GAMESIZE_Y _padding.y * 2 + _block.y * gameInfo->gameboard.y
 #define MARGED_POS(pos) MARGED_X(pos), MARGED_Y(pos)
 
+/**
+ * @brief NibblerSFML object
+ */
 class NibblerSFML : public ANibblerGui {
 	public:
 		// Constructors
@@ -35,16 +38,13 @@ class NibblerSFML : public ANibblerGui {
 	private:
 		// Members
 		typedef void(*inputFuncPtr)(Input &);
-		static	std::map<sf::Keyboard::Key , inputFuncPtr>	_inputKeyPressed;
-		sf::RenderWindow	_win;
-		sf::Event			_event;
-		sf::Font			_font;
-		glm::ivec2			_block;
-		glm::ivec2			_margin;
-		glm::ivec2			_padding;
-		bool				_isMoving;
-		sf::Vector2i		_relativePos;
-		bool				_isActive;
+		static	std::map<sf::Keyboard::Key , inputFuncPtr>	_inputKeyPressed;  ///< map of key pressed
+		sf::RenderWindow	_win;  ///< window object
+		sf::Event			_event;  ///< SFML event
+		sf::Font			_font;  ///< font used
+		glm::ivec2			_block;  ///< block size
+		glm::ivec2			_margin;  ///< margin of the game
+		glm::ivec2			_padding;  ///< padding of the game (border size)
 
 		// Methods
 		void				_printBoard();
