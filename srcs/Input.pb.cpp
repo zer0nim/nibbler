@@ -70,9 +70,8 @@ static ::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase*const descriptor_table_inp
   &scc_info_Input_input_2eproto.base,
 };
 static ::PROTOBUF_NAMESPACE_ID::internal::once_flag descriptor_table_input_2eproto_once;
-static bool descriptor_table_input_2eproto_initialized = false;
 const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_input_2eproto = {
-  &descriptor_table_input_2eproto_initialized, descriptor_table_protodef_input_2eproto, "input.proto", 209,
+  false, false, descriptor_table_protodef_input_2eproto, "input.proto", 209,
   &descriptor_table_input_2eproto_once, descriptor_table_input_2eproto_sccs, descriptor_table_input_2eproto_deps, 1, 0,
   schemas, file_default_instances, TableStruct_input_2eproto::offsets,
   file_level_metadata_input_2eproto, 1, file_level_enum_descriptors_input_2eproto, file_level_service_descriptors_input_2eproto,
@@ -107,15 +106,15 @@ class Input::_Internal {
  public:
 };
 
-Input::Input()
-  : ::PROTOBUF_NAMESPACE_ID::Message(), _internal_metadata_(nullptr) {
+Input::Input(::PROTOBUF_NAMESPACE_ID::Arena* arena)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena) {
   SharedCtor();
-  // @@protoc_insertion_point(constructor:inputProto.Input)
+  RegisterArenaDtor(arena);
+  // @@protoc_insertion_point(arena_constructor:inputProto.Input)
 }
 Input::Input(const Input& from)
-  : ::PROTOBUF_NAMESPACE_ID::Message(),
-      _internal_metadata_(nullptr) {
-  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  : ::PROTOBUF_NAMESPACE_ID::Message() {
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   ::memcpy(&togglepause_, &from.togglepause_,
     static_cast<size_t>(reinterpret_cast<char*>(&loadguiid_) -
     reinterpret_cast<char*>(&togglepause_)) + sizeof(loadguiid_));
@@ -131,11 +130,19 @@ void Input::SharedCtor() {
 Input::~Input() {
   // @@protoc_insertion_point(destructor:inputProto.Input)
   SharedDtor();
+  _internal_metadata_.Delete<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
 void Input::SharedDtor() {
+  GOOGLE_DCHECK(GetArena() == nullptr);
 }
 
+void Input::ArenaDtor(void* object) {
+  Input* _this = reinterpret_cast< Input* >(object);
+  (void)_this;
+}
+void Input::RegisterArenaDtor(::PROTOBUF_NAMESPACE_ID::Arena*) {
+}
 void Input::SetCachedSize(int size) const {
   _cached_size_.Set(size);
 }
@@ -154,11 +161,12 @@ void Input::Clear() {
   ::memset(&togglepause_, 0, static_cast<size_t>(
       reinterpret_cast<char*>(&loadguiid_) -
       reinterpret_cast<char*>(&togglepause_)) + sizeof(loadguiid_));
-  _internal_metadata_.Clear();
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
 const char* Input::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) {
 #define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  ::PROTOBUF_NAMESPACE_ID::Arena* arena = GetArena(); (void)arena;
   while (!ctx->Done(&ptr)) {
     ::PROTOBUF_NAMESPACE_ID::uint32 tag;
     ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
@@ -192,7 +200,9 @@ const char* Input::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::inte
           ctx->SetLastTag(tag);
           goto success;
         }
-        ptr = UnknownFieldParse(tag, &_internal_metadata_, ptr, ctx);
+        ptr = UnknownFieldParse(tag,
+            _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+            ptr, ctx);
         CHK_(ptr != nullptr);
         continue;
       }
@@ -233,7 +243,7 @@ failure:
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::InternalSerializeUnknownFieldsToArray(
-        _internal_metadata_.unknown_fields(), target, stream);
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
   // @@protoc_insertion_point(serialize_to_array_end:inputProto.Input)
   return target;
@@ -292,7 +302,7 @@ void Input::MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
 void Input::MergeFrom(const Input& from) {
 // @@protoc_insertion_point(class_specific_merge_from_start:inputProto.Input)
   GOOGLE_DCHECK_NE(&from, this);
-  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
@@ -327,10 +337,13 @@ bool Input::IsInitialized() const {
 
 void Input::InternalSwap(Input* other) {
   using std::swap;
-  _internal_metadata_.Swap(&other->_internal_metadata_);
-  swap(togglepause_, other->togglepause_);
-  swap(direction_, other->direction_);
-  swap(loadguiid_, other->loadguiid_);
+  _internal_metadata_.Swap<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(&other->_internal_metadata_);
+  ::PROTOBUF_NAMESPACE_ID::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(Input, loadguiid_)
+      + sizeof(Input::loadguiid_)
+      - PROTOBUF_FIELD_OFFSET(Input, togglepause_)>(
+          reinterpret_cast<char*>(&togglepause_),
+          reinterpret_cast<char*>(&other->togglepause_));
 }
 
 ::PROTOBUF_NAMESPACE_ID::Metadata Input::GetMetadata() const {
@@ -342,7 +355,7 @@ void Input::InternalSwap(Input* other) {
 }  // namespace inputProto
 PROTOBUF_NAMESPACE_OPEN
 template<> PROTOBUF_NOINLINE ::inputProto::Input* Arena::CreateMaybeMessage< ::inputProto::Input >(Arena* arena) {
-  return Arena::CreateInternal< ::inputProto::Input >(arena);
+  return Arena::CreateMessageInternal< ::inputProto::Input >(arena);
 }
 PROTOBUF_NAMESPACE_CLOSE
 

@@ -141,9 +141,8 @@ static ::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase*const descriptor_table_gam
   &scc_info_Snake_gameInfo_2eproto.base,
 };
 static ::PROTOBUF_NAMESPACE_ID::internal::once_flag descriptor_table_gameInfo_2eproto_once;
-static bool descriptor_table_gameInfo_2eproto_initialized = false;
 const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_gameInfo_2eproto = {
-  &descriptor_table_gameInfo_2eproto_initialized, descriptor_table_protodef_gameInfo_2eproto, "gameInfo.proto", 493,
+  false, false, descriptor_table_protodef_gameInfo_2eproto, "gameInfo.proto", 493,
   &descriptor_table_gameInfo_2eproto_once, descriptor_table_gameInfo_2eproto_sccs, descriptor_table_gameInfo_2eproto_deps, 3, 0,
   schemas, file_default_instances, TableStruct_gameInfo_2eproto::offsets,
   file_level_metadata_gameInfo_2eproto, 3, file_level_enum_descriptors_gameInfo_2eproto, file_level_service_descriptors_gameInfo_2eproto,
@@ -193,15 +192,15 @@ class IVec2::_Internal {
  public:
 };
 
-IVec2::IVec2()
-  : ::PROTOBUF_NAMESPACE_ID::Message(), _internal_metadata_(nullptr) {
+IVec2::IVec2(::PROTOBUF_NAMESPACE_ID::Arena* arena)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena) {
   SharedCtor();
-  // @@protoc_insertion_point(constructor:gameInfoProto.IVec2)
+  RegisterArenaDtor(arena);
+  // @@protoc_insertion_point(arena_constructor:gameInfoProto.IVec2)
 }
 IVec2::IVec2(const IVec2& from)
-  : ::PROTOBUF_NAMESPACE_ID::Message(),
-      _internal_metadata_(nullptr) {
-  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  : ::PROTOBUF_NAMESPACE_ID::Message() {
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   ::memcpy(&x_, &from.x_,
     static_cast<size_t>(reinterpret_cast<char*>(&y_) -
     reinterpret_cast<char*>(&x_)) + sizeof(y_));
@@ -217,11 +216,19 @@ void IVec2::SharedCtor() {
 IVec2::~IVec2() {
   // @@protoc_insertion_point(destructor:gameInfoProto.IVec2)
   SharedDtor();
+  _internal_metadata_.Delete<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
 void IVec2::SharedDtor() {
+  GOOGLE_DCHECK(GetArena() == nullptr);
 }
 
+void IVec2::ArenaDtor(void* object) {
+  IVec2* _this = reinterpret_cast< IVec2* >(object);
+  (void)_this;
+}
+void IVec2::RegisterArenaDtor(::PROTOBUF_NAMESPACE_ID::Arena*) {
+}
 void IVec2::SetCachedSize(int size) const {
   _cached_size_.Set(size);
 }
@@ -240,11 +247,12 @@ void IVec2::Clear() {
   ::memset(&x_, 0, static_cast<size_t>(
       reinterpret_cast<char*>(&y_) -
       reinterpret_cast<char*>(&x_)) + sizeof(y_));
-  _internal_metadata_.Clear();
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
 const char* IVec2::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) {
 #define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  ::PROTOBUF_NAMESPACE_ID::Arena* arena = GetArena(); (void)arena;
   while (!ctx->Done(&ptr)) {
     ::PROTOBUF_NAMESPACE_ID::uint32 tag;
     ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
@@ -270,7 +278,9 @@ const char* IVec2::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::inte
           ctx->SetLastTag(tag);
           goto success;
         }
-        ptr = UnknownFieldParse(tag, &_internal_metadata_, ptr, ctx);
+        ptr = UnknownFieldParse(tag,
+            _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+            ptr, ctx);
         CHK_(ptr != nullptr);
         continue;
       }
@@ -304,7 +314,7 @@ failure:
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::InternalSerializeUnknownFieldsToArray(
-        _internal_metadata_.unknown_fields(), target, stream);
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
   // @@protoc_insertion_point(serialize_to_array_end:gameInfoProto.IVec2)
   return target;
@@ -359,7 +369,7 @@ void IVec2::MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
 void IVec2::MergeFrom(const IVec2& from) {
 // @@protoc_insertion_point(class_specific_merge_from_start:gameInfoProto.IVec2)
   GOOGLE_DCHECK_NE(&from, this);
-  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
@@ -391,9 +401,13 @@ bool IVec2::IsInitialized() const {
 
 void IVec2::InternalSwap(IVec2* other) {
   using std::swap;
-  _internal_metadata_.Swap(&other->_internal_metadata_);
-  swap(x_, other->x_);
-  swap(y_, other->y_);
+  _internal_metadata_.Swap<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(&other->_internal_metadata_);
+  ::PROTOBUF_NAMESPACE_ID::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(IVec2, y_)
+      + sizeof(IVec2::y_)
+      - PROTOBUF_FIELD_OFFSET(IVec2, x_)>(
+          reinterpret_cast<char*>(&x_),
+          reinterpret_cast<char*>(&other->x_));
 }
 
 ::PROTOBUF_NAMESPACE_ID::Metadata IVec2::GetMetadata() const {
@@ -409,16 +423,17 @@ class Snake::_Internal {
  public:
 };
 
-Snake::Snake()
-  : ::PROTOBUF_NAMESPACE_ID::Message(), _internal_metadata_(nullptr) {
+Snake::Snake(::PROTOBUF_NAMESPACE_ID::Arena* arena)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena),
+  body_(arena) {
   SharedCtor();
-  // @@protoc_insertion_point(constructor:gameInfoProto.Snake)
+  RegisterArenaDtor(arena);
+  // @@protoc_insertion_point(arena_constructor:gameInfoProto.Snake)
 }
 Snake::Snake(const Snake& from)
   : ::PROTOBUF_NAMESPACE_ID::Message(),
-      _internal_metadata_(nullptr),
       body_(from.body_) {
-  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   // @@protoc_insertion_point(copy_constructor:gameInfoProto.Snake)
 }
 
@@ -429,11 +444,19 @@ void Snake::SharedCtor() {
 Snake::~Snake() {
   // @@protoc_insertion_point(destructor:gameInfoProto.Snake)
   SharedDtor();
+  _internal_metadata_.Delete<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
 void Snake::SharedDtor() {
+  GOOGLE_DCHECK(GetArena() == nullptr);
 }
 
+void Snake::ArenaDtor(void* object) {
+  Snake* _this = reinterpret_cast< Snake* >(object);
+  (void)_this;
+}
+void Snake::RegisterArenaDtor(::PROTOBUF_NAMESPACE_ID::Arena*) {
+}
 void Snake::SetCachedSize(int size) const {
   _cached_size_.Set(size);
 }
@@ -450,11 +473,12 @@ void Snake::Clear() {
   (void) cached_has_bits;
 
   body_.Clear();
-  _internal_metadata_.Clear();
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
 const char* Snake::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) {
 #define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  ::PROTOBUF_NAMESPACE_ID::Arena* arena = GetArena(); (void)arena;
   while (!ctx->Done(&ptr)) {
     ::PROTOBUF_NAMESPACE_ID::uint32 tag;
     ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
@@ -478,7 +502,9 @@ const char* Snake::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::inte
           ctx->SetLastTag(tag);
           goto success;
         }
-        ptr = UnknownFieldParse(tag, &_internal_metadata_, ptr, ctx);
+        ptr = UnknownFieldParse(tag,
+            _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+            ptr, ctx);
         CHK_(ptr != nullptr);
         continue;
       }
@@ -508,7 +534,7 @@ failure:
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::InternalSerializeUnknownFieldsToArray(
-        _internal_metadata_.unknown_fields(), target, stream);
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
   // @@protoc_insertion_point(serialize_to_array_end:gameInfoProto.Snake)
   return target;
@@ -556,7 +582,7 @@ void Snake::MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
 void Snake::MergeFrom(const Snake& from) {
 // @@protoc_insertion_point(class_specific_merge_from_start:gameInfoProto.Snake)
   GOOGLE_DCHECK_NE(&from, this);
-  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
@@ -583,7 +609,7 @@ bool Snake::IsInitialized() const {
 
 void Snake::InternalSwap(Snake* other) {
   using std::swap;
-  _internal_metadata_.Swap(&other->_internal_metadata_);
+  _internal_metadata_.Swap<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(&other->_internal_metadata_);
   body_.InternalSwap(&other->body_);
 }
 
@@ -614,16 +640,17 @@ const ::gameInfoProto::Snake&
 GameInfo::_Internal::snake(const GameInfo* msg) {
   return *msg->snake_;
 }
-GameInfo::GameInfo()
-  : ::PROTOBUF_NAMESPACE_ID::Message(), _internal_metadata_(nullptr) {
+GameInfo::GameInfo(::PROTOBUF_NAMESPACE_ID::Arena* arena)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena),
+  snakeop_(arena) {
   SharedCtor();
-  // @@protoc_insertion_point(constructor:gameInfoProto.GameInfo)
+  RegisterArenaDtor(arena);
+  // @@protoc_insertion_point(arena_constructor:gameInfoProto.GameInfo)
 }
 GameInfo::GameInfo(const GameInfo& from)
   : ::PROTOBUF_NAMESPACE_ID::Message(),
-      _internal_metadata_(nullptr),
       snakeop_(from.snakeop_) {
-  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   if (from._internal_has_food()) {
     food_ = new ::gameInfoProto::IVec2(*from.food_);
   } else {
@@ -650,13 +677,21 @@ void GameInfo::SharedCtor() {
 GameInfo::~GameInfo() {
   // @@protoc_insertion_point(destructor:gameInfoProto.GameInfo)
   SharedDtor();
+  _internal_metadata_.Delete<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
 void GameInfo::SharedDtor() {
+  GOOGLE_DCHECK(GetArena() == nullptr);
   if (this != internal_default_instance()) delete food_;
   if (this != internal_default_instance()) delete snake_;
 }
 
+void GameInfo::ArenaDtor(void* object) {
+  GameInfo* _this = reinterpret_cast< GameInfo* >(object);
+  (void)_this;
+}
+void GameInfo::RegisterArenaDtor(::PROTOBUF_NAMESPACE_ID::Arena*) {
+}
 void GameInfo::SetCachedSize(int size) const {
   _cached_size_.Set(size);
 }
@@ -673,22 +708,23 @@ void GameInfo::Clear() {
   (void) cached_has_bits;
 
   snakeop_.Clear();
-  if (GetArenaNoVirtual() == nullptr && food_ != nullptr) {
+  if (GetArena() == nullptr && food_ != nullptr) {
     delete food_;
   }
   food_ = nullptr;
-  if (GetArenaNoVirtual() == nullptr && snake_ != nullptr) {
+  if (GetArena() == nullptr && snake_ != nullptr) {
     delete snake_;
   }
   snake_ = nullptr;
   ::memset(&play_, 0, static_cast<size_t>(
       reinterpret_cast<char*>(&quitted_) -
       reinterpret_cast<char*>(&play_)) + sizeof(quitted_));
-  _internal_metadata_.Clear();
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
 const char* GameInfo::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) {
 #define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  ::PROTOBUF_NAMESPACE_ID::Arena* arena = GetArena(); (void)arena;
   while (!ctx->Done(&ptr)) {
     ::PROTOBUF_NAMESPACE_ID::uint32 tag;
     ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
@@ -756,7 +792,9 @@ const char* GameInfo::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::i
           ctx->SetLastTag(tag);
           goto success;
         }
-        ptr = UnknownFieldParse(tag, &_internal_metadata_, ptr, ctx);
+        ptr = UnknownFieldParse(tag,
+            _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+            ptr, ctx);
         CHK_(ptr != nullptr);
         continue;
       }
@@ -828,7 +866,7 @@ failure:
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::InternalSerializeUnknownFieldsToArray(
-        _internal_metadata_.unknown_fields(), target, stream);
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
   // @@protoc_insertion_point(serialize_to_array_end:gameInfoProto.GameInfo)
   return target;
@@ -912,7 +950,7 @@ void GameInfo::MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
 void GameInfo::MergeFrom(const GameInfo& from) {
 // @@protoc_insertion_point(class_specific_merge_from_start:gameInfoProto.GameInfo)
   GOOGLE_DCHECK_NE(&from, this);
-  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
@@ -957,14 +995,14 @@ bool GameInfo::IsInitialized() const {
 
 void GameInfo::InternalSwap(GameInfo* other) {
   using std::swap;
-  _internal_metadata_.Swap(&other->_internal_metadata_);
+  _internal_metadata_.Swap<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(&other->_internal_metadata_);
   snakeop_.InternalSwap(&other->snakeop_);
-  swap(food_, other->food_);
-  swap(snake_, other->snake_);
-  swap(play_, other->play_);
-  swap(snakespeed_, other->snakespeed_);
-  swap(direction_, other->direction_);
-  swap(quitted_, other->quitted_);
+  ::PROTOBUF_NAMESPACE_ID::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(GameInfo, quitted_)
+      + sizeof(GameInfo::quitted_)
+      - PROTOBUF_FIELD_OFFSET(GameInfo, food_)>(
+          reinterpret_cast<char*>(&food_),
+          reinterpret_cast<char*>(&other->food_));
 }
 
 ::PROTOBUF_NAMESPACE_ID::Metadata GameInfo::GetMetadata() const {
@@ -976,13 +1014,13 @@ void GameInfo::InternalSwap(GameInfo* other) {
 }  // namespace gameInfoProto
 PROTOBUF_NAMESPACE_OPEN
 template<> PROTOBUF_NOINLINE ::gameInfoProto::IVec2* Arena::CreateMaybeMessage< ::gameInfoProto::IVec2 >(Arena* arena) {
-  return Arena::CreateInternal< ::gameInfoProto::IVec2 >(arena);
+  return Arena::CreateMessageInternal< ::gameInfoProto::IVec2 >(arena);
 }
 template<> PROTOBUF_NOINLINE ::gameInfoProto::Snake* Arena::CreateMaybeMessage< ::gameInfoProto::Snake >(Arena* arena) {
-  return Arena::CreateInternal< ::gameInfoProto::Snake >(arena);
+  return Arena::CreateMessageInternal< ::gameInfoProto::Snake >(arena);
 }
 template<> PROTOBUF_NOINLINE ::gameInfoProto::GameInfo* Arena::CreateMaybeMessage< ::gameInfoProto::GameInfo >(Arena* arena) {
-  return Arena::CreateInternal< ::gameInfoProto::GameInfo >(arena);
+  return Arena::CreateMessageInternal< ::gameInfoProto::GameInfo >(arena);
 }
 PROTOBUF_NAMESPACE_CLOSE
 

@@ -69,7 +69,7 @@ ARGS =
 # compiler (g++ or clang++)
 CC = g++
 # flags for compilation
-CFLAGS = -Ofast -std=c++14 -Wall -Wextra
+CFLAGS = -Ofast -std=c++14 -Wall -Wextra -Wno-array-bounds
 # flags only for debug mode (make DEBUG=1)
 DEBUG_FLAGS = -g3 -DDEBUG=true
 # classic flags
@@ -184,17 +184,20 @@ if [[ "$$OSTYPE" == "linux-gnu" ]]; then
 	mkdir -p $(LIBS_DIR)
 	# glm
 	sudo apt-get -y install libglm-dev;
+
 	# protobuf
-	sudo apt-get -y install autoconf automake libtool curl make g++ unzip
-	git clone https://github.com/protocolbuffers/protobuf.git $(LIBS_DIR)/protobuf
-	cd $(LIBS_DIR)/protobuf
-	git submodule update --init --recursive
-	./autogen.sh
+	sudo apt-get -y install wget unzip
+	cd $(LIBS_DIR)
+	rm -rf protobuf
+	wget -O protobuf-cpp-3.12.3.zip https://github.com/protocolbuffers/protobuf/releases/download/v3.12.3/protobuf-cpp-3.12.3.zip
+	unzip protobuf-cpp-3.12.3.zip -d protobuf
+	rm protobuf-cpp-3.12.3.zip
+	cd protobuf/protobuf-3.12.3
 	./configure
-     make
-     make check
-     sudo make install
-     sudo ldconfig # refresh shared library cache.
+	make -j8
+	sudo make install
+	sudo ldconfig # refresh shared library cache.
+	cd ..
 
 # Mac OSX
 elif [[ "$$OSTYPE" == "darwin"* ]]; then
@@ -202,7 +205,7 @@ elif [[ "$$OSTYPE" == "darwin"* ]]; then
 	# glm
 	brew install glm
 	# protobuf
-	brew install protobuf
+	brew install protobuf@3.12
 fi
 
 exit 0
