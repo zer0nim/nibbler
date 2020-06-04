@@ -44,12 +44,6 @@ int	main(int ac, char * const *av) {
 		.setDefaultU(16)
 		.setMinU(10)
 		.setMaxU(1000);
-	// -s --speed
-	ap.addArgument("snakeSpeed", ArgType::FLOAT, 's', "snakeSpeed")
-		.setHelp("change the snake speed")
-		.setMinF(0.0f)
-		.setMaxF(100.0f)
-		.setDefaultF(10.5f);
 
 	// -- run the parser -------------------------------------------------------
 	try {
@@ -71,14 +65,11 @@ int	main(int ac, char * const *av) {
 	// gameboard
 	gameInfo.gameboard.x = ap.get<uint32_t>("gameboard");
 	gameInfo.gameboard.y = gameInfo.gameboard.x;
-	// snakeSpeed
-	gameInfo.snakeSpeed = ap.get<float>("snakeSpeed");
 
 	logDebug("-- gameInfo ------------");
 	logDebug(" windowSize: " << glm::to_string(gameInfo.windowSize));
 	logDebug(" gameboard: " << glm::to_string(gameInfo.gameboard));
 	logDebug(" play: " << gameInfo.play);
-	logDebug(" snakeSpeed: " << gameInfo.snakeSpeed);
 	logDebug("-----------------------");
 
 	// -- run the game ---------------------------------------------------------

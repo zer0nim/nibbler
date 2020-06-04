@@ -50,7 +50,6 @@ struct GameInfo {
 	State::Enum				play;
 	std::deque<glm::ivec2>	snake;
 	int						score;
-	float					snakeSpeed;
 	Direction::Enum			direction;
 
 	GameInfo();
